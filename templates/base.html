@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}TINO Photography — Leicester{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Barlow:wght@300;400;500&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="{{ url_for('index') }}" class="nav-logo">TINO<span>.</span></a>
+  <ul class="nav-links">
+    <li><a href="{{ url_for('portfolio') }}" {% if request.endpoint == 'portfolio' %}class="active"{% endif %}>Portfolio</a></li>
+    <li><a href="{{ url_for('services') }}"  {% if request.endpoint == 'services'  %}class="active"{% endif %}>Services</a></li>
+    <li><a href="{{ url_for('about') }}"     {% if request.endpoint == 'about'     %}class="active"{% endif %}>About</a></li>
+    <li><a href="{{ url_for('contact') }}" class="nav-book">Book Now</a></li>
+  </ul>
+  <button class="nav-burger" id="burger">&#9776;</button>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mob-menu" id="mobMenu">
+  <a href="{{ url_for('portfolio') }}">Portfolio</a>
+  <a href="{{ url_for('services') }}">Services</a>
+  <a href="{{ url_for('about') }}">About</a>
+  <a href="{{ url_for('contact') }}">Book Now</a>
+</div>
+
+<!-- PAGE CONTENT -->
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 TINO Photography — Leicester, UK</p>
+  <div class="footer-links">
+    <a href="#">Instagram</a>
+    <a href="#">TikTok</a>
+    <a href="{{ url_for('admin') }}">Admin</a>
+  </div>
+</footer>
+
+<!-- LIGHTBOX (available on every page) -->
+<div class="lightbox" id="lightbox">
+  <div class="lb-close" id="lbClose">&#10005; Close</div>
+  <div class="lb-prev" id="lbPrev">&#8249;</div>
+  <img id="lbImg" src="" alt="">
+  <div class="lb-next" id="lbNext">&#8250;</div>
+</div>
+
+<script>
+  // Mobile menu toggle
+  document.getElementById('burger').addEventListener('click', function() {
+    document.getElementById('mobMenu').classList.toggle('open');
+  });
+
+  // Lightbox
+  var lbPhotos = [];
+  var lbIndex  = 0;
+
+  function openLightbox(photos, index) {
+    lbPhotos = photos;
+    lbIndex  = index;
+    document.getElementById('lbImg').src = lbPhotos[lbIndex];
+    document.getElementById('lightbox').classList.add('open');
+  }
+
+  document.getElementById('lbClose').onclick = function() {
+    document.getElementById('lightbox').classList.remove('open');
+  };
+  document.getElementById('lbPrev').onclick = function() {
+    lbIndex = (lbIndex - 1 + lbPhotos.length) % lbPhotos.length;
+    document.getElementById('lbImg').src = lbPhotos[lbIndex];
+  };
+  document.getElementById('lbNext').onclick = function() {
+    lbIndex = (lbIndex + 1) % lbPhotos.length;
+    document.getElementById('lbImg').src = lbPhotos[lbIndex];
+  };
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape')      document.getElementById('lightbox').classList.remove('open');
+    if (e.key === 'ArrowLeft')   document.getElementById('lbPrev').click();
+    if (e.key === 'ArrowRight')  document.getElementById('lbNext').click();
+  });
+</script>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>

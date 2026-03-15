@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Services — TINO Photography{% endblock %}
+
+{% block content %}
+
+<div class="page-banner">
+  <p class="label">What I Offer</p>
+  <h1>Services</h1>
+  <p>From church interiors to club nights — rates are fair and turnaround is fast.</p>
+</div>
+
+<section class="section">
+  <div class="services-grid" style="grid-template-columns: repeat(3, 1fr);">
+
+    <div class="service-card">
+      <div class="service-num">01</div>
+      <div class="service-icon">⛪</div>
+      <p class="service-name">Church & Architecture</p>
+      <p class="service-desc">Interiors, stained glass, ceremonies and architectural details. Available for all denominations and venues across the Midlands. Great for churches wanting professional photos for their website or social media.</p>
+      <p class="service-price">From £80</p>
+    </div>
+
+    <div class="service-card">
+      <div class="service-num">02</div>
+      <div class="service-icon">🍜</div>
+      <p class="service-name">Restaurants & Food</p>
+      <p class="service-desc">Atmosphere shots, plated dishes, staff and events. Social-ready content for menus, Instagram and Google listings. Help your restaurant stand out online with quality visuals.</p>
+      <p class="service-price">From £100</p>
+    </div>
+
+    <div class="service-card">
+      <div class="service-num">03</div>
+      <div class="service-icon">👟</div>
+      <p class="service-name">Streetwear & Fashion</p>
+      <p class="service-desc">Lookbooks, individual outfit shots and editorial-style street photography. Perfect for creatives, influencers and individuals wanting fire content for their socials.</p>
+      <p class="service-price">From £60</p>
+    </div>
+
+    <div class="service-card">
+      <div class="service-num">04</div>
+      <div class="service-icon">🚀</div>
+      <p class="service-name">Upcoming Brands</p>
+      <p class="service-desc">Launch shoots, product photography and campaign content for new brands. If you're building something from scratch, let's build your visual identity together. I understand the hustle.</p>
+      <p class="service-price">From £80</p>
+    </div>
+
+    <div class="service-card">
+      <div class="service-num">05</div>
+      <div class="service-icon">🎉</div>
+      <p class="service-name">Events & Club Nights</p>
+      <p class="service-desc">Full coverage of club nights, birthdays, private events and gigs. Fast edits, shareable files delivered same or next day. Perfect for promoters wanting content to push online.</p>
+      <p class="service-price">From £120</p>
+    </div>
+
+    <div class="service-card">
+      <div class="service-num">06</div>
+      <div class="service-icon">📸</div>
+      <p class="service-name">Portraits</p>
+      <p class="service-desc">Professional headshots and personal portrait sessions. Studio or on location. Whether it's for LinkedIn, press shots or just something for yourself — I'll make sure you look good.</p>
+      <p class="service-price">From £50</p>
+    </div>
+
+  </div>
+
+  <div style="margin-top: 4rem; background-color: #141414; border: 1px solid rgba(245,240,235,0.1); border-left: 3px solid #e8000d; padding: 2.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
+    <div>
+      <p style="font-family: 'Playfair Display', Georgia, serif; font-size: 1.5rem; font-weight: 900; color: #f5f0eb; margin-bottom: 0.5rem;">Not sure what you need?</p>
+      <p style="color: #888888; font-size: 0.95rem;">Drop me a message and we'll figure it out. All budgets welcome.</p>
+    </div>
+    <a href="{{ url_for('contact') }}" class="btn-primary">Get in Touch</a>
+  </div>
+</section>
+
+{% endblock %}

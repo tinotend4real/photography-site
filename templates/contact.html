@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block title %}Book a Shoot — TINO Photography{% endblock %}
+
+{% block content %}
+
+<div class="page-banner">
+  <p class="label">Get In Touch</p>
+  <h1>Book a Shoot</h1>
+  <p>Fill out the form and I'll get back to you within 24 hours. All budgets welcome.</p>
+</div>
+
+<section class="section">
+  <div class="contact-grid">
+
+    <!-- Left: contact info -->
+    <div>
+      <p class="sec-label">Details</p>
+      <h2 class="sec-title">Let's Talk</h2>
+      <p style="font-size: 0.95rem; line-height: 1.8; color: #888888; margin-bottom: 2rem;">
+        Whether you've got a firm plan or just an idea, get in touch. I work with all budgets and I'm always up for something creative.
+      </p>
+
+      <div class="contact-details">
+        <div class="cd-row">
+          <span class="cd-label">Location</span>
+          <span class="cd-val">Leicester, UK</span>
+        </div>
+        <div class="cd-row">
+          <span class="cd-label">Email</span>
+          <span class="cd-val"><a href="mailto:tinotend4official@icloud.com">tinotend4official@icloud.com</a></span>
+        </div>
+        <div class="cd-row">
+          <span class="cd-label">Instagram</span>
+          <span class="cd-val"><a href="#" style="color:#e8000d;">@yourhandle</a></span>
+        </div>
+        <div class="cd-row">
+          <span class="cd-label">Response</span>
+          <span class="cd-val">Within 24 hours</span>
+        </div>
+        <div class="cd-row">
+          <span class="cd-label">Status</span>
+          <span class="cd-val cd-available">&#10003; Taking bookings now</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: form -->
+    <div>
+      <form class="booking-form" id="bookForm">
+        <div class="form-row">
+          <div class="fg">
+            <label>Your name</label>
+            <input type="text" id="fname" placeholder="Full name" required>
+          </div>
+          <div class="fg">
+            <label>Email address</label>
+            <input type="email" id="femail" placeholder="you@example.com" required>
+          </div>
+        </div>
+        <div class="fg">
+          <label>Type of shoot</label>
+          <select id="ftype" required>
+            <option value="" disabled selected>Select a service</option>
+            <option>Church / Architecture</option>
+            <option>Restaurant / Food</option>
+            <option>Streetwear / Fashion</option>
+            <option>Brand Campaign</option>
+            <option>Event / Club Night</option>
+            <option>Portrait</option>
+            <option>Something else</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Tell me more</label>
+          <textarea id="fmsg" placeholder="Date, location, budget, vibe — the more detail the better..."></textarea>
+        </div>
+        <button type="submit" id="submitBtn">Send Enquiry &rarr;</button>
+        <div id="form-msg"></div>
+      </form>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.getElementById('bookForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    var btn = document.getElementById('submitBtn');
+    var msg = document.getElementById('form-msg');
+    btn.textContent = 'Sending...';
+    btn.disabled = true;
+
+    fetch('/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name:       document.getElementById('fname').value,
+        email:      document.getElementById('femail').value,
+        shoot_type: document.getElementById('ftype').value,
+        message:    document.getElementById('fmsg').value
+      })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success) {
+        msg.textContent = "Message sent! I'll be in touch within 24 hours.";
+        msg.className = 'ok';
+        document.getElementById('bookForm').reset();
+      } else {
+        throw new Error(data.error);
+      }
+    })
+    .catch(function() {
+      msg.textContent = 'Something went wrong. Email me directly at tinotend4official@icloud.com';
+      msg.className = 'err';
+    })
+    .finally(function() {
+      btn.textContent = 'Send Enquiry \u2192';
+      btn.disabled = false;
+    });
+  });
+</script>
+{% endblock %}

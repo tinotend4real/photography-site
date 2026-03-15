@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Admin — TINO Photography{% endblock %}
+
+{% block content %}
+
+<div class="page-banner">
+  <p class="label">Dashboard</p>
+  <h1>Bookings</h1>
+</div>
+
+<section class="section">
+
+  <!-- STATS -->
+  <div class="admin-stats">
+    <div class="admin-stat">
+      <div class="admin-stat-n">{{ bookings | length }}</div>
+      <div class="admin-stat-l">Total Enquiries</div>
+    </div>
+    <div class="admin-stat">
+      <div class="admin-stat-n" style="color:#e8000d;">{{ bookings | selectattr('status','eq','new') | list | length }}</div>
+      <div class="admin-stat-l">New</div>
+    </div>
+    <div class="admin-stat">
+      <div class="admin-stat-n" style="color:#888888;">{{ bookings | selectattr('status','eq','read') | list | length }}</div>
+      <div class="admin-stat-l">Read</div>
+    </div>
+    <div class="admin-stat">
+      <div class="admin-stat-n" style="color:#4caf50;">{{ bookings | selectattr('status','eq','replied') | list | length }}</div>
+      <div class="admin-stat-l">Replied</div>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  {% if bookings %}
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Shoot Type</th>
+        <th>Message</th>
+        <th>Date</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for b in bookings %}
+      <tr id="row-{{ b.id }}">
+        <td style="color:#888888;">{{ b.id }}</td>
+        <td><strong>{{ b.name }}</strong></td>
+        <td><a href="mailto:{{ b.email }}" style="color:#e8000d;">{{ b.email }}</a></td>
+        <td>{{ b.shoot_type }}</td>
+        <td style="color:#888888;max-width:250px;font-size:0.82rem;">{{ b.message[:100] }}{% if b.message|length > 100 %}...{% endif %}</td>
+        <td style="color:#888888;white-space:nowrap;font-size:0.82rem;">{{ b.date }}</td>
+        <td><span class="badge badge-{{ b.status }}" id="badge-{{ b.id }}">{{ b.status }}</span></td>
+        <td>
+          <button class="act-btn" onclick="setStatus({{ b.id }}, 'read')">Mark Read</button>
+          <button class="act-btn" onclick="setStatus({{ b.id }}, 'replied')">Replied</button>
+          <a href="mailto:{{ b.email }}?subject=Re: {{ b.shoot_type }}" class="act-btn" style="display:inline-block;">Reply</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div style="text-align:center;padding:4rem;border:1px dashed rgba(245,240,235,0.1);font-family:'Barlow Condensed',Arial,sans-serif;letter-spacing:0.15em;text-transform:uppercase;font-size:0.8rem;color:#888888;">
+    No enquiries yet — share your site and they will come.
+  </div>
+  {% endif %}
+
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function setStatus(id, status) {
+    fetch('/admin/mark/' + id + '/' + status)
+      .then(function() {
+        var badge = document.getElementById('badge-' + id);
+        badge.className = 'badge badge-' + status;
+        badge.textContent = status;
+      });
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}About — TINO Photography{% endblock %}
+
+{% block content %}
+
+<div class="page-banner">
+  <p class="label">The Photographer</p>
+  <h1>Behind the Lens</h1>
+</div>
+
+<section class="section">
+  <div class="about-grid">
+
+    <div class="about-img">
+      <img src="{{ url_for('static', filename='images/tinoroom.jpg') }}" alt="Tino">
+      <div class="about-img-badge">
+        <span class="badge-num">6</span>
+        <span class="badge-lbl">Months<br>Shooting</span>
+      </div>
+    </div>
+
+    <div class="about-text">
+      <p class="sec-label">About Me</p>
+      <h2 class="sec-title">Tino</h2>
+
+      <p>Based in <strong>Leicester</strong>, I'm a self-taught photographer six months deep and already building a real body of work across multiple genres.</p>
+
+      <p>I started shooting because I wanted to capture things properly — <strong>real moments, real people, real places</strong>. No over-edited filters, no fake poses. Just honest photography that actually looks good.</p>
+
+      <p>In six months I've shot <strong>church interiors and architecture, restaurant atmosphere, streetwear looks, upcoming brand campaigns</strong> and raw street portraits. Every shoot has taught me something new.</p>
+
+      <p>I'm currently taking bookings for <strong>club nights, brand shoots, events and anything creative</strong> across Leicester and the Midlands. Rates are fair, turnaround is fast, and I'm easy to work with.</p>
+
+      <p>If you've got an idea, let's make it happen.</p>
+
+      <div class="stats-row">
+        <div>
+          <div class="stat-n">5+</div>
+          <div class="stat-l">Categories</div>
+        </div>
+        <div>
+          <div class="stat-n">24h</div>
+          <div class="stat-l">Turnaround</div>
+        </div>
+        <div>
+          <div class="stat-n">100%</div>
+          <div class="stat-l">Committed</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 2.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+        <a href="{{ url_for('portfolio') }}" class="btn-primary">View My Work</a>
+        <a href="{{ url_for('contact') }}" class="btn-outline">Book a Shoot</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- WHAT I SHOOT -->
+<section class="section section-alt">
+  <p class="sec-label">Specialisms</p>
+  <h2 class="sec-title">What I Shoot</h2>
+
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 2rem;">
+    <div style="position: relative; overflow: hidden; cursor: pointer;" onclick="openLightbox(aboutPhotos, 0)">
+      <img src="{{ url_for('static', filename='images/churchfront.jpg') }}"
+           alt="Church" style="width: 100%; aspect-ratio: 4/3; object-fit: cover; filter: brightness(0.7); transition: transform 0.5s, filter 0.3s;"
+           onmouseover="this.style.transform='scale(1.05)';this.style.filter='brightness(0.9)'"
+           onmouseout="this.style.transform='scale(1)';this.style.filter='brightness(0.7)'">
+      <div style="position: absolute; bottom: 1rem; left: 1rem;">
+        <p style="font-family:'Barlow Condensed',Arial,sans-serif;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:#e8000d;">Church</p>
+        <p style="font-family:'Playfair Display',Georgia,serif;font-size:1rem;color:#f5f0eb;">Architecture</p>
+      </div>
+    </div>
+    <div style="position: relative; overflow: hidden; cursor: pointer;" onclick="openLightbox(aboutPhotos, 1)">
+      <img src="{{ url_for('static', filename='images/chinafood.jpg') }}"
+           alt="Restaurant" style="width: 100%; aspect-ratio: 4/3; object-fit: cover; filter: brightness(0.7); transition: transform 0.5s, filter 0.3s;"
+           onmouseover="this.style.transform='scale(1.05)';this.style.filter='brightness(0.9)'"
+           onmouseout="this.style.transform='scale(1)';this.style.filter='brightness(0.7)'">
+      <div style="position: absolute; bottom: 1rem; left: 1rem;">
+        <p style="font-family:'Barlow Condensed',Arial,sans-serif;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:#e8000d;">Food</p>
+        <p style="font-family:'Playfair Display',Georgia,serif;font-size:1rem;color:#f5f0eb;">Restaurants</p>
+      </div>
+    </div>
+    <div style="position: relative; overflow: hidden; cursor: pointer;" onclick="openLightbox(aboutPhotos, 2)">
+      <img src="{{ url_for('static', filename='images/monbrand1.jpg') }}"
+           alt="Brand" style="width: 100%; aspect-ratio: 4/3; object-fit: cover; filter: brightness(0.7); transition: transform 0.5s, filter 0.3s;"
+           onmouseover="this.style.transform='scale(1.05)';this.style.filter='brightness(0.9)'"
+           onmouseout="this.style.transform='scale(1)';this.style.filter='brightness(0.7)'">
+      <div style="position: absolute; bottom: 1rem; left: 1rem;">
+        <p style="font-family:'Barlow Condensed',Arial,sans-serif;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:#e8000d;">Brand</p>
+        <p style="font-family:'Playfair Display',Georgia,serif;font-size:1rem;color:#f5f0eb;">Campaigns</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  var aboutPhotos = [
+    "{{ url_for('static', filename='images/churchfront.jpg') }}",
+    "{{ url_for('static', filename='images/chinafood.jpg') }}",
+    "{{ url_for('static', filename='images/monbrand1.jpg') }}"
+  ];
+</script>
+{% endblock %}

@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% block title %}Portfolio — TINO Photography{% endblock %}
+
+{% block content %}
+
+<div class="page-banner">
+  <p class="label">Selected Work</p>
+  <h1>The Portfolio</h1>
+  <p>Church, restaurants, streetwear, brands & street portraits — six months of work.</p>
+</div>
+
+<section class="section">
+
+  <!-- FILTERS -->
+  <div class="filters">
+    <button class="filter-btn active" data-cat="all">All Work</button>
+    <button class="filter-btn" data-cat="church">Church</button>
+    <button class="filter-btn" data-cat="restaurant">Restaurants</button>
+    <button class="filter-btn" data-cat="streetwear">Streetwear</button>
+    <button class="filter-btn" data-cat="brand">Brands</button>
+    <button class="filter-btn" data-cat="street">Street</button>
+  </div>
+
+  <!-- GRID -->
+  <div class="photo-grid" id="grid">
+
+    <div class="grid-item" data-cat="church" onclick="openLightbox(allPhotos, 0)">
+      <img src="{{ url_for('static', filename='images/churchfront.jpg') }}" alt="Church front">
+      <div class="grid-overlay"><div><p class="cat">Church</p><p class="title">Church Front</p></div></div>
+    </div>
+
+    <div class="grid-item" data-cat="church" onclick="openLightbox(allPhotos, 1)">
+      <img src="{{ url_for('static', filename='images/churchentry.jpg') }}" alt="Church entry">
+      <div class="grid-overlay"><div><p class="cat">Church</p><p class="title">The Entry</p></div></div>
+    </div>
+
+    <div class="grid-item" data-cat="church" onclick="openLightbox(allPhotos, 2)">
+      <img src="{{ url_for('static', filename='images/crypt.jpg') }}" alt="Crypt">
+      <div class="grid-overlay"><div><p class="cat">Church</p><p class="title">The Crypt</p></div></div>
+    </div>
+
+    <div class="grid-item" data-cat="church" onclick="openLightbox(allPhotos, 3)">
+      <img src="{{ url_for('static', filename='images/churchwindow.jpg') }}" alt="Church window">
+      <div class="grid-overlay"><div><p class="cat">Church</p><p class="title">Stained Glass</p></div></div>
+    </div>
+
+    <div class="grid-item" data-cat="church" onclick="openLightbox(allPhotos, 4)">
+      <img src="{{ url_for('static', filename='images/churchscript.jpg') }}" alt="Church script">
+      <div class="grid-overlay"><div><p class="cat">Church</p><p class="title">The Script</p></div></div>
+    </div>
+
+    <div class="grid-item" data-cat="restaurant" onclick="openLightbox(allPhotos, 5)">
+      <img src="{{ url_for('static', filename='images/chinafood.jpg') }}" alt="China food">
+      <div class="grid-overlay"><div><p class="cat">Restaurant</p><p class="title">China Food</p></div></div>
+    </div>
+
+    <div class="grid-item" data-cat="restaurant" onclick="openLightbox(allPhotos, 6)">
+      <img src="{{ url_for('static', filename='images/restuarant.jpg') }}" alt="Restaurant">
+      <div class="grid-overlay"><div><p class="cat">Restaurant</p><p class="title">Restaurant</p></div></div>
+    </div>
+
+    <div class="grid-item" data-cat="brand" onclick="openLightbox(allPhotos, 7)">
+      <img src="{{ url_for('static', filename='images/monbrand1.jpg') }}" alt="Brand shoot">
+      <div class="grid-overlay"><div><p class="cat">Brand</p><p class="title">Mon Brand</p></div></div>
+    </div>
+
+    <div class="grid-item" data-cat="brand" onclick="openLightbox(allPhotos, 8)">
+      <img src="{{ url_for('static', filename='images/monbrand2.jpg') }}" alt="Brand shoot 2">
+      <div class="grid-overlay"><div><p class="cat">Brand</p><p class="title">Mon Brand II</p></div></div>
+    </div>
+
+    <div class="grid-item" data-cat="streetwear" onclick="openLightbox(allPhotos, 9)">
+      <img src="{{ url_for('static', filename='images/timbboots.jpg') }}" alt="Timberlands">
+      <div class="grid-overlay"><div><p class="cat">Streetwear</p><p class="title">Timbs</p></div></div>
+    </div>
+
+    <div class="grid-item" data-cat="streetwear" onclick="openLightbox(allPhotos, 10)">
+      <img src="{{ url_for('static', filename='images/bedroom1.jpg') }}" alt="Bedroom">
+      <div class="grid-overlay"><div><p class="cat">Lifestyle</p><p class="title">Bedroom</p></div></div>
+    </div>
+
+    <div class="grid-item" data-cat="streetwear" onclick="openLightbox(allPhotos, 11)">
+      <img src="{{ url_for('static', filename='images/tinoroom.jpg') }}" alt="Tino room">
+      <div class="grid-overlay"><div><p class="cat">Lifestyle</p><p class="title">The Room</p></div></div>
+    </div>
+
+    <div class="grid-item" data-cat="street" onclick="openLightbox(allPhotos, 12)">
+      <img src="{{ url_for('static', filename='images/cecilstreet.jpg') }}" alt="Cecil street">
+      <div class="grid-overlay"><div><p class="cat">Street</p><p class="title">Cecil Street</p></div></div>
+    </div>
+
+    <div class="grid-item" data-cat="street" onclick="openLightbox(allPhotos, 13)">
+      <img src="{{ url_for('static', filename='images/streetview.jpg') }}" alt="Street view">
+      <div class="grid-overlay"><div><p class="cat">Street</p><p class="title">Street View</p></div></div>
+    </div>
+
+    <div class="grid-item" data-cat="street" onclick="openLightbox(allPhotos, 14)">
+      <img src="{{ url_for('static', filename='images/dylanpark.jpg') }}" alt="Dylan park">
+      <div class="grid-overlay"><div><p class="cat">Street / Portrait</p><p class="title">Dylan Park</p></div></div>
+    </div>
+
+    <div class="grid-item" data-cat="street" onclick="openLightbox(allPhotos, 15)">
+      <img src="{{ url_for('static', filename='images/dylancar.jpg') }}" alt="Dylan car">
+      <div class="grid-overlay"><div><p class="cat">Street / Portrait</p><p class="title">Dylan Car</p></div></div>
+    </div>
+
+    <div class="grid-item" data-cat="street" onclick="openLightbox(allPhotos, 16)">
+      <img src="{{ url_for('static', filename='images/me&dylan.jpg') }}" alt="Me and Dylan">
+      <div class="grid-overlay"><div><p class="cat">Street</p><p class="title">Me & Dylan</p></div></div>
+    </div>
+
+    <div class="grid-item" data-cat="street" onclick="openLightbox(allPhotos, 17)">
+      <img src="{{ url_for('static', filename='images/flowers.jpg') }}" alt="Flowers">
+      <div class="grid-overlay"><div><p class="cat">Street</p><p class="title">Flowers</p></div></div>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  var allPhotos = [
+    "{{ url_for('static', filename='images/churchfront.jpg') }}",
+    "{{ url_for('static', filename='images/churchentry.jpg') }}",
+    "{{ url_for('static', filename='images/crypt.jpg') }}",
+    "{{ url_for('static', filename='images/churchwindow.jpg') }}",
+    "{{ url_for('static', filename='images/churchscript.jpg') }}",
+    "{{ url_for('static', filename='images/chinafood.jpg') }}",
+    "{{ url_for('static', filename='images/restuarant.jpg') }}",
+    "{{ url_for('static', filename='images/monbrand1.jpg') }}",
+    "{{ url_for('static', filename='images/monbrand2.jpg') }}",
+    "{{ url_for('static', filename='images/timbboots.jpg') }}",
+    "{{ url_for('static', filename='images/bedroom1.jpg') }}",
+    "{{ url_for('static', filename='images/tinoroom.jpg') }}",
+    "{{ url_for('static', filename='images/cecilstreet.jpg') }}",
+    "{{ url_for('static', filename='images/streetview.jpg') }}",
+    "{{ url_for('static', filename='images/dylanpark.jpg') }}",
+    "{{ url_for('static', filename='images/dylancar.jpg') }}",
+    "{{ url_for('static', filename='images/me&dylan.jpg') }}",
+    "{{ url_for('static', filename='images/flowers.jpg') }}"
+  ];
+
+  // Category filter
+  document.querySelectorAll('.filter-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      var cat = btn.getAttribute('data-cat');
+      document.querySelectorAll('.grid-item').forEach(function(item) {
+        item.style.display = (cat === 'all' || item.getAttribute('data-cat') === cat) ? 'block' : 'none';
+      });
+    });
+  });
+</script>
+{% endblock %}

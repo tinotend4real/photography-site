@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% block title %}TINO Photography — Leicester{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<section style="min-height: 100vh; display: grid; grid-template-columns: 1.1fr 0.9fr; border-bottom: 1px solid rgba(245,240,235,0.1);">
+
+  <!-- Left side: text -->
+  <div style="display: flex; flex-direction: column; justify-content: center; padding: 6rem 3rem 4rem; border-right: 1px solid rgba(245,240,235,0.1);">
+    <p style="font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase; color: #e8000d; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+      <span style="width: 40px; height: 1px; background: #e8000d; display: inline-block;"></span>
+      Leicester, UK — Est. 2024
+    </p>
+
+    <h1 style="font-family: 'Playfair Display', Georgia, serif; font-size: clamp(3.5rem, 7vw, 7rem); font-weight: 900; line-height: 0.92; color: #f5f0eb; margin-bottom: 2rem;">
+      The<br>Art of<br><em style="font-style: italic; color: #e8000d;">Real</em><br>Shots.
+    </h1>
+
+    <p style="font-size: 1rem; line-height: 1.8; color: #888888; max-width: 380px; margin-bottom: 2rem;">
+      Church interiors, restaurants, streetwear, brand campaigns &amp; street portraits.
+      Six months in — and just getting started.
+    </p>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 2.5rem;">
+      <span style="font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; border: 1px solid #e8000d; color: #e8000d; padding: 0.4rem 0.9rem;">Church</span>
+      <span style="font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; border: 1px solid rgba(245,240,235,0.15); color: #888888; padding: 0.4rem 0.9rem;">Restaurants</span>
+      <span style="font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; border: 1px solid rgba(245,240,235,0.15); color: #888888; padding: 0.4rem 0.9rem;">Streetwear</span>
+      <span style="font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; border: 1px solid rgba(245,240,235,0.15); color: #888888; padding: 0.4rem 0.9rem;">Brands</span>
+      <span style="font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; border: 1px solid rgba(245,240,235,0.15); color: #888888; padding: 0.4rem 0.9rem;">Street</span>
+    </div>
+
+    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+      <a href="{{ url_for('portfolio') }}" class="btn-primary">View Work</a>
+      <a href="{{ url_for('contact') }}" class="btn-outline">Book a Shoot</a>
+    </div>
+  </div>
+
+  <!-- Right side: images -->
+  <div style="display: grid; grid-template-rows: 2fr 1fr; grid-template-columns: 1fr 1fr;">
+    <div style="grid-column: 1 / -1; overflow: hidden; position: relative;">
+      <img src="{{ url_for('static', filename='images/cecilstreet.jpg') }}"
+           alt="Portfolio" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.85);">
+      <span style="position: absolute; bottom: 1rem; left: 1rem; font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(245,240,235,0.5); background: rgba(12,12,12,0.6); padding: 0.3rem 0.7rem;">
+        Street — Leicester 2025
+      </span>
+    </div>
+    <div style="overflow: hidden; border-top: 1px solid rgba(245,240,235,0.1); border-right: 1px solid rgba(245,240,235,0.1);">
+      <img src="{{ url_for('static', filename='images/monbrand1.jpg') }}"
+           alt="" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.8);">
+    </div>
+    <div style="overflow: hidden; border-top: 1px solid rgba(245,240,235,0.1);">
+      <img src="{{ url_for('static', filename='images/churchentry.jpg') }}"
+           alt="" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.8);">
+    </div>
+  </div>
+
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-track">
+    <span class="ticker-item">Church & Architecture</span>
+    <span class="ticker-item">Restaurants & Food</span>
+    <span class="ticker-item">Streetwear</span>
+    <span class="ticker-item">Brand Shoots</span>
+    <span class="ticker-item">Street Portraits</span>
+    <span class="ticker-item">Club Nights</span>
+    <span class="ticker-item">Available Now</span>
+    <span class="ticker-item">Based in Leicester</span>
+    <span class="ticker-item">Church & Architecture</span>
+    <span class="ticker-item">Restaurants & Food</span>
+    <span class="ticker-item">Streetwear</span>
+    <span class="ticker-item">Brand Shoots</span>
+    <span class="ticker-item">Street Portraits</span>
+    <span class="ticker-item">Club Nights</span>
+    <span class="ticker-item">Available Now</span>
+    <span class="ticker-item">Based in Leicester</span>
+  </div>
+</div>
+
+<!-- FEATURED WORK (3 photos) -->
+<section class="section">
+  <div class="sec-head">
+    <div>
+      <p class="sec-label">Selected Work</p>
+      <h2 class="sec-title">Latest Shots</h2>
+    </div>
+    <a href="{{ url_for('portfolio') }}" class="sec-link">View all work &rarr;</a>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+    <div style="overflow: hidden; cursor: pointer;" onclick="openLightbox(featuredPhotos, 0)">
+      <img src="{{ url_for('static', filename='images/churchfront.jpg') }}"
+           alt="Church" style="width: 100%; aspect-ratio: 3/4; object-fit: cover; filter: brightness(0.85); transition: transform 0.5s, filter 0.3s;"
+           onmouseover="this.style.transform='scale(1.04)';this.style.filter='brightness(1)'"
+           onmouseout="this.style.transform='scale(1)';this.style.filter='brightness(0.85)'">
+    </div>
+    <div style="overflow: hidden; cursor: pointer;" onclick="openLightbox(featuredPhotos, 1)">
+      <img src="{{ url_for('static', filename='images/monbrand2.jpg') }}"
+           alt="Brand" style="width: 100%; aspect-ratio: 3/4; object-fit: cover; filter: brightness(0.85); transition: transform 0.5s, filter 0.3s;"
+           onmouseover="this.style.transform='scale(1.04)';this.style.filter='brightness(1)'"
+           onmouseout="this.style.transform='scale(1)';this.style.filter='brightness(0.85)'">
+    </div>
+    <div style="overflow: hidden; cursor: pointer;" onclick="openLightbox(featuredPhotos, 2)">
+      <img src="{{ url_for('static', filename='images/chinafood.jpg') }}"
+           alt="Restaurant" style="width: 100%; aspect-ratio: 3/4; object-fit: cover; filter: brightness(0.85); transition: transform 0.5s, filter 0.3s;"
+           onmouseover="this.style.transform='scale(1.04)';this.style.filter='brightness(1)'"
+           onmouseout="this.style.transform='scale(1)';this.style.filter='brightness(0.85)'">
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES PREVIEW -->
+<section class="section section-alt">
+  <div class="sec-head">
+    <div>
+      <p class="sec-label">What I Offer</p>
+      <h2 class="sec-title">Services</h2>
+    </div>
+    <a href="{{ url_for('services') }}" class="sec-link">See all services &rarr;</a>
+  </div>
+  <div class="services-grid">
+    <div class="service-card">
+      <div class="service-icon">⛪</div>
+      <p class="service-name">Church & Architecture</p>
+      <p class="service-desc">Interiors, stained glass, ceremonies and architectural details.</p>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🍜</div>
+      <p class="service-name">Restaurants & Food</p>
+      <p class="service-desc">Atmosphere shots, dishes and social-ready content for your venue.</p>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">👟</div>
+      <p class="service-name">Streetwear & Fashion</p>
+      <p class="service-desc">Lookbooks and editorial street photography for personal brands.</p>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🚀</div>
+      <p class="service-name">Upcoming Brands</p>
+      <p class="service-desc">Launch shoots and campaign content for new brands.</p>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🎉</div>
+      <p class="service-name">Events & Club Nights</p>
+      <p class="service-desc">Full coverage of club nights, birthdays and events.</p>
+    </div>
+    <div class="service-card" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+      <p style="font-family: 'Playfair Display', serif; font-size: 1.1rem; color: #f5f0eb; margin-bottom: 1rem;">Ready to book?</p>
+      <a href="{{ url_for('contact') }}" class="btn-primary">Get in Touch</a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  var featuredPhotos = [
+    "{{ url_for('static', filename='images/churchfront.jpg') }}",
+    "{{ url_for('static', filename='images/monbrand2.jpg') }}",
+    "{{ url_for('static', filename='images/chinafood.jpg') }}"
+  ];
+</script>
+{% endblock %}
