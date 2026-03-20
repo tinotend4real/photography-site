@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Login — TINO Photography{% endblock %}
+
+{% block content %}
+<div class="page-banner">
+  <p class="label">Admin</p>
+  <h1>Login</h1>
+</div>
+
+<section class="section" style="text-align:center; max-width:400px; margin:0 auto;">
+  <form method="POST" style="display:flex; flex-direction:column; gap:1rem;">
+    <input type="text" name="username" placeholder="Username" required style="padding:0.5rem; font-size:1rem;">
+    <input type="password" name="password" placeholder="Password" required style="padding:0.5rem; font-size:1rem;">
+    <button type="submit" style="padding:0.6rem; background:#e8000d; color:white; border:none; cursor:pointer;">Login</button>
+  </form>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div style="margin-top:1rem; color:#e8000d;">
+        {% for msg in messages %}
+          <p>{{ msg }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+</section>
+{% endblock %}
