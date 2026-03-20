@@ -9,22 +9,31 @@ import json
 app = Flask(__name__)
 
 # ── CONFIG ─────────────────────────────────────────────────────────────────────
-app.config['SECRET_KEY'] = 'tino-photography-secret-2026-upgrade'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tino.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = os.path.join('static', 'images')
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'tino-photography-secret-2026-upgrade')
 
-app.config['MAIL_SERVER'] = 'smtp.mail.me.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'tinotend4official@icloud.com'
-app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD', '')
+# ── DATABASE — PostgreSQL on Railway, SQLite locally ───────────────────────────
+database_url = os.environ.get('DATABASE_URL', 'sqlite:///tino.db')
+if database_url.startswith('postgres://'):
+    database_url = database_url.replace('postgres://', 'postgresql://', 1)
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# ── UPLOAD FOLDER ──────────────────────────────────────────────────────────────
+app.config['UPLOAD_FOLDER'] = os.path.join('static', 'images')
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+# ── MAIL ───────────────────────────────────────────────────────────────────────
+app.config['MAIL_SERVER']         = 'smtp.mail.me.com'
+app.config['MAIL_PORT']           = 587
+app.config['MAIL_USE_TLS']        = True
+app.config['MAIL_USERNAME']       = 'tinotend4official@icloud.com'
+app.config['MAIL_PASSWORD']       = os.environ.get('MAIL_PASSWORD', '')
 app.config['MAIL_DEFAULT_SENDER'] = ('TINO Photography', 'tinotend4official@icloud.com')
 
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'gif', 'jfif', 'webp'}
 
-db = SQLAlchemy(app)
+db   = SQLAlchemy(app)
 mail = Mail(app)
 
 # ── LOGIN ───────────────────────────────────────────────────────────────────────
@@ -51,11 +60,11 @@ class Booking(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class Photo(db.Model):
-    id         = db.Column(db.Integer, primary_key=True)
-    filename   = db.Column(db.String(200), unique=True)
-    title      = db.Column(db.String(200))
-    category   = db.Column(db.String(100))
-    featured   = db.Column(db.Boolean, default=False)
+    id          = db.Column(db.Integer, primary_key=True)
+    filename    = db.Column(db.String(200), unique=True)
+    title       = db.Column(db.String(200))
+    category    = db.Column(db.String(100))
+    featured    = db.Column(db.Boolean, default=False)
     uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class Note(db.Model):
@@ -70,9 +79,13 @@ class PageView(db.Model):
     visited_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class SiteSettings(db.Model):
-    id         = db.Column(db.Integer, primary_key=True)
-    key        = db.Column(db.String(100), unique=True)
-    value      = db.Column(db.Text)
+    id    = db.Column(db.Integer, primary_key=True)
+    key   = db.Column(db.String(100), unique=True)
+    value = db.Column(db.Text)
+
+# ── CREATE TABLES on startup ────────────────────────────────────────────────────
+with app.app_context():
+    db.create_all()
 
 # ── HELPERS ─────────────────────────────────────────────────────────────────────
 def allowed_file(filename):
@@ -83,19 +96,25 @@ def track(page):
         db.session.add(PageView(page=page))
         db.session.commit()
     except:
-        pass
+        db.session.rollback()
 
 def get_setting(key, default=''):
-    s = SiteSettings.query.filter_by(key=key).first()
-    return s.value if s else default
+    try:
+        s = SiteSettings.query.filter_by(key=key).first()
+        return s.value if s else default
+    except:
+        return default
 
 def set_setting(key, value):
-    s = SiteSettings.query.filter_by(key=key).first()
-    if s:
-        s.value = value
-    else:
-        db.session.add(SiteSettings(key=key, value=value))
-    db.session.commit()
+    try:
+        s = SiteSettings.query.filter_by(key=key).first()
+        if s:
+            s.value = value
+        else:
+            db.session.add(SiteSettings(key=key, value=value))
+        db.session.commit()
+    except:
+        db.session.rollback()
 
 # ── PUBLIC ROUTES ───────────────────────────────────────────────────────────────
 @app.route('/')
@@ -124,7 +143,7 @@ def contact():
     track('contact')
     return render_template('contact.html')
 
-# ── SECRET LOGIN ROUTE (/backstage) ─────────────────────────────────────────────
+# ── SECRET LOGIN ROUTE ──────────────────────────────────────────────────────────
 @app.route('/backstage')
 def backstage():
     return redirect(url_for('admin_login'))
@@ -150,50 +169,58 @@ def admin_logout():
 @app.route('/admin')
 @login_required
 def admin():
-    bookings  = Booking.query.order_by(Booking.id.desc()).all()
-    photos    = Photo.query.order_by(Photo.uploaded_at.desc()).all()
-    notes     = Note.query.order_by(Note.updated_at.desc()).all()
-    settings  = {
-        'hero_title':    get_setting('hero_title',    'The Art of Real Shots.'),
-        'hero_subtitle': get_setting('hero_subtitle', 'Church interiors, restaurants, streetwear, brand campaigns & street portraits.'),
-        'about_bio':     get_setting('about_bio',     ''),
-        'instagram':     get_setting('instagram',     'https://www.instagram.com/tino4_real'),
-        'tiktok':        get_setting('tiktok',        'https://www.tiktok.com/@tino4real._'),
-        'location':      get_setting('location',      'Nottingham, UK'),
+    try:
+        bookings = Booking.query.order_by(Booking.id.desc()).all()
+        photos   = Photo.query.order_by(Photo.uploaded_at.desc()).all()
+        notes    = Note.query.order_by(Note.updated_at.desc()).all()
+    except:
+        db.session.rollback()
+        bookings, photos, notes = [], [], []
+
+    settings = {
+        'hero_title':      get_setting('hero_title',      'The Art of Real Shots.'),
+        'hero_subtitle':   get_setting('hero_subtitle',   'Portraits, street, fashion, food & events across Nottingham.'),
+        'about_bio':       get_setting('about_bio',       ''),
+        'instagram':       get_setting('instagram',       'https://www.instagram.com/tino4_real'),
+        'tiktok':          get_setting('tiktok',          'https://www.tiktok.com/@tino4real._'),
+        'location':        get_setting('location',        'Nottingham, UK'),
         'taking_bookings': get_setting('taking_bookings', 'yes'),
     }
 
-    # ── Analytics ──────────────────────────────────────────────────────────────
-    total_views  = PageView.query.count()
-    today_views  = PageView.query.filter(
-        PageView.visited_at >= datetime.utcnow().replace(hour=0, minute=0, second=0)
-    ).count()
-    week_views   = PageView.query.filter(
-        PageView.visited_at >= datetime.utcnow() - timedelta(days=7)
-    ).count()
-
-    page_counts = {}
-    for pv in PageView.query.all():
-        page_counts[pv.page] = page_counts.get(pv.page, 0) + 1
-
-    # Last 7 days chart data
-    chart_labels = []
-    chart_data   = []
-    for i in range(6, -1, -1):
-        day = datetime.utcnow() - timedelta(days=i)
-        label = day.strftime('%a')
-        count = PageView.query.filter(
-            PageView.visited_at >= day.replace(hour=0, minute=0, second=0),
-            PageView.visited_at <  day.replace(hour=23, minute=59, second=59)
+    # Analytics
+    try:
+        total_views = PageView.query.count()
+        today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        today_views = PageView.query.filter(PageView.visited_at >= today_start).count()
+        week_views  = PageView.query.filter(
+            PageView.visited_at >= datetime.utcnow() - timedelta(days=7)
         ).count()
-        chart_labels.append(label)
-        chart_data.append(count)
+
+        page_counts = {}
+        for pv in PageView.query.all():
+            page_counts[pv.page] = page_counts.get(pv.page, 0) + 1
+
+        chart_labels, chart_data = [], []
+        for i in range(6, -1, -1):
+            day       = datetime.utcnow() - timedelta(days=i)
+            day_start = day.replace(hour=0, minute=0, second=0, microsecond=0)
+            day_end   = day.replace(hour=23, minute=59, second=59, microsecond=999999)
+            count     = PageView.query.filter(
+                PageView.visited_at >= day_start,
+                PageView.visited_at <= day_end
+            ).count()
+            chart_labels.append(day.strftime('%a'))
+            chart_data.append(count)
+    except:
+        db.session.rollback()
+        total_views, today_views, week_views = 0, 0, 0
+        page_counts, chart_labels, chart_data = {}, [], []
 
     analytics = {
-        'total':       total_views,
-        'today':       today_views,
-        'week':        week_views,
-        'page_counts': page_counts,
+        'total':        total_views,
+        'today':        today_views,
+        'week':         week_views,
+        'page_counts':  page_counts,
         'chart_labels': json.dumps(chart_labels),
         'chart_data':   json.dumps(chart_data),
     }
@@ -206,7 +233,7 @@ def admin():
         analytics=analytics
     )
 
-# ── BOOKING STATUS ──────────────────────────────────────────────────────────────
+# ── BOOKING ROUTES ──────────────────────────────────────────────────────────────
 @app.route('/admin/mark/<int:bid>/<status>')
 @login_required
 def mark(bid, status):
@@ -229,9 +256,9 @@ def delete_booking(bid):
 def upload_photo():
     if 'file' not in request.files:
         return jsonify({'ok': False, 'error': 'No file'}), 400
-    file = request.files['file']
+    file     = request.files['file']
     title    = request.form.get('title', '').strip()
-    category = request.form.get('category', 'street').strip()
+    category = request.form.get('category', 'people').strip()
     featured = request.form.get('featured', 'false') == 'true'
 
     if file.filename == '':
@@ -239,7 +266,7 @@ def upload_photo():
     if not allowed_file(file.filename):
         return jsonify({'ok': False, 'error': 'File type not allowed'}), 400
 
-    filename = file.filename
+    filename  = file.filename
     save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     file.save(save_path)
 
@@ -249,7 +276,10 @@ def upload_photo():
         existing.category = category
         existing.featured = featured
     else:
-        db.session.add(Photo(filename=filename, title=title, category=category, featured=featured))
+        db.session.add(Photo(
+            filename=filename, title=title,
+            category=category, featured=featured
+        ))
     db.session.commit()
     return jsonify({'ok': True, 'filename': filename})
 
@@ -257,7 +287,7 @@ def upload_photo():
 @app.route('/admin/photo/edit/<int:pid>', methods=['POST'])
 @login_required
 def edit_photo(pid):
-    p = Photo.query.get_or_404(pid)
+    p          = Photo.query.get_or_404(pid)
     p.title    = request.form.get('title', p.title)
     p.category = request.form.get('category', p.category)
     p.featured = request.form.get('featured', 'false') == 'true'
@@ -350,6 +380,22 @@ def submit():
 
 # ── RUN ──────────────────────────────────────────────────────────────────────────
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
     app.run(debug=True)
+```
+
+---
+
+After pasting that, you also need to do **two things on Railway**:
+
+**1. Add a PostgreSQL database:**
+- Railway dashboard → your project → **+ New** → **Database** → **PostgreSQL**
+- Railway will automatically set the `DATABASE_URL` environment variable
+
+**2. Add `psycopg2-binary` to your `requirements.txt`:**
+```
+flask
+flask-sqlalchemy
+flask-mail
+flask-login
+gunicorn
+psycopg2-binary
