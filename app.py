@@ -1,13 +1,15 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 import os
 
 app = Flask(__name__)
 
 # ── CONFIG ────────────────────────────────────────────────────────────────────
-app.config['SECRET_KEY'] = 'tino-photography-secret'
+app.config['SECRET_KEY'] = 'tino-photography-secret-2026-upgrade'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///bookings.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -21,7 +23,23 @@ app.config['MAIL_DEFAULT_SENDER'] = ('TINO Photography', 'tinotend4official@iclo
 db   = SQLAlchemy(app)
 mail = Mail(app)
 
-# ── DATABASE MODEL ─────────────────────────────────────────────────────────────
+# ── FLASK-LOGIN SETUP ──────────────────────────────────────────────────────────
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'admin_login'
+
+class AdminUser(UserMixin):
+    def __init__(self, id):
+        self.id = id
+
+# Admin credentials (CHANGE PASSWORD!)
+ADMIN_PASSWORD_HASH = generate_password_hash('tino2026')  # Username: 'tino', Password: 'tino2026'
+
+@login_manager.user_loader
+def load_user(user_id):
+    return AdminUser(user_id)
+
+# ── YOUR EXISTING DATABASE MODEL ──────────────────────────────────────────────
 class Booking(db.Model):
     id         = db.Column(db.Integer,     primary_key=True)
     name       = db.Column(db.String(120), nullable=False)
@@ -31,7 +49,28 @@ class Booking(db.Model):
     date       = db.Column(db.String(40),  default=lambda: datetime.now().strftime('%d %b %Y, %H:%M'))
     status     = db.Column(db.String(20),  default='new')
 
-# ── ROUTES ─────────────────────────────────────────────────────────────────────
+# ── ADMIN ROUTES (NEW) ─────────────────────────────────────────────────────────
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        
+        if username == 'tino' and check_password_hash(ADMIN_PASSWORD_HASH, password):
+            user = AdminUser(1)
+            login_user(user)
+            return redirect(url_for('admin'))
+        flash('Wrong username or password')
+    
+    return render_template('admin_login.html')
+
+@app.route('/admin/logout')
+@login_required
+def admin_logout():
+    logout_user()
+    return redirect(url_for('index'))
+
+# ── YOUR EXISTING ROUTES (PROTECTED) ──────────────────────────────────────────
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -52,18 +91,22 @@ def about():
 def contact():
     return render_template('contact.html')
 
+# PROTECTED ADMIN DASHBOARD (your existing /admin)
 @app.route('/admin')
+@login_required
 def admin():
     bookings = Booking.query.order_by(Booking.id.desc()).all()
     return render_template('admin.html', bookings=bookings)
 
 @app.route('/admin/mark/<int:bid>/<status>')
+@login_required
 def mark(bid, status):
     b = Booking.query.get_or_404(bid)
     b.status = status
     db.session.commit()
     return jsonify({'ok': True})
 
+# ── YOUR CONTACT FORM (UNCHANGED) ─────────────────────────────────────────────
 @app.route('/submit', methods=['POST'])
 def submit():
     data       = request.get_json()
@@ -86,25 +129,4 @@ def submit():
             reply_to=email,
             html=f"""
 <div style="font-family:Arial,sans-serif;max-width:600px;background:#111111;color:#f5f0eb;padding:32px;border-top:4px solid #e8000d;">
-  <h2 style="font-size:20px;letter-spacing:2px;text-transform:uppercase;margin-bottom:24px;">New Booking Enquiry</h2>
-  <table style="width:100%;border-collapse:collapse;">
-    <tr><td style="padding:10px 0;color:#888888;width:110px;">Name</td><td style="padding:10px 0;font-weight:bold;">{name}</td></tr>
-    <tr><td style="padding:10px 0;color:#888888;">Email</td><td style="padding:10px 0;"><a href="mailto:{email}" style="color:#e8000d;">{email}</a></td></tr>
-    <tr><td style="padding:10px 0;color:#888888;">Shoot Type</td><td style="padding:10px 0;">{shoot_type}</td></tr>
-    <tr><td style="padding:10px 0;color:#888888;vertical-align:top;">Message</td><td style="padding:10px 0;">{message}</td></tr>
-  </table>
-  <p style="margin-top:24px;font-size:12px;color:#555555;">Reply directly to this email to respond to {name}.</p>
-</div>"""
-        )
-        mail.send(msg)
-    except Exception as ex:
-        print(f'[MAIL ERROR] {ex}')
-
-    return jsonify({'success': True})
-
-# ── INIT & RUN ─────────────────────────────────────────────────────────────────
-with app.app_context():
-    db.create_all()
-
-if __name__ == '__main__':
-    app.run(debug=True)
+  <h2 style="font-size:20px;letter-spacing:2px;text-transform
