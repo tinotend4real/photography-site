@@ -1,90 +1,275 @@
 {% extends "base.html" %}
-{% block title %}Admin — TINO Photography{% endblock %}
+{% block title %}Admin Dashboard — TINO Photography{% endblock %}
 
-{% block content %}
-
-<div class="page-banner">
-  <p class="label">Dashboard</p>
-  <h1>Bookings</h1>
-</div>
-
-<section class="section">
-
-  <!-- STATS -->
-  <div class="admin-stats">
-    <div class="admin-stat">
-      <div class="admin-stat-n">{{ bookings | length }}</div>
-      <div class="admin-stat-l">Total Enquiries</div>
-    </div>
-    <div class="admin-stat">
-      <div class="admin-stat-n" style="color:#e8000d;">{{ bookings | selectattr('status','eq','new') | list | length }}</div>
-      <div class="admin-stat-l">New</div>
-    </div>
-    <div class="admin-stat">
-      <div class="admin-stat-n" style="color:#888888;">{{ bookings | selectattr('status','eq','read') | list | length }}</div>
-      <div class="admin-stat-l">Read</div>
-    </div>
-    <div class="admin-stat">
-      <div class="admin-stat-n" style="color:#4caf50;">{{ bookings | selectattr('status','eq','replied') | list | length }}</div>
-      <div class="admin-stat-l">Replied</div>
-    </div>
-  </div>
-
-  <!-- TABLE -->
-  {% if bookings %}
-  <table class="admin-table">
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Shoot Type</th>
-        <th>Message</th>
-        <th>Date</th>
-        <th>Status</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for b in bookings %}
-      <tr id="row-{{ b.id }}">
-        <td style="color:#888888;">{{ b.id }}</td>
-        <td><strong>{{ b.name }}</strong></td>
-        <td><a href="mailto:{{ b.email }}" style="color:#e8000d;">{{ b.email }}</a></td>
-        <td>{{ b.shoot_type }}</td>
-        <td style="color:#888888;max-width:250px;font-size:0.82rem;">{{ b.message[:100] }}{% if b.message|length > 100 %}...{% endif %}</td>
-        <td style="color:#888888;white-space:nowrap;font-size:0.82rem;">
-          {% if b.created_at %}{{ b.created_at.strftime('%Y-%m-%d %H:%M') }}{% endif %}
-        </td>
-        <td><span class="badge badge-{{ b.status }}" id="badge-{{ b.id }}">{{ b.status }}</span></td>
-        <td>
-          <button class="act-btn" onclick="setStatus({{ b.id }}, 'read')">Mark Read</button>
-          <button class="act-btn" onclick="setStatus({{ b.id }}, 'replied')">Replied</button>
-          <a href="mailto:{{ b.email }}?subject=Re: {{ b.shoot_type }}" class="act-btn" style="display:inline-block;">Reply</a>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  {% else %}
-  <div style="text-align:center;padding:4rem;border:1px dashed rgba(245,240,235,0.1);font-family:'Barlow Condensed',Arial,sans-serif;letter-spacing:0.15em;text-transform:uppercase;font-size:0.8rem;color:#888888;">
-    No enquiries yet — share your site and they will come.
-  </div>
-  {% endif %}
-
-</section>
-
-{% endblock %}
-
-{% block extra_js %}
-<script>
-  function setStatus(id, status) {
-    fetch('/admin/mark/' + id + '/' + status)
-      .then(function() {
-        var badge = document.getElementById('badge-' + id);
-        badge.className = 'badge badge-' + status;
-        badge.textContent = status;
-      });
+{% block extra_css %}
+<style>
+  /* ── ADMIN LAYOUT ── */
+  .admin-layout {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    min-height: calc(100vh - 64px);
   }
-</script>
-{% endblock %}
+
+  /* ── SIDEBAR ── */
+  .admin-sidebar {
+    background: #080808;
+    border-right: 1px solid rgba(245,240,235,0.08);
+    padding: 2rem 0;
+    position: sticky;
+    top: 64px;
+    height: calc(100vh - 64px);
+    overflow-y: auto;
+  }
+  .sidebar-label {
+    font-family: 'Barlow Condensed', Arial, sans-serif;
+    font-size: 0.55rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: #444;
+    padding: 0 1.5rem;
+    margin: 1.5rem 0 0.5rem;
+  }
+  .sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    font-family: 'Barlow Condensed', Arial, sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #666;
+    cursor: pointer;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    transition: all 0.2s;
+    border-left: 2px solid transparent;
+  }
+  .sidebar-link:hover { color: #f5f0eb; background: rgba(245,240,235,0.03); }
+  .sidebar-link.active { color: #e8000d; border-left-color: #e8000d; background: rgba(232,0,13,0.05); }
+  .sidebar-icon { font-size: 1rem; width: 20px; }
+
+  /* ── MAIN CONTENT ── */
+  .admin-main { padding: 2.5rem 2rem; background: #0c0c0c; }
+
+  /* ── PANEL SECTIONS ── */
+  .admin-panel {
+    display: none;
+  }
+  .admin-panel.active { display: block; }
+
+  .panel-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: #f5f0eb;
+    margin-bottom: 0.3rem;
+  }
+  .panel-sub {
+    font-size: 0.82rem;
+    color: #555;
+    margin-bottom: 2rem;
+    font-family: 'Barlow Condensed', Arial, sans-serif;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* ── STAT CARDS ── */
+  .stats-row-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .stat-card {
+    background: #111;
+    border: 1px solid rgba(245,240,235,0.07);
+    border-left: 3px solid #e8000d;
+    padding: 1.4rem 1.2rem;
+  }
+  .stat-card .num {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 2rem;
+    font-weight: 900;
+    color: #e8000d;
+    line-height: 1;
+  }
+  .stat-card .lbl {
+    font-family: 'Barlow Condensed', Arial, sans-serif;
+    font-size: 0.58rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #555;
+    margin-top: 0.4rem;
+  }
+
+  /* ── CHART ── */
+  .chart-wrap {
+    background: #111;
+    border: 1px solid rgba(245,240,235,0.07);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .chart-title {
+    font-family: 'Barlow Condensed', Arial, sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #555;
+    margin-bottom: 1rem;
+  }
+
+  /* ── PAGE BREAKDOWN ── */
+  .page-breakdown { display: flex; flex-direction: column; gap: 0.5rem; }
+  .pb-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .pb-label {
+    font-family: 'Barlow Condensed', Arial, sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #888;
+    min-width: 90px;
+  }
+  .pb-bar-wrap { flex: 1; background: #1a1a1a; height: 6px; }
+  .pb-bar { height: 100%; background: #e8000d; transition: width 1s; }
+  .pb-count {
+    font-family: 'Barlow Condensed', Arial, sans-serif;
+    font-size: 0.7rem;
+    color: #555;
+    min-width: 30px;
+    text-align: right;
+  }
+
+  /* ── UPLOAD AREA ── */
+  .upload-zone {
+    border: 2px dashed rgba(245,240,235,0.1);
+    padding: 3rem 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+  .upload-zone:hover, .upload-zone.dragover {
+    border-color: #e8000d;
+    background: rgba(232,0,13,0.03);
+  }
+  .upload-zone input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+  .upload-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+  .upload-zone p { color: #555; font-size: 0.85rem; }
+  .upload-zone p strong { color: #e8000d; }
+
+  /* ── UPLOAD FORM ── */
+  .upload-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 0.75rem;
+    align-items: end;
+    margin-bottom: 2rem;
+  }
+  .upload-form input,
+  .upload-form select {
+    background: #111;
+    border: 1px solid rgba(245,240,235,0.1);
+    color: #f5f0eb;
+    padding: 0.7rem 0.9rem;
+    font-family: 'Barlow', Arial, sans-serif;
+    font-size: 0.85rem;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .upload-form input:focus,
+  .upload-form select:focus { border-color: #e8000d; }
+  .upload-form label {
+    font-family: 'Barlow Condensed', Arial, sans-serif;
+    font-size: 0.58rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #555;
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+
+  /* ── IMAGE GRID (admin) ── */
+  .img-admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 0.75rem;
+  }
+  .img-admin-card {
+    background: #111;
+    border: 1px solid rgba(245,240,235,0.07);
+    overflow: hidden;
+    position: relative;
+  }
+  .img-admin-card img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    filter: brightness(0.85);
+    transition: filter 0.2s;
+  }
+  .img-admin-card:hover img { filter: brightness(1); }
+  .img-admin-info {
+    padding: 0.6rem 0.75rem;
+  }
+  .img-admin-info input,
+  .img-admin-info select {
+    width: 100%;
+    background: #0c0c0c;
+    border: 1px solid rgba(245,240,235,0.08);
+    color: #f5f0eb;
+    padding: 0.35rem 0.5rem;
+    font-size: 0.75rem;
+    font-family: 'Barlow', Arial, sans-serif;
+    margin-top: 0.3rem;
+    outline: none;
+  }
+  .img-admin-info input:focus,
+  .img-admin-info select:focus { border-color: #e8000d; }
+  .img-admin-actions {
+    display: flex;
+    gap: 0.4rem;
+    padding: 0.5rem 0.75rem 0.75rem;
+  }
+  .img-save-btn, .img-del-btn {
+    flex: 1;
+    font-family: 'Barlow Condensed', Arial, sans-serif;
+    font-size: 0.58rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border: 1px solid;
+    padding: 0.4rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: none;
+  }
+  .img-save-btn { color: #4caf50; border-color: rgba(76,175,80,0.3); }
+  .img-save-btn:hover { background: rgba(76,175,80,0.1); }
+  .img-del-btn  { color: #e8000d; border-color: rgba(232,0,13,0.3); }
+  .img-del-btn:hover  { background: rgba(232,0,13,0.1); }
+
+  /* ── NOTES ── */
+  .notes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  .note-card {
+    background: #111;
+    border: 1px soli
