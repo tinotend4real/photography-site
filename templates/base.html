@@ -55,12 +55,10 @@
 </div>
 
 <script>
-  // Mobile menu
   document.getElementById('burger').addEventListener('click', function() {
     document.getElementById('mobMenu').classList.toggle('open');
   });
 
-  // Lightbox
   var lbPhotos = [];
   var lbIndex  = 0;
 
@@ -93,8 +91,3 @@
 {% block extra_js %}{% endblock %}
 </body>
 </html>
-```
-
-Then make sure your `index.html` starts with this line at the very top:
-```
-{% extends "base.html" %}
