@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+
 {% block title %}Portfolio — TINO Photography{% endblock %}
 
 {% block content %}
@@ -20,13 +21,58 @@
     <button class="filter-btn" data-cat="street">Street</button>
   </div>
 
-  <!-- FULL GRID -->
+  <!-- PHOTO GRID -->
   <div class="photo-grid" id="grid">
 
-    {% for i in range(50) %}
-    <div class="grid-item" data-cat="all" onclick="openLightbox(allPhotos, {{ i }})">
-      <img src="{{ url_for('static', filename='images/photo{{ i+1 }}.jpg') }}" alt="Photo {{ i+1 }}">
-      <div class="grid-overlay"><div><p class="cat">Category</p><p class="title">Photo {{ i+1 }}</p></div></div>
+    {% set images = [
+      {'file':'churchfront.jpg','cat':'church','title':'Church Front'},
+      {'file':'churchentry.jpg','cat':'church','title':'The Entry'},
+      {'file':'crypt.jpg','cat':'church','title':'The Crypt'},
+      {'file':'churchwindow.jpg','cat':'church','title':'Stained Glass'},
+      {'file':'churchscript.jpg','cat':'church','title':'The Script'},
+      {'file':'chinafood.jpg','cat':'restaurant','title':'China Food'},
+      {'file':'restuarant.jpg','cat':'restaurant','title':'Restaurant'},
+      {'file':'streetview.jpg','cat':'streetwear','title':'Street Look 1'},
+      {'file':'thrifts.jfif','cat':'streetwear','title':'Thrifts 1'},
+      {'file':'thrifts2.jfif','cat':'streetwear','title':'Thrifts 2'},
+      {'file':'monbrand1.jpg','cat':'brand','title':'Brand 1'},
+      {'file':'monbrand2.jpg','cat':'brand','title':'Brand 2'},
+      {'file':'tino_nike.jfif','cat':'brand','title':'Nike Shoot'},
+      {'file':'tino_tunnel.jfif','cat':'street','title':'Tunnel Street'},
+      {'file':'tinoroom.jpg','cat':'street','title':'Room Portrait'},
+      {'file':'cecilstreet.jpg','cat':'street','title':'Cecil Street'},
+      {'file':'boats.jfif','cat':'street','title':'Boats View'},
+      {'file':'boats_views.jfif','cat':'street','title':'Boats 2'},
+      {'file':'art_gallery.jfif','cat':'brand','title':'Art Gallery'},
+      {'file':'bedroom1.jpg','cat':'brand','title':'Bedroom Shoot'},
+      {'file':'cambridge_painting.jfif','cat':'brand','title':'Cambridge Painting'},
+      {'file':'drip.jfif','cat':'streetwear','title':'Drip Fashion'},
+      {'file':'dylancar.jpg','cat':'streetwear','title':'Dylan Car'},
+      {'file':'dylanpark.jpg','cat':'streetwear','title':'Dylan Park'},
+      {'file':'fireworks.jfif','cat':'street','title':'Fireworks'},
+      {'file':'flowers.jpg','cat':'church','title':'Flowers'},
+      {'file':'gino.jfif','cat':'brand','title':'Gino Shoot'},
+      {'file':'linc_works.jfif','cat':'brand','title':'Linc Works'},
+      {'file':'me&dylan.jpg','cat':'street','title':'Me & Dylan'},
+      {'file':'night_out_notts.jfif','cat':'street','title':'Night Out Notts'},
+      {'file':'nyc_painting.jfif','cat':'brand','title':'NYC Painting'},
+      {'file':'ocean_view.jfif','cat':'church','title':'Ocean View'},
+      {'file':'paper_works.jfif','cat':'brand','title':'Paper Works'},
+      {'file':'robot_painting.jfif','cat':'brand','title':'Robot Painting'},
+      {'file':'starbucks.jfif','cat':'restaurant','title':'Starbucks'},
+      {'file':'suitvibes.jfif','cat':'streetwear','title':'Suit Vibes'},
+      {'file':'timbboots.jpg','cat':'streetwear','title':'Timb Boots'}
+    ] %}
+
+    {% for i, img in enumerate(images) %}
+    <div class="grid-item" data-cat="{{ img.cat }}" onclick="openLightbox(allPhotos, {{ i }})">
+      <img src="{{ url_for('static', filename='images/' + img.file) }}" alt="{{ img.title }}">
+      <div class="grid-overlay">
+        <div>
+          <p class="cat">{{ img.cat|capitalize }}</p>
+          <p class="title">{{ img.title }}</p>
+        </div>
+      </div>
     </div>
     {% endfor %}
 
@@ -37,18 +83,19 @@
 
 {% block extra_js %}
 <script>
-  // List all photo paths
-  var allPhotos = [];
-  for (var i = 1; i <= 50; i++) {
-    allPhotos.push("{{ url_for('static', filename='images/photo") }}" + i + ".jpg");
-  }
+  // JavaScript array of all photos
+  var allPhotos = [
+    {% for img in images %}
+    "{{ url_for('static', filename='images/' + img.file) }}"{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ];
 
   function openLightbox(arr, index) {
     console.log("Open photo", index, arr[index]);
-    // Implement your lightbox logic here
+    // Insert your lightbox functionality here
   }
 
-  // Filter buttons
+  // Filter functionality
   document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const cat = btn.dataset.cat;
