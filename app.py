@@ -33,22 +33,20 @@ class AdminUser(UserMixin):
         self.id = id
 
 # Admin credentials (CHANGE PASSWORD!)
-ADMIN_PASSWORD_HASH = generate_password_hash('tino2026')  # Username: 'tino', Password: 'tino2026'
-
-@login_manager.user_loader
-def load_user(user_id):
-    return AdminUser(user_id)
-
-# ── YOUR EXISTING DATABASE MODEL ──────────────────────────────────────────────
-class Booking(db.Model):
-    id         = db.Column(db.Integer,     primary_key=True)
-    name       = db.Column(db.String(120), nullable=False)
-    email      = db.Column(db.String(120), nullable=False)
-    shoot_type = db.Column(db.String(80),  nullable=False)
-    message    = db.Column(db.Text,        nullable=False)
-    date       = db.Column(db.String(40),  default=lambda: datetime.now().strftime('%d %b %Y, %H:%M'))
-    status     = db.Column(db.String(20),  default='new')
-
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        
+        # YOUR PERSONAL CREDENTIALS
+        if username == 'tinotenda' and password == 'hillary2026':
+            user = AdminUser(1)
+            login_user(user)
+            return redirect(url_for('admin'))
+        flash('Wrong username or password')
+    
+    return render_template('admin_login.html')
 # ── ADMIN ROUTES (NEW) ─────────────────────────────────────────────────────────
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
