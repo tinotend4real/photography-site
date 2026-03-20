@@ -1,922 +1,736 @@
-Here's the full `admin.html` — paste the whole thing:
+/* ── RESET ─────────────────────────────────────────────────────────────────── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-```html
-{% extends "base.html" %}
-{% block title %}Admin Dashboard — TINO Photography{% endblock %}
+/* ── VARIABLES ─────────────────────────────────────────────────────────────── */
+:root {
+  --red:    #e8000d;
+  --red2:   #ff2d2d;
+  --black:  #0c0c0c;
+  --grey:   #141414;
+  --grey2:  #1c1c1c;
+  --white:  #f5f0eb;
+  --muted:  #888888;
+  --border: rgba(245, 240, 235, 0.1);
 
-{% block extra_css %}
-<style>
-  /* Override base */
-  main { padding-top: 0 !important; }
-
-  /* ── ADMIN LAYOUT ── */
-  .admin-layout {
-    display: grid;
-    grid-template-columns: 220px 1fr;
-    min-height: calc(100vh - 64px);
-  }
-
-  /* ── SIDEBAR ── */
-  .admin-sidebar {
-    background: #080808;
-    border-right: 1px solid rgba(245,240,235,0.08);
-    padding: 2rem 0;
-    position: sticky;
-    top: 64px;
-    height: calc(100vh - 64px);
-    overflow-y: auto;
-  }
-  .sidebar-label {
-    font-family: 'Barlow Condensed', Arial, sans-serif;
-    font-size: 0.55rem;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: #444;
-    padding: 0 1.5rem;
-    margin: 1.5rem 0 0.5rem;
-  }
-  .sidebar-link {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1.5rem;
-    font-family: 'Barlow Condensed', Arial, sans-serif;
-    font-size: 0.8rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: #666;
-    cursor: pointer;
-    border: none;
-    background: none;
-    width: 100%;
-    text-align: left;
-    transition: all 0.2s;
-    border-left: 2px solid transparent;
-    text-decoration: none;
-  }
-  .sidebar-link:hover { color: #f5f0eb; background: rgba(245,240,235,0.03); }
-  .sidebar-link.active { color: #e8000d; border-left-color: #e8000d; background: rgba(232,0,13,0.05); }
-  .sidebar-icon { font-size: 1rem; width: 20px; }
-
-  /* ── MAIN CONTENT ── */
-  .admin-main { padding: 2.5rem 2rem; background: #0c0c0c; overflow-y: auto; }
-
-  /* ── PANELS ── */
-  .admin-panel { display: none; }
-  .admin-panel.active { display: block; }
-
-  .panel-title {
-    font-family: 'Playfair Display', Georgia, serif;
-    font-size: 1.8rem;
-    font-weight: 900;
-    color: #f5f0eb;
-    margin-bottom: 0.3rem;
-  }
-  .panel-sub {
-    font-size: 0.82rem;
-    color: #555;
-    margin-bottom: 2rem;
-    font-family: 'Barlow Condensed', Arial, sans-serif;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-
-  /* ── STAT CARDS ── */
-  .stats-row-4 {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
-    margin-bottom: 2rem;
-  }
-  .stat-card {
-    background: #111;
-    border: 1px solid rgba(245,240,235,0.07);
-    border-left: 3px solid #e8000d;
-    padding: 1.4rem 1.2rem;
-  }
-  .stat-card .num {
-    font-family: 'Playfair Display', Georgia, serif;
-    font-size: 2rem;
-    font-weight: 900;
-    color: #e8000d;
-    line-height: 1;
-  }
-  .stat-card .lbl {
-    font-family: 'Barlow Condensed', Arial, sans-serif;
-    font-size: 0.58rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: #555;
-    margin-top: 0.4rem;
-  }
-
-  /* ── CHART ── */
-  .chart-wrap {
-    background: #111;
-    border: 1px solid rgba(245,240,235,0.07);
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-  }
-  .chart-title {
-    font-family: 'Barlow Condensed', Arial, sans-serif;
-    font-size: 0.65rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: #555;
-    margin-bottom: 1rem;
-  }
-
-  /* ── PAGE BREAKDOWN ── */
-  .page-breakdown { display: flex; flex-direction: column; gap: 0.6rem; }
-  .pb-row { display: flex; align-items: center; gap: 1rem; }
-  .pb-label {
-    font-family: 'Barlow Condensed', Arial, sans-serif;
-    font-size: 0.7rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: #888;
-    min-width: 90px;
-  }
-  .pb-bar-wrap { flex: 1; background: #1a1a1a; height: 6px; }
-  .pb-bar { height: 100%; background: #e8000d; }
-  .pb-count {
-    font-family: 'Barlow Condensed', Arial, sans-serif;
-    font-size: 0.7rem;
-    color: #555;
-    min-width: 30px;
-    text-align: right;
-  }
-
-  /* ── UPLOAD ZONE ── */
-  .upload-zone {
-    border: 2px dashed rgba(245,240,235,0.1);
-    padding: 3rem 2rem;
-    text-align: center;
-    cursor: pointer;
-    transition: border-color 0.2s, background 0.2s;
-    margin-bottom: 1.5rem;
-    position: relative;
-  }
-  .upload-zone:hover, .upload-zone.dragover {
-    border-color: #e8000d;
-    background: rgba(232,0,13,0.03);
-  }
-  .upload-zone input[type="file"] {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    cursor: pointer;
-    width: 100%;
-    height: 100%;
-  }
-  .upload-icon { font-size: 2rem; margin-bottom: 0.5rem; }
-  .upload-zone p { color: #555; font-size: 0.85rem; }
-  .upload-zone p strong { color: #e8000d; }
-
-  /* ── UPLOAD FORM ── */
-  .upload-form {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr auto;
-    gap: 0.75rem;
-    align-items: end;
-    margin-bottom: 2rem;
-  }
-  .upload-form input,
-  .upload-form select {
-    background: #111;
-    border: 1px solid rgba(245,240,235,0.1);
-    color: #f5f0eb;
-    padding: 0.7rem 0.9rem;
-    font-family: 'Barlow', Arial, sans-serif;
-    font-size: 0.85rem;
-    width: 100%;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .upload-form input:focus,
-  .upload-form select:focus { border-color: #e8000d; }
-  .upload-form label {
-    font-family: 'Barlow Condensed', Arial, sans-serif;
-    font-size: 0.58rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: #555;
-    display: block;
-    margin-bottom: 0.4rem;
-  }
-
-  /* ── IMAGE GRID ── */
-  .img-admin-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 0.75rem;
-  }
-  .img-admin-card {
-    background: #111;
-    border: 1px solid rgba(245,240,235,0.07);
-    overflow: hidden;
-  }
-  .img-admin-card img {
-    width: 100%;
-    aspect-ratio: 1;
-    object-fit: cover;
-    filter: brightness(0.85);
-    transition: filter 0.2s;
-  }
-  .img-admin-card:hover img { filter: brightness(1); }
-  .img-admin-info { padding: 0.6rem 0.75rem; }
-  .img-admin-info input,
-  .img-admin-info select {
-    width: 100%;
-    background: #0c0c0c;
-    border: 1px solid rgba(245,240,235,0.08);
-    color: #f5f0eb;
-    padding: 0.35rem 0.5rem;
-    font-size: 0.75rem;
-    font-family: 'Barlow', Arial, sans-serif;
-    margin-top: 0.3rem;
-    outline: none;
-  }
-  .img-admin-info input:focus,
-  .img-admin-info select:focus { border-color: #e8000d; }
-  .img-admin-actions {
-    display: flex;
-    gap: 0.4rem;
-    padding: 0.5rem 0.75rem 0.75rem;
-  }
-  .img-save-btn, .img-del-btn {
-    flex: 1;
-    font-family: 'Barlow Condensed', Arial, sans-serif;
-    font-size: 0.58rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    border: 1px solid;
-    padding: 0.4rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    background: none;
-  }
-  .img-save-btn { color: #4caf50; border-color: rgba(76,175,80,0.3); }
-  .img-save-btn:hover { background: rgba(76,175,80,0.1); }
-  .img-del-btn { color: #e8000d; border-color: rgba(232,0,13,0.3); }
-  .img-del-btn:hover { background: rgba(232,0,13,0.1); }
-
-  /* ── NOTES ── */
-  .notes-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1rem;
-    margin-top: 1.5rem;
-  }
-  .note-card {
-    background: #111;
-    border: 1px solid rgba(245,240,235,0.07);
-    border-top: 2px solid #e8000d;
-    padding: 1.2rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-  .note-card textarea {
-    background: none;
-    border: none;
-    color: #f5f0eb;
-    font-family: 'Barlow', Arial, sans-serif;
-    font-size: 0.88rem;
-    line-height: 1.7;
-    resize: vertical;
-    min-height: 100px;
-    outline: none;
-    width: 100%;
-  }
-  .note-card textarea::placeholder { color: #444; }
-  .note-meta {
-    font-family: 'Barlow Condensed', Arial, sans-serif;
-    font-size: 0.58rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: #444;
-  }
-  .note-actions { display: flex; gap: 0.5rem; }
-  .note-save-btn, .note-del-btn {
-    font-family: 'Barlow Condensed', Arial, sans-serif;
-    font-size: 0.6rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    border: 1px solid;
-    padding: 0.35rem 0.8rem;
-    cursor: pointer;
-    background: none;
-    transition: all 0.2s;
-  }
-  .note-save-btn { color: #4caf50; border-color: rgba(76,175,80,0.3); }
-  .note-save-btn:hover { background: rgba(76,175,80,0.1); }
-  .note-del-btn { color: #e8000d; border-color: rgba(232,0,13,0.3); }
-  .note-del-btn:hover { background: rgba(232,0,13,0.1); }
-  .add-note-btn {
-    font-family: 'Barlow Condensed', Arial, sans-serif;
-    font-size: 0.7rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    background: none;
-    border: 1px dashed rgba(245,240,235,0.15);
-    color: #555;
-    padding: 0.7rem 1.5rem;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .add-note-btn:hover { border-color: #e8000d; color: #e8000d; }
-
-  /* ── SETTINGS ── */
-  .settings-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-  }
-  .settings-group {
-    background: #111;
-    border: 1px solid rgba(245,240,235,0.07);
-    padding: 1.5rem;
-  }
-  .settings-group-title {
-    font-family: 'Barlow Condensed', Arial, sans-serif;
-    font-size: 0.65rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: #e8000d;
-    margin-bottom: 1.2rem;
-    padding-bottom: 0.6rem;
-    border-bottom: 1px solid rgba(232,0,13,0.2);
-  }
-  .setting-field { margin-bottom: 1rem; }
-  .setting-field label {
-    font-family: 'Barlow Condensed', Arial, sans-serif;
-    font-size: 0.58rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: #555;
-    display: block;
-    margin-bottom: 0.4rem;
-  }
-  .setting-field input,
-  .setting-field textarea,
-  .setting-field select {
-    width: 100%;
-    background: #0c0c0c;
-    border: 1px solid rgba(245,240,235,0.08);
-    color: #f5f0eb;
-    padding: 0.65rem 0.85rem;
-    font-family: 'Barlow', Arial, sans-serif;
-    font-size: 0.85rem;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .setting-field input:focus,
-  .setting-field textarea:focus,
-  .setting-field select:focus { border-color: #e8000d; }
-  .setting-field textarea { resize: vertical; min-height: 80px; }
-  .settings-save-btn {
-    width: 100%;
-    background: #e8000d;
-    color: #f5f0eb;
-    border: none;
-    padding: 0.8rem;
-    font-family: 'Barlow Condensed', Arial, sans-serif;
-    font-size: 0.75rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    cursor: pointer;
-    margin-top: 1rem;
-    transition: opacity 0.2s;
-  }
-  .settings-save-btn:hover { opacity: 0.85; }
-
-  /* ── BOOKINGS ── */
-  .booking-detail-row { background: rgba(232,0,13,0.03); display: none; }
-  .booking-detail-row.open { display: table-row; }
-  .booking-detail-cell {
-    padding: 1rem 1rem 1.5rem 2rem;
-    color: #888;
-    font-size: 0.85rem;
-    line-height: 1.7;
-    border-bottom: 1px solid rgba(245,240,235,0.06);
-  }
-
-  /* ── TOAST ── */
-  .toast {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    background: #111;
-    border-left: 3px solid #4caf50;
-    color: #f5f0eb;
-    padding: 0.9rem 1.5rem;
-    font-family: 'Barlow Condensed', Arial, sans-serif;
-    font-size: 0.75rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    z-index: 9999;
-    opacity: 0;
-    transform: translateY(10px);
-    transition: all 0.3s;
-    pointer-events: none;
-  }
-  .toast.show { opacity: 1; transform: translateY(0); }
-  .toast.err { border-left-color: #e8000d; }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 900px) {
-    .admin-layout { grid-template-columns: 1fr; }
-    .admin-sidebar {
-      position: static;
-      height: auto;
-      display: flex;
-      flex-direction: row;
-      overflow-x: auto;
-      padding: 0.5rem 0;
-      border-right: none;
-      border-bottom: 1px solid rgba(245,240,235,0.08);
-    }
-    .sidebar-label { display: none; }
-    .stats-row-4 { grid-template-columns: 1fr 1fr; }
-    .upload-form { grid-template-columns: 1fr 1fr; }
-    .settings-grid { grid-template-columns: 1fr; }
-  }
-</style>
-{% endblock %}
-
-{% block content %}
-<div class="admin-layout">
-
-  <!-- SIDEBAR -->
-  <aside class="admin-sidebar">
-    <div class="sidebar-label">Dashboard</div>
-    <button class="sidebar-link active" onclick="showPanel('analytics', this)">
-      <span class="sidebar-icon">📊</span> Analytics
-    </button>
-    <button class="sidebar-link" onclick="showPanel('bookings', this)">
-      <span class="sidebar-icon">📬</span> Bookings
-    </button>
-    <div class="sidebar-label">Content</div>
-    <button class="sidebar-link" onclick="showPanel('images', this)">
-      <span class="sidebar-icon">🖼️</span> Images
-    </button>
-    <button class="sidebar-link" onclick="showPanel('notes', this)">
-      <span class="sidebar-icon">📝</span> Notes
-    </button>
-    <div class="sidebar-label">Website</div>
-    <button class="sidebar-link" onclick="showPanel('settings', this)">
-      <span class="sidebar-icon">⚙️</span> Site Settings
-    </button>
-    <div class="sidebar-label">Account</div>
-    <a class="sidebar-link" href="{{ url_for('admin_logout') }}" style="color:#e8000d;">
-      <span class="sidebar-icon">🚪</span> Logout
-    </a>
-  </aside>
-
-  <!-- MAIN -->
-  <div class="admin-main">
-
-    <!-- ANALYTICS -->
-    <div class="admin-panel active" id="panel-analytics">
-      <p class="panel-title">Analytics</p>
-      <p class="panel-sub">Site traffic overview</p>
-
-      <div class="stats-row-4">
-        <div class="stat-card">
-          <div class="num">{{ analytics.total }}</div>
-          <div class="lbl">Total Views</div>
-        </div>
-        <div class="stat-card">
-          <div class="num">{{ analytics.today }}</div>
-          <div class="lbl">Today</div>
-        </div>
-        <div class="stat-card">
-          <div class="num">{{ analytics.week }}</div>
-          <div class="lbl">This Week</div>
-        </div>
-        <div class="stat-card">
-          <div class="num">{{ bookings | selectattr('status','eq','new') | list | length }}</div>
-          <div class="lbl">New Enquiries</div>
-        </div>
-      </div>
-
-      <div class="chart-wrap">
-        <p class="chart-title">Daily Views — Last 7 Days</p>
-        <canvas id="viewsChart" height="80"></canvas>
-      </div>
-
-      <div class="chart-wrap">
-        <p class="chart-title">Views by Page</p>
-        <div class="page-breakdown" id="pageBreakdown"></div>
-      </div>
-    </div>
-
-    <!-- BOOKINGS -->
-    <div class="admin-panel" id="panel-bookings">
-      <p class="panel-title">Bookings</p>
-      <p class="panel-sub">{{ bookings | length }} total enquiries</p>
-
-      <div class="stats-row-4" style="grid-template-columns: repeat(3,1fr); max-width:500px;">
-        <div class="stat-card">
-          <div class="num" style="color:#e8000d;">{{ bookings | selectattr('status','eq','new') | list | length }}</div>
-          <div class="lbl">New</div>
-        </div>
-        <div class="stat-card">
-          <div class="num" style="color:#888;">{{ bookings | selectattr('status','eq','read') | list | length }}</div>
-          <div class="lbl">Read</div>
-        </div>
-        <div class="stat-card">
-          <div class="num" style="color:#4caf50;">{{ bookings | selectattr('status','eq','replied') | list | length }}</div>
-          <div class="lbl">Replied</div>
-        </div>
-      </div>
-
-      {% if bookings %}
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Type</th>
-            <th>Date</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for b in bookings %}
-          <tr style="cursor:pointer;" onclick="toggleDetail({{ b.id }})">
-            <td style="color:#444;">{{ b.id }}</td>
-            <td><strong>{{ b.name }}</strong></td>
-            <td><a href="mailto:{{ b.email }}" style="color:#e8000d;" onclick="event.stopPropagation();">{{ b.email }}</a></td>
-            <td style="color:#888;">{{ b.shoot_type }}</td>
-            <td style="color:#444;font-size:0.78rem;white-space:nowrap;">
-              {% if b.created_at %}{{ b.created_at.strftime('%d %b %Y') }}{% endif %}
-            </td>
-            <td><span class="badge badge-{{ b.status }}" id="badge-{{ b.id }}">{{ b.status }}</span></td>
-            <td onclick="event.stopPropagation();">
-              <button class="act-btn" onclick="setStatus({{ b.id }}, 'read')">Read</button>
-              <button class="act-btn" onclick="setStatus({{ b.id }}, 'replied')">Replied</button>
-              <a href="mailto:{{ b.email }}?subject=Re: {{ b.shoot_type }}" class="act-btn" style="display:inline-block;">Reply</a>
-              <button class="act-btn" style="color:#e8000d;" onclick="deleteBooking({{ b.id }})">Delete</button>
-            </td>
-          </tr>
-          <tr class="booking-detail-row" id="detail-{{ b.id }}">
-            <td class="booking-detail-cell" colspan="7">
-              <strong style="color:#f5f0eb;">Message:</strong> {{ b.message }}
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      {% else %}
-      <div style="text-align:center;padding:4rem;border:1px dashed rgba(245,240,235,0.08);color:#444;font-family:'Barlow Condensed',Arial,sans-serif;letter-spacing:0.15em;text-transform:uppercase;font-size:0.8rem;">
-        No enquiries yet — share your site and they will come.
-      </div>
-      {% endif %}
-    </div>
-
-    <!-- IMAGES -->
-    <div class="admin-panel" id="panel-images">
-      <p class="panel-title">Images</p>
-      <p class="panel-sub">Upload, label and manage your photos</p>
-
-      <div class="upload-zone" id="dropZone">
-        <input type="file" id="fileInput" accept="image/*" multiple>
-        <div class="upload-icon">📷</div>
-        <p><strong>Drop images here</strong> or click to browse</p>
-        <p style="font-size:0.75rem;margin-top:0.3rem;">JPG, PNG, JFIF, WEBP — max 16MB each</p>
-      </div>
-
-      <div class="upload-form">
-        <div>
-          <label>Title</label>
-          <input type="text" id="upTitle" placeholder="e.g. Night Out Notts">
-        </div>
-        <div>
-          <label>Category</label>
-          <select id="upCat">
-            <option value="people">People</option>
-            <option value="places">Places</option>
-            <option value="vibes">Vibes</option>
-            <option value="moments">Moments</option>
-          </select>
-        </div>
-        <div>
-          <label>Featured?</label>
-          <select id="upFeatured">
-            <option value="false">No</option>
-            <option value="true">Yes — show on homepage</option>
-          </select>
-        </div>
-        <div>
-          <label>&nbsp;</label>
-          <button class="btn-primary" onclick="uploadFiles()" style="width:100%;padding:0.7rem;">Upload</button>
-        </div>
-      </div>
-
-      <div id="filePreview" style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1.5rem;"></div>
-
-      <p class="chart-title" style="margin-bottom:1rem;">Library — {{ photos | length }} images</p>
-      <div class="img-admin-grid" id="imgGrid">
-        {% for p in photos %}
-        <div class="img-admin-card" id="imgcard-{{ p.id }}">
-          <img src="{{ url_for('static', filename='images/' + p.filename) }}" alt="{{ p.title }}">
-          <div class="img-admin-info">
-            <input type="text" value="{{ p.title }}" id="title-{{ p.id }}" placeholder="Title">
-            <select id="cat-{{ p.id }}">
-              <option value="people"  {% if p.category=='people'  %}selected{% endif %}>People</option>
-              <option value="places"  {% if p.category=='places'  %}selected{% endif %}>Places</option>
-              <option value="vibes"   {% if p.category=='vibes'   %}selected{% endif %}>Vibes</option>
-              <option value="moments" {% if p.category=='moments' %}selected{% endif %}>Moments</option>
-            </select>
-            <select id="feat-{{ p.id }}">
-              <option value="false" {% if not p.featured %}selected{% endif %}>Not Featured</option>
-              <option value="true"  {% if p.featured     %}selected{% endif %}>Featured</option>
-            </select>
-          </div>
-          <div class="img-admin-actions">
-            <button class="img-save-btn" onclick="savePhoto({{ p.id }})">Save</button>
-            <button class="img-del-btn"  onclick="deletePhoto({{ p.id }})">Delete</button>
-          </div>
-        </div>
-        {% endfor %}
-      </div>
-    </div>
-
-    <!-- NOTES -->
-    <div class="admin-panel" id="panel-notes">
-      <p class="panel-title">Notes</p>
-      <p class="panel-sub">Personal reminders, shoot ideas, to-dos</p>
-
-      <button class="add-note-btn" onclick="addNote()">+ New Note</button>
-
-      <div class="notes-grid" id="notesGrid">
-        {% for n in notes %}
-        <div class="note-card" id="note-{{ n.id }}">
-          <textarea placeholder="Write something..." id="notecontent-{{ n.id }}">{{ n.content }}</textarea>
-          <div class="note-meta">Updated {{ n.updated_at.strftime('%d %b %Y, %H:%M') if n.updated_at else '' }}</div>
-          <div class="note-actions">
-            <button class="note-save-btn" onclick="saveNote({{ n.id }})">Save</button>
-            <button class="note-del-btn"  onclick="deleteNote({{ n.id }})">Delete</button>
-          </div>
-        </div>
-        {% endfor %}
-      </div>
-    </div>
-
-    <!-- SETTINGS -->
-    <div class="admin-panel" id="panel-settings">
-      <p class="panel-title">Site Settings</p>
-      <p class="panel-sub">Edit your website without touching code</p>
-
-      <div class="settings-grid">
-        <div class="settings-group">
-          <p class="settings-group-title">Homepage</p>
-          <div class="setting-field">
-            <label>Hero Title</label>
-            <input type="text" id="set-hero_title" value="{{ settings.hero_title }}">
-          </div>
-          <div class="setting-field">
-            <label>Hero Subtitle</label>
-            <textarea id="set-hero_subtitle">{{ settings.hero_subtitle }}</textarea>
-          </div>
-          <div class="setting-field">
-            <label>Taking Bookings?</label>
-            <select id="set-taking_bookings">
-              <option value="yes" {% if settings.taking_bookings == 'yes' %}selected{% endif %}>Yes — open for bookings</option>
-              <option value="no"  {% if settings.taking_bookings == 'no'  %}selected{% endif %}>No — closed</option>
-            </select>
-          </div>
-          <button class="settings-save-btn" onclick="saveSettings(['hero_title','hero_subtitle','taking_bookings'])">Save Homepage Settings</button>
-        </div>
-
-        <div class="settings-group">
-          <p class="settings-group-title">About & Contact</p>
-          <div class="setting-field">
-            <label>Location</label>
-            <input type="text" id="set-location" value="{{ settings.location }}">
-          </div>
-          <div class="setting-field">
-            <label>Instagram URL</label>
-            <input type="text" id="set-instagram" value="{{ settings.instagram }}">
-          </div>
-          <div class="setting-field">
-            <label>TikTok URL</label>
-            <input type="text" id="set-tiktok" value="{{ settings.tiktok }}">
-          </div>
-          <div class="setting-field">
-            <label>Bio (About page)</label>
-            <textarea id="set-about_bio">{{ settings.about_bio }}</textarea>
-          </div>
-          <button class="settings-save-btn" onclick="saveSettings(['location','instagram','tiktok','about_bio'])">Save Contact Settings</button>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
-{% endblock %}
-
-{% block extra_js %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
-<script>
-
-function showPanel(name, btn) {
-  document.querySelectorAll('.admin-panel').forEach(function(p) { p.classList.remove('active'); });
-  document.querySelectorAll('.sidebar-link').forEach(function(b) { b.classList.remove('active'); });
-  document.getElementById('panel-' + name).classList.add('active');
-  btn.classList.add('active');
+  --font-display:    'Playfair Display', Georgia, serif;
+  --font-body:       'Barlow', Arial, sans-serif;
+  --font-condensed:  'Barlow Condensed', 'Arial Narrow', Arial, sans-serif;
 }
 
-function toast(msg, isErr) {
-  var t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show' + (isErr ? ' err' : '');
-  setTimeout(function() { t.className = 'toast'; }, 3000);
+/* ── BASE ──────────────────────────────────────────────────────────────────── */
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: #0c0c0c;
+  color: #f5f0eb;
+  font-family: 'Barlow', Arial, sans-serif;
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
 }
 
-var chartLabels = {{ analytics.chart_labels | safe }};
-var chartData   = {{ analytics.chart_data   | safe }};
-var pageCounts  = {{ analytics.page_counts  | tojson }};
+img { display: block; max-width: 100%; }
+a   { color: inherit; text-decoration: none; }
+ul  { list-style: none; }
 
-new Chart(document.getElementById('viewsChart'), {
-  type: 'bar',
-  data: {
-    labels: chartLabels,
-    datasets: [{
-      data: chartData,
-      backgroundColor: 'rgba(232,0,13,0.6)',
-      borderColor: '#e8000d',
-      borderWidth: 1,
-      borderRadius: 2
-    }]
-  },
-  options: {
-    plugins: { legend: { display: false } },
-    scales: {
-      x: { ticks: { color: '#555' }, grid: { color: 'rgba(255,255,255,0.04)' } },
-      y: { ticks: { color: '#555' }, grid: { color: 'rgba(255,255,255,0.04)' }, beginAtZero: true }
-    }
-  }
-});
-
-var total = Object.values(pageCounts).reduce(function(a,b){ return a+b; }, 0) || 1;
-var bd = document.getElementById('pageBreakdown');
-Object.entries(pageCounts).forEach(function(entry) {
-  var page = entry[0], count = entry[1];
-  var pct = Math.round((count / total) * 100);
-  bd.innerHTML += '<div class="pb-row">' +
-    '<span class="pb-label">' + page + '</span>' +
-    '<div class="pb-bar-wrap"><div class="pb-bar" style="width:' + pct + '%"></div></div>' +
-    '<span class="pb-count">' + count + '</span>' +
-  '</div>';
-});
-
-function toggleDetail(id) {
-  var row = document.getElementById('detail-' + id);
-  row.classList.toggle('open');
+/* ── NAV ───────────────────────────────────────────────────────────────────── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.2rem 3rem;
+  background-color: rgba(12, 12, 12, 0.96);
+  border-bottom: 1px solid rgba(245, 240, 235, 0.1);
 }
 
-function setStatus(id, status) {
-  fetch('/admin/mark/' + id + '/' + status).then(function() {
-    var badge = document.getElementById('badge-' + id);
-    badge.className = 'badge badge-' + status;
-    badge.textContent = status;
-    toast('Status updated');
-  });
+.nav-logo {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #f5f0eb;
+  letter-spacing: 0.05em;
+}
+.nav-logo span { color: #e8000d; }
+
+.nav-links {
+  display: flex;
+  gap: 2.5rem;
+  align-items: center;
+}
+.nav-links a {
+  font-family: 'Barlow Condensed', Arial, sans-serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #888888;
+  transition: color 0.2s;
+}
+.nav-links a:hover,
+.nav-links a.active { color: #f5f0eb; }
+
+.nav-book {
+  background-color: #e8000d !important;
+  color: #f5f0eb !important;
+  padding: 0.5rem 1.4rem;
+}
+.nav-book:hover { background-color: #ff2d2d !important; }
+
+.nav-burger {
+  display: none;
+  background: none;
+  border: none;
+  color: #f5f0eb;
+  font-size: 1.4rem;
+  cursor: pointer;
 }
 
-function deleteBooking(id) {
-  if (!confirm('Delete this booking?')) return;
-  fetch('/admin/booking/delete/' + id, { method: 'POST' }).then(function() {
-    document.getElementById('detail-' + id).remove();
-    var mainRow = document.querySelector('tr[onclick="toggleDetail(' + id + ')"]');
-    if (mainRow) mainRow.remove();
-    toast('Booking deleted');
-  });
+/* ── MOBILE MENU ───────────────────────────────────────────────────────────── */
+.mob-menu {
+  display: none;
+  flex-direction: column;
+  position: fixed;
+  top: 64px; left: 0; right: 0;
+  background-color: #141414;
+  border-bottom: 1px solid rgba(245, 240, 235, 0.1);
+  z-index: 199;
+  padding: 1rem 0;
+}
+.mob-menu.open { display: flex; }
+.mob-menu a {
+  font-family: 'Barlow Condensed', Arial, sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #888888;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid rgba(245, 240, 235, 0.05);
+  transition: color 0.2s;
+}
+.mob-menu a:hover { color: #e8000d; }
+
+/* ── MAIN WRAPPER ──────────────────────────────────────────────────────────── */
+main { padding-top: 64px; }
+
+/* ── PAGE BANNER ───────────────────────────────────────────────────────────── */
+.page-banner {
+  background-color: #141414;
+  border-bottom: 1px solid rgba(245, 240, 235, 0.1);
+  padding: 4rem 3rem 3rem;
+}
+.page-banner .label {
+  font-family: 'Barlow Condensed', Arial, sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #e8000d;
+  margin-bottom: 0.6rem;
+}
+.page-banner h1 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-weight: 900;
+  line-height: 1;
+  color: #f5f0eb;
+}
+.page-banner p {
+  margin-top: 1rem;
+  font-size: 1rem;
+  color: #888888;
+  max-width: 520px;
 }
 
-var selectedFiles = [];
+/* ── SECTION UTILITIES ─────────────────────────────────────────────────────── */
+.section { padding: 5rem 3rem; }
+.section-alt { background-color: #141414; }
 
-document.getElementById('fileInput').addEventListener('change', function() {
-  selectedFiles = Array.from(this.files);
-  renderPreviews();
-});
+.sec-label {
+  font-family: 'Barlow Condensed', Arial, sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #e8000d;
+  margin-bottom: 0.5rem;
+}
+.sec-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 900;
+  line-height: 1;
+  color: #f5f0eb;
+  margin-bottom: 1.5rem;
+}
+.sec-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid rgba(245, 240, 235, 0.1);
+}
+.sec-link {
+  font-family: 'Barlow Condensed', Arial, sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #888888;
+  transition: color 0.2s;
+}
+.sec-link:hover { color: #e8000d; }
 
-var dz = document.getElementById('dropZone');
-dz.addEventListener('dragover', function(e) { e.preventDefault(); dz.classList.add('dragover'); });
-dz.addEventListener('dragleave', function() { dz.classList.remove('dragover'); });
-dz.addEventListener('drop', function(e) {
-  e.preventDefault();
-  dz.classList.remove('dragover');
-  selectedFiles = Array.from(e.dataTransfer.files);
-  renderPreviews();
-});
+/* ── BUTTONS ───────────────────────────────────────────────────────────────── */
+.btn-primary {
+  display: inline-block;
+  background-color: #e8000d;
+  color: #f5f0eb;
+  font-family: 'Barlow Condensed', Arial, sans-serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0.9rem 2.2rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.btn-primary:hover { background-color: #ff2d2d; }
 
-function renderPreviews() {
-  var pv = document.getElementById('filePreview');
-  pv.innerHTML = '';
-  selectedFiles.forEach(function(f) {
-    var url = URL.createObjectURL(f);
-    pv.innerHTML += '<img src="' + url + '" style="width:70px;height:70px;object-fit:cover;filter:brightness(0.85);">';
-  });
+.btn-outline {
+  display: inline-block;
+  background: transparent;
+  color: #f5f0eb;
+  font-family: 'Barlow Condensed', Arial, sans-serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0.9rem 2.2rem;
+  border: 1px solid rgba(245, 240, 235, 0.2);
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.btn-outline:hover { border-color: #f5f0eb; }
+
+/* ── TICKER ────────────────────────────────────────────────────────────────── */
+.ticker {
+  background-color: #e8000d;
+  overflow: hidden;
+  padding: 0.7rem 0;
+}
+.ticker-track {
+  display: flex;
+  white-space: nowrap;
+  animation: ticker 20s linear infinite;
+}
+.ticker-item {
+  font-family: 'Barlow Condensed', Arial, sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #f5f0eb;
+  padding: 0 2.5rem;
+  flex-shrink: 0;
+}
+.ticker-item::after { content: '◆'; margin-left: 2.5rem; opacity: 0.4; }
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
 }
 
-function uploadFiles() {
-  if (!selectedFiles.length) { toast('No files selected', true); return; }
-  var title    = document.getElementById('upTitle').value.trim();
-  var cat      = document.getElementById('upCat').value;
-  var featured = document.getElementById('upFeatured').value;
-  var done = 0;
-  selectedFiles.forEach(function(file) {
-    var fd = new FormData();
-    fd.append('file', file);
-    fd.append('title', title || file.name.replace(/\.[^.]+$/, ''));
-    fd.append('category', cat);
-    fd.append('featured', featured);
-    fetch('/admin/upload', { method: 'POST', body: fd })
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
-        done++;
-        if (done === selectedFiles.length) {
-          toast('Uploaded ' + done + ' image' + (done > 1 ? 's' : ''));
-          setTimeout(function() { location.reload(); }, 1200);
-        }
-      }).catch(function() { toast('Upload failed', true); });
-  });
+/* ── PHOTO GRID ────────────────────────────────────────────────────────────── */
+.photo-grid {
+  columns: 3;
+  column-gap: 8px;
+}
+.photo-grid .grid-item {
+  break-inside: avoid;
+  margin-bottom: 8px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+.photo-grid .grid-item img {
+  width: 100%;
+  display: block;
+  transition: transform 0.5s ease;
+  filter: brightness(0.85);
+}
+.photo-grid .grid-item:hover img {
+  transform: scale(1.04);
+  filter: brightness(1);
+}
+.grid-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(12,12,12,0.8) 0%, transparent 55%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  display: flex;
+  align-items: flex-end;
+  padding: 1rem;
+}
+.grid-item:hover .grid-overlay { opacity: 1; }
+.grid-overlay .cat {
+  font-family: 'Barlow Condensed', Arial, sans-serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #e8000d;
+}
+.grid-overlay .title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 0.95rem;
+  color: #f5f0eb;
+  margin-top: 0.2rem;
 }
 
-function savePhoto(id) {
-  var fd = new FormData();
-  fd.append('title',    document.getElementById('title-' + id).value);
-  fd.append('category', document.getElementById('cat-' + id).value);
-  fd.append('featured', document.getElementById('feat-' + id).value);
-  fetch('/admin/photo/edit/' + id, { method: 'POST', body: fd })
-    .then(function() { toast('Saved'); });
+/* ── FILTER BUTTONS ────────────────────────────────────────────────────────── */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+.filter-btn {
+  font-family: 'Barlow Condensed', Arial, sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  background: none;
+  border: 1px solid rgba(245, 240, 235, 0.1);
+  color: #888888;
+  padding: 0.5rem 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.filter-btn:hover,
+.filter-btn.active {
+  background-color: #e8000d;
+  border-color: #e8000d;
+  color: #f5f0eb;
 }
 
-function deletePhoto(id) {
-  if (!confirm('Delete this image?')) return;
-  fetch('/admin/photo/delete/' + id, { method: 'POST' }).then(function() {
-    var card = document.getElementById('imgcard-' + id);
-    if (card) card.remove();
-    toast('Image deleted');
-  });
+/* ── LIGHTBOX ──────────────────────────────────────────────────────────────── */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(8, 8, 8, 0.97);
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.lightbox.open { display: flex; }
+.lightbox img {
+  max-width: 88vw;
+  max-height: 88vh;
+  object-fit: contain;
+}
+.lb-close {
+  position: absolute;
+  top: 1.5rem; right: 2rem;
+  font-family: 'Barlow Condensed', Arial, sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #888888;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.lb-close:hover { color: #e8000d; }
+.lb-prev, .lb-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 2.5rem;
+  color: #888888;
+  cursor: pointer;
+  transition: color 0.2s;
+  user-select: none;
+}
+.lb-prev { left: 1.5rem; }
+.lb-next { right: 1.5rem; }
+.lb-prev:hover, .lb-next:hover { color: #e8000d; }
+
+/* ── SERVICES GRID ─────────────────────────────────────────────────────────── */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background-color: rgba(245, 240, 235, 0.1);
+  border: 1px solid rgba(245, 240, 235, 0.1);
+}
+.service-card {
+  background-color: #0c0c0c;
+  padding: 2.5rem 2rem;
+  position: relative;
+  overflow: hidden;
+  transition: background-color 0.3s;
+}
+.service-card:hover { background-color: #141414; }
+.service-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0;
+  height: 2px; width: 0;
+  background-color: #e8000d;
+  transition: width 0.4s;
+}
+.service-card:hover::after { width: 100%; }
+.service-num {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 3rem;
+  font-weight: 900;
+  color: rgba(245, 240, 235, 0.06);
+  line-height: 1;
+  margin-bottom: 1rem;
+}
+.service-icon { font-size: 1.8rem; margin-bottom: 1rem; }
+.service-name {
+  font-family: 'Barlow Condensed', Arial, sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #f5f0eb;
+  margin-bottom: 0.8rem;
+}
+.service-desc {
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: #888888;
+}
+.service-price {
+  margin-top: 1.2rem;
+  font-family: 'Barlow Condensed', Arial, sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #e8000d;
 }
 
-function addNote() {
-  var grid = document.getElementById('notesGrid');
-  var card = document.createElement('div');
-  card.className = 'note-card';
-  card.id = 'note-new';
-  card.innerHTML = '<textarea placeholder="Write something..." id="notecontent-new"></textarea>' +
-    '<div class="note-actions"><button class="note-save-btn" onclick="saveNote(\'new\')">Save</button></div>';
-  grid.prepend(card);
+/* ── ACCORDION (services page) ─────────────────────────────────────────────── */
+.accordion { display: flex; flex-direction: column; gap: 0; }
+.acc-item { border-bottom: 1px solid rgba(245,240,235,0.08); }
+.acc-head {
+  width: 100%;
+  background: none;
+  border: none;
+  color: #f5f0eb;
+  padding: 1.4rem 0;
+  font-family: 'Barlow Condensed', Arial, sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: left;
+  transition: color 0.2s;
+}
+.acc-head:hover { color: #e8000d; }
+.acc-item.open .acc-head { color: #e8000d; }
+.acc-icon { margin-right: 0.75rem; }
+.acc-arrow {
+  font-size: 1.4rem;
+  color: #e8000d;
+  font-weight: 300;
+  flex-shrink: 0;
+}
+.acc-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease;
+  padding: 0 0.25rem;
+}
+.acc-body p { color: #888; font-size: 0.9rem; line-height: 1.8; margin-bottom: 0.75rem; }
+.acc-body ul { color: #888; font-size: 0.88rem; line-height: 2; padding-left: 1.2rem; margin-bottom: 0.75rem; }
+.acc-body li { list-style: disc; }
+.acc-price {
+  font-family: 'Barlow Condensed', Arial, sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #f5f0eb !important;
+  margin-top: 0.5rem;
+  padding-bottom: 1.4rem;
+}
+.acc-price strong { color: #e8000d; }
+
+/* ── ABOUT LAYOUT ──────────────────────────────────────────────────────────── */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  align-items: center;
+}
+.about-img { position: relative; }
+.about-img img { width: 100%; }
+.about-img-badge {
+  position: absolute;
+  bottom: -1.5rem; right: -1.5rem;
+  background-color: #e8000d;
+  width: 90px; height: 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.badge-num {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.8rem;
+  font-weight: 900;
+  line-height: 1;
+  color: #f5f0eb;
+}
+.badge-lbl {
+  font-family: 'Barlow Condensed', Arial, sans-serif;
+  font-size: 0.5rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #f5f0eb;
+}
+.about-text p {
+  font-size: 0.95rem;
+  line-height: 1.9;
+  color: #888888;
+  margin-bottom: 1rem;
+}
+.about-text p strong { color: #f5f0eb; font-weight: 500; }
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(245, 240, 235, 0.1);
+}
+.stat-n {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 2rem;
+  font-weight: 900;
+  color: #e8000d;
+}
+.stat-l {
+  font-family: 'Barlow Condensed', Arial, sans-serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #888888;
 }
 
-function saveNote(id) {
-  var content = document.getElementById('notecontent-' + id).value.trim();
-  if (!content) { toast('Note is empty', true); return; }
-  fetch('/admin/note/save', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id: id === 'new' ? null : id, content: content })
-  }).then(function(r) { return r.json(); })
-    .then(function() {
-      toast('Note saved');
-      if (id === 'new') setTimeout(function() { location.reload(); }, 1000);
-    });
+/* ── CONTACT FORM ──────────────────────────────────────────────────────────── */
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  align-items: start;
+}
+.contact-details { margin-top: 2rem; }
+.cd-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(245, 240, 235, 0.1);
+}
+.cd-label {
+  font-family: 'Barlow Condensed', Arial, sans-serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #888888;
+  min-width: 90px;
+}
+.cd-val { font-size: 0.92rem; color: #f5f0eb; }
+.cd-val a { color: #e8000d; }
+.cd-available { color: #4caf50 !important; font-weight: 500; }
+
+.booking-form { display: flex; flex-direction: column; gap: 1.2rem; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.fg label {
+  font-family: 'Barlow Condensed', Arial, sans-serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #888888;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+.fg input,
+.fg textarea,
+.fg select {
+  width: 100%;
+  background-color: #141414;
+  border: 1px solid rgba(245, 240, 235, 0.1);
+  padding: 0.85rem 1rem;
+  color: #f5f0eb;
+  font-family: 'Barlow', Arial, sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.fg input:focus,
+.fg textarea:focus,
+.fg select:focus { border-color: #e8000d; }
+.fg textarea { resize: vertical; min-height: 120px; }
+.fg select option { background-color: #141414; color: #f5f0eb; }
+
+#submitBtn {
+  width: 100%;
+  background-color: #e8000d;
+  color: #f5f0eb;
+  border: none;
+  padding: 1rem;
+  font-family: 'Barlow Condensed', Arial, sans-serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+#submitBtn:hover { background-color: #ff2d2d; }
+#submitBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+#form-msg {
+  font-family: 'Barlow Condensed', Arial, sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.8rem;
+  text-align: center;
+  display: none;
+}
+#form-msg.ok  { color: #4caf50; border: 1px solid #4caf50; display: block; }
+#form-msg.err { color: #e8000d; border: 1px solid #e8000d; display: block; }
+
+/* ── FOOTER ────────────────────────────────────────────────────────────────── */
+footer {
+  background-color: #080808;
+  border-top: 1px solid rgba(245, 240, 235, 0.1);
+  padding: 2rem 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+footer p {
+  font-family: 'Barlow Condensed', Arial, sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #888888;
+}
+.footer-links { display: flex; gap: 2rem; }
+.footer-links a {
+  font-family: 'Barlow Condensed', Arial, sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #888888;
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: #e8000d; }
+
+/* ── ADMIN BASE ────────────────────────────────────────────────────────────── */
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+.admin-stat {
+  background-color: #141414;
+  border: 1px solid rgba(245, 240, 235, 0.1);
+  border-left: 3px solid #e8000d;
+  padding: 1.5rem;
+}
+.admin-stat-n {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 2rem;
+  font-weight: 900;
+  color: #e8000d;
+}
+.admin-stat-l {
+  font-family: 'Barlow Condensed', Arial, sans-serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #888888;
+  margin-top: 0.3rem;
+}
+.admin-table { width: 100%; border-collapse: collapse; }
+.admin-table th {
+  font-family: 'Barlow Condensed', Arial, sans-serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #888888;
+  padding: 0.8rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(245, 240, 235, 0.1);
+}
+.admin-table td {
+  padding: 1rem;
+  font-size: 0.88rem;
+  border-bottom: 1px solid rgba(245, 240, 235, 0.06);
+  vertical-align: top;
+  color: #f5f0eb;
+}
+.admin-table tr:hover td { background-color: rgba(255,255,255,0.02); }
+.badge {
+  font-family: 'Barlow Condensed', Arial, sans-serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.7rem;
+}
+.badge-new     { color: #e8000d; border: 1px solid #e8000d; background: rgba(232,0,13,0.1); }
+.badge-read    { color: #888888; border: 1px solid rgba(245,240,235,0.15); }
+.badge-replied { color: #4caf50; border: 1px solid #4caf50; background: rgba(76,175,80,0.1); }
+.act-btn {
+  font-family: 'Barlow Condensed', Arial, sans-serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: none;
+  border: 1px solid rgba(245,240,235,0.1);
+  color: #888888;
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+  margin-right: 0.4rem;
+  margin-top: 0.4rem;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-block;
+}
+.act-btn:hover { border-color: #e8000d; color: #e8000d; }
+
+/* ── RESPONSIVE ────────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  nav { padding: 1rem 1.5rem; }
+  .nav-links { display: none; }
+  .nav-burger { display: block; }
+  .section { padding: 3rem 1.5rem; }
+  .page-banner { padding: 3rem 1.5rem 2rem; }
+  .photo-grid { columns: 2; }
+  .services-grid { grid-template-columns: 1fr 1fr; }
+  .about-grid { grid-template-columns: 1fr; gap: 3rem; }
+  .contact-grid { grid-template-columns: 1fr; gap: 3rem; }
+  .form-row { grid-template-columns: 1fr; }
+  footer { flex-direction: column; gap: 1rem; text-align: center; }
+  .admin-stats { grid-template-columns: 1fr 1fr; }
+  .accordion .acc-head { font-size: 0.95rem; }
 }
 
-function deleteNote(id) {
-  if (!confirm('Delete this note?')) return;
-  fetch('/admin/note/delete/' + id, { method: 'POST' }).then(function() {
-    var card = document.getElementById('note-' + id);
-    if (card) card.remove();
-    toast('Note deleted');
-  });
+@media (max-width: 600px) {
+  .photo-grid { columns: 1; }
+  .services-grid { grid-template-columns: 1fr; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .section { padding: 2.5rem 1rem; }
+  .page-banner { padding: 2.5rem 1rem 2rem; }
+  nav { padding: 1rem; }
+  footer { padding: 1.5rem 1rem; }
 }
-
-function saveSettings(keys) {
-  var data = {};
-  keys.forEach(function(k) {
-    var el = document.getElementById('set-' + k);
-    if (el) data[k] = el.value;
-  });
-  fetch('/admin/settings/save', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  }).then(function() { toast('Settings saved'); });
-}
-
-</script>
-{% endblock %}
-```
-
-That's the complete file. Push it and let me know if the nav shows up now!
