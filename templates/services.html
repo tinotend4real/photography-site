@@ -1,104 +1,183 @@
 {% extends "base.html" %}
-{% block title %}Portfolio — TINO Photography{% endblock %}
+{% block title %}Services — TINO Photography{% endblock %}
 
 {% block content %}
 
 <div class="page-banner">
-  <p class="label">Selected Work</p>
-  <h1>The Portfolio</h1>
-  <p>People, places, vibes & moments — Nottingham and beyond, 2024–2026.</p>
+  <p class="label">What I Offer</p>
+  <h1>Services</h1>
+  <p>Honest prices. Fast turnaround. Based in Nottingham — available everywhere.</p>
 </div>
 
-<section class="section">
+<section class="section" style="max-width: 860px; margin: 0 auto;">
 
-  <!-- FILTERS -->
-  <div class="filters">
-    <button class="filter-btn active" data-cat="all">All Work</button>
-    <button class="filter-btn" data-cat="people">People</button>
-    <button class="filter-btn" data-cat="places">Places</button>
-    <button class="filter-btn" data-cat="vibes">Vibes</button>
-    <button class="filter-btn" data-cat="moments">Moments</button>
-  </div>
+  <p class="sec-label">Pricing</p>
+  <h2 class="sec-title" style="margin-bottom: 0.5rem;">What I Shoot</h2>
+  <p style="color:#888;font-size:0.9rem;margin-bottom:3rem;line-height:1.8;">
+    I shoot everything. Whether you've got a full brief or just a feeling, get in touch and we'll figure it out. All prices are fair — I'm building my portfolio and I want to work with people who are building something too.
+  </p>
 
-  <!-- PHOTO GRID -->
-  <div class="photo-grid" id="grid">
+  <!-- SERVICE ACCORDION -->
+  <div class="accordion">
 
-    {% set images = [
-      {'file':'tinoroom.jpg',           'cat':'people',  'title':'Room Portrait'},
-      {'file':'cecilstreet.jpg',        'cat':'people',  'title':'Cecil Street'},
-      {'file':'me&dylan.jpg',           'cat':'people',  'title':'Me & Dylan'},
-      {'file':'dylanpark.jpg',          'cat':'people',  'title':'Dylan Park'},
-      {'file':'dylancar.jpg',           'cat':'people',  'title':'Dylan Car'},
-      {'file':'gino.jfif',              'cat':'people',  'title':'Gino'},
-      {'file':'tino_tunnel.jfif',       'cat':'people',  'title':'Tunnel'},
-      {'file':'drip.jfif',              'cat':'vibes',   'title':'Drip'},
-      {'file':'suitvibes.jfif',         'cat':'vibes',   'title':'Suit Vibes'},
-      {'file':'thrifts.jfif',           'cat':'vibes',   'title':'Thrifts 1'},
-      {'file':'thrifts2.jfif',          'cat':'vibes',   'title':'Thrifts 2'},
-      {'file':'timbboots.jpg',          'cat':'vibes',   'title':'Timb Boots'},
-      {'file':'tino_nike.jfif',         'cat':'vibes',   'title':'Nike Shoot'},
-      {'file':'boohman_tracksuit.jfif', 'cat':'vibes',   'title':'Tracksuit'},
-      {'file':'streetview.jpg',         'cat':'vibes',   'title':'Street Look'},
-      {'file':'night_out_notts.jfif',   'cat':'moments', 'title':'Night Out Notts'},
-      {'file':'fireworks.jfif',         'cat':'moments', 'title':'Fireworks'},
-      {'file':'chinafood.jpg',          'cat':'moments', 'title':'China Food'},
-      {'file':'restuarant.jpg',         'cat':'moments', 'title':'Restaurant'},
-      {'file':'starbucks.jfif',         'cat':'moments', 'title':'Starbucks'},
-      {'file':'monbrand1.jpg',          'cat':'moments', 'title':'Brand Shoot 1'},
-      {'file':'monbrand2.jpg',          'cat':'moments', 'title':'Brand Shoot 2'},
-      {'file':'bedroom1.jpg',           'cat':'moments', 'title':'Bedroom Shoot'},
-      {'file':'boats.jfif',             'cat':'places',  'title':'Boats'},
-      {'file':'boats_views.jfif',       'cat':'places',  'title':'Boats View'},
-      {'file':'art_gallery.jfif',       'cat':'places',  'title':'Art Gallery'},
-      {'file':'nyc_painting.jfif',      'cat':'places',  'title':'NYC Painting'},
-      {'file':'cambridge_painting.jfif','cat':'places',  'title':'Cambridge Painting'},
-      {'file':'robot_painting.jfif',    'cat':'places',  'title':'Robot Painting'},
-      {'file':'color_painting.jfif',    'cat':'places',  'title':'Colour Painting'},
-      {'file':'paper_works.jfif',       'cat':'places',  'title':'Paper Works'},
-      {'file':'linc_works.jfif',        'cat':'places',  'title':'Linc Works'},
-      {'file':'ocean_view.jfif',        'cat':'places',  'title':'Ocean View'},
-      {'file':'blue_green_Building.jfif','cat':'places', 'title':'Blue Green Building'},
-      {'file':'flowers.jpg',            'cat':'places',  'title':'Flowers'},
-      {'file':'churchfront.jpg',        'cat':'places',  'title':'Church Front'},
-      {'file':'churchentry.jpg',        'cat':'places',  'title':'Church Entry'}
-    ] %}
-
-    {% for img in images %}
-    <div class="grid-item" data-cat="{{ img.cat }}" onclick="openLightbox(allPhotos, {{ loop.index0 }})">
-      <img src="{{ url_for('static', filename='images/' + img.file) }}" alt="{{ img.title }}">
-      <div class="grid-overlay">
-        <div>
-          <p class="cat">{{ img.cat | capitalize }}</p>
-          <p class="title">{{ img.title }}</p>
-        </div>
+    <div class="acc-item">
+      <button class="acc-head" onclick="toggleAcc(this)">
+        <span><span class="acc-icon">🧍</span> Portraits & Headshots</span>
+        <span class="acc-arrow">+</span>
+      </button>
+      <div class="acc-body">
+        <p>Whether it's for LinkedIn, social media, press shots or just something to remember a moment — I'll make sure you look good. Relaxed sessions, no stiff posing.</p>
+        <ul>
+          <li>1 location, up to 1 hour</li>
+          <li>10–20 edited shots delivered</li>
+          <li>24 hour turnaround</li>
+        </ul>
+        <p class="acc-price">From <strong>£30–£50</strong></p>
       </div>
     </div>
-    {% endfor %}
+
+    <div class="acc-item">
+      <button class="acc-head" onclick="toggleAcc(this)">
+        <span><span class="acc-icon">👟</span> Fashion & Streetwear</span>
+        <span class="acc-arrow">+</span>
+      </button>
+      <div class="acc-body">
+        <p>Lookbooks, fit pics, brand content — shot on location around Nottingham or wherever you want. I'll find the angles and light that make your fits look as fire as they feel.</p>
+        <ul>
+          <li>1–2 locations, up to 2 hours</li>
+          <li>20–40 edited shots</li>
+          <li>Great for personal brands & upcoming streetwear labels</li>
+        </ul>
+        <p class="acc-price">From <strong>£40–£70</strong></p>
+      </div>
+    </div>
+
+    <div class="acc-item">
+      <button class="acc-head" onclick="toggleAcc(this)">
+        <span><span class="acc-icon">🎉</span> Events & Club Nights</span>
+        <span class="acc-arrow">+</span>
+      </button>
+      <div class="acc-body">
+        <p>Full coverage of your night. Club nights, birthdays, house parties, gigs — I'll move through the crowd and capture the energy properly. Fast edits, shareable files ready to post.</p>
+        <ul>
+          <li>Up to 3 hours coverage</li>
+          <li>50–100+ shots delivered</li>
+          <li>Same or next day turnaround</li>
+        </ul>
+        <p class="acc-price">From <strong>£60–£100</strong></p>
+      </div>
+    </div>
+
+    <div class="acc-item">
+      <button class="acc-head" onclick="toggleAcc(this)">
+        <span><span class="acc-icon">🍜</span> Food & Restaurants</span>
+        <span class="acc-arrow">+</span>
+      </button>
+      <div class="acc-body">
+        <p>Atmosphere shots, plated dishes and interior photos for menus, Instagram and Google listings. Help your restaurant stand out online with visuals that actually do the food justice.</p>
+        <ul>
+          <li>2–3 hour session on location</li>
+          <li>20–40 edited shots</li>
+          <li>Dishes, interior, vibe — all covered</li>
+        </ul>
+        <p class="acc-price">From <strong>£50–£80</strong></p>
+      </div>
+    </div>
+
+    <div class="acc-item">
+      <button class="acc-head" onclick="toggleAcc(this)">
+        <span><span class="acc-icon">🚀</span> Brand & Product Shoots</span>
+        <span class="acc-arrow">+</span>
+      </button>
+      <div class="acc-body">
+        <p>If you're building a brand from scratch, I get it — I'm doing the same thing. Launch shoots, product photography and campaign content for upcoming brands who need visuals that punch above their weight.</p>
+        <ul>
+          <li>Flexible sessions tailored to your brief</li>
+          <li>Products, people, places — whatever tells your story</li>
+          <li>Great for new businesses, Depop sellers, small labels</li>
+        </ul>
+        <p class="acc-price">From <strong>£40–£80</strong></p>
+      </div>
+    </div>
+
+    <div class="acc-item">
+      <button class="acc-head" onclick="toggleAcc(this)">
+        <span><span class="acc-icon">🌆</span> Street & Documentary</span>
+        <span class="acc-arrow">+</span>
+      </button>
+      <div class="acc-body">
+        <p>Candid street photography, location shoots and documentary-style coverage. Real moments, real places — no staging, no filters. Perfect for personal projects or anyone who wants authentic content.</p>
+        <ul>
+          <li>Flexible session length</li>
+          <li>Nottingham, East Midlands and beyond</li>
+          <li>Raw, honest photography</li>
+        </ul>
+        <p class="acc-price">From <strong>£30–£60</strong></p>
+      </div>
+    </div>
+
+    <div class="acc-item">
+      <button class="acc-head" onclick="toggleAcc(this)">
+        <span><span class="acc-icon">⛪</span> Architecture & Interiors</span>
+        <span class="acc-arrow">+</span>
+      </button>
+      <div class="acc-body">
+        <p>Churches, buildings, interiors and architectural details. Available across the Midlands. Great for venues, churches or anyone wanting professional documentation of a space.</p>
+        <ul>
+          <li>2–3 hour session on site</li>
+          <li>20–30 edited shots</li>
+          <li>Interior, exterior and detail shots</li>
+        </ul>
+        <p class="acc-price">From <strong>£50–£80</strong></p>
+      </div>
+    </div>
+
+    <div class="acc-item">
+      <button class="acc-head" onclick="toggleAcc(this)">
+        <span><span class="acc-icon">🤝</span> Something Else?</span>
+        <span class="acc-arrow">+</span>
+      </button>
+      <div class="acc-body">
+        <p>Got something in mind that doesn't fit a category? I shoot everything. If you've got an idea — a concept, a project, a collaboration — just reach out and let's talk about it. No idea is too weird.</p>
+        <p class="acc-price">Price on request</p>
+      </div>
+    </div>
 
   </div>
+
+  <!-- NOTE -->
+  <div style="margin-top:3rem;padding:1.5rem;border-left:3px solid #e8000d;background:rgba(232,0,13,0.05);">
+    <p style="font-family:'Barlow Condensed',Arial,sans-serif;font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:#e8000d;margin-bottom:0.5rem;">A note on pricing</p>
+    <p style="color:#888;font-size:0.88rem;line-height:1.8;margin:0;">All prices are rough guides. I'm a beginner building my portfolio and I'd rather shoot something great at a fair price than overcharge and underdeliver. If you've got a budget, tell me — we'll make it work.</p>
+  </div>
+
+  <div style="text-align:center;margin-top:3rem;">
+    <a href="{{ url_for('contact') }}" class="btn-primary">Book a Shoot</a>
+  </div>
+
 </section>
 
 {% endblock %}
 
 {% block extra_js %}
 <script>
-  var allPhotos = [
-    {% for img in images %}
-    "{{ url_for('static', filename='images/' + img.file) }}"{% if not loop.last %},{% endif %}
-    {% endfor %}
-  ];
+  function toggleAcc(btn) {
+    var item = btn.parentElement;
+    var body = item.querySelector('.acc-body');
+    var arrow = btn.querySelector('.acc-arrow');
+    var isOpen = item.classList.contains('open');
 
-  document.querySelectorAll('.filter-btn').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var cat = btn.dataset.cat;
-      document.querySelectorAll('.grid-item').forEach(function(item) {
-        item.style.display = (cat === 'all' || item.dataset.cat === cat) ? '' : 'none';
-      });
-      document.querySelectorAll('.filter-btn').forEach(function(b) {
-        b.classList.remove('active');
-      });
-      btn.classList.add('active');
+    document.querySelectorAll('.acc-item').forEach(function(i) {
+      i.classList.remove('open');
+      i.querySelector('.acc-body').style.maxHeight = null;
+      i.querySelector('.acc-arrow').textContent = '+';
     });
-  });
+
+    if (!isOpen) {
+      item.classList.add('open');
+      body.style.maxHeight = body.scrollHeight + 'px';
+      arrow.textContent = '−';
+    }
+  }
 </script>
 {% endblock %}
