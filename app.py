@@ -381,21 +381,3 @@ def submit():
 # ── RUN ──────────────────────────────────────────────────────────────────────────
 if __name__ == '__main__':
     app.run(debug=True)
-```
-
----
-
-After pasting that, you also need to do **two things on Railway**:
-
-**1. Add a PostgreSQL database:**
-- Railway dashboard → your project → **+ New** → **Database** → **PostgreSQL**
-- Railway will automatically set the `DATABASE_URL` environment variable
-
-**2. Add `psycopg2-binary` to your `requirements.txt`:**
-```
-flask
-flask-sqlalchemy
-flask-mail
-flask-login
-gunicorn
-psycopg2-binary
