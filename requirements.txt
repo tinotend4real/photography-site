@@ -4,3 +4,4 @@ flask-mail
 flask-login
 gunicorn
 psycopg2-binary
+cloudinary
