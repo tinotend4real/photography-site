@@ -1,94 +1,175 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>{% block title %}TINO Photography — Leicester{% endblock %}</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Barlow:wght@300;400;500&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  {% block extra_css %}{% endblock %}
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}TINO Photography — Nottingham{% endblock %}
 
-<!-- NAV -->
-<nav>
-  <a href="{{ url_for('index') }}" class="nav-logo">TINO<span>.</span></a>
-  <ul class="nav-links">
-    <li><a href="{{ url_for('portfolio') }}" {% if request.endpoint == 'portfolio' %}class="active"{% endif %}>Portfolio</a></li>
-    <li><a href="{{ url_for('services') }}"  {% if request.endpoint == 'services'  %}class="active"{% endif %}>Services</a></li>
-    <li><a href="{{ url_for('about') }}"     {% if request.endpoint == 'about'     %}class="active"{% endif %}>About</a></li>
-    <li><a href="{{ url_for('contact') }}" class="nav-book">Book Now</a></li>
-  </ul>
-  <button class="nav-burger" id="burger">&#9776;</button>
-</nav>
+{% block content %}
 
-<!-- MOBILE MENU -->
-<div class="mob-menu" id="mobMenu">
-  <a href="{{ url_for('portfolio') }}">Portfolio</a>
-  <a href="{{ url_for('services') }}">Services</a>
-  <a href="{{ url_for('about') }}">About</a>
-  <a href="{{ url_for('contact') }}">Book Now</a>
-</div>
+<!-- HERO SECTION -->
+<section style="min-height: 100vh; display: grid; grid-template-columns: 1.1fr 0.9fr; border-bottom: 1px solid rgba(245,240,235,0.1);">
 
-<!-- PAGE CONTENT -->
-<main>
-  {% block content %}{% endblock %}
-</main>
+  <!-- Left side: text -->
+  <div style="display: flex; flex-direction: column; justify-content: center; padding: 6rem 3rem 4rem; border-right: 1px solid rgba(245,240,235,0.1);">
+    <p style="font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase; color: #e8000d; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+      <span style="width: 40px; height: 1px; background: #e8000d; display: inline-block;"></span>
+      Nottingham, UK — Est. 2024
+    </p>
 
-<!-- FOOTER -->
-<footer>
-  <p>© 2026 TINO Photography — Leicester, UK</p>
-  <div class="footer-links">
-    <a href="#">https://www.instagram.com/tino4_real?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==</a>
-    <a href="#">https://www.tiktok.com/@tino4real._?is_from_webapp=1&sender_device=pc</a>
-    <a href="{{ url_for('admin') }}">Admin</a>
+    <h1 style="font-family: 'Playfair Display', Georgia, serif; font-size: clamp(3.5rem, 7vw, 7rem); font-weight: 900; line-height: 0.92; color: #f5f0eb; margin-bottom: 2rem;">
+      The<br>Art of<br><em style="font-style: italic; color: #e8000d;">Real</em><br>Shots.
+    </h1>
+
+    <p style="font-size: 1rem; line-height: 1.8; color: #888888; max-width: 380px; margin-bottom: 2rem;">
+      Church interiors, restaurants, streetwear, brand campaigns & street portraits.
+      Six months in — and just getting started.
+    </p>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 2.5rem;">
+      <span style="font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; border: 1px solid #e8000d; color: #e8000d; padding: 0.4rem 0.9rem;">Church</span>
+      <span style="font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; border: 1px solid rgba(245,240,235,0.15); color: #888888; padding: 0.4rem 0.9rem;">Restaurants</span>
+      <span style="font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; border: 1px solid rgba(245,240,235,0.15); color: #888888; padding: 0.4rem 0.9rem;">Streetwear</span>
+      <span style="font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; border: 1px solid rgba(245,240,235,0.15); color: #888888; padding: 0.4rem 0.9rem;">Brands</span>
+      <span style="font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; border: 1px solid rgba(245,240,235,0.15); color: #888888; padding: 0.4rem 0.9rem;">Street</span>
+    </div>
+
+    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+      <a href="{{ url_for('portfolio') }}" class="btn-primary">View Work</a>
+      <a href="{{ url_for('contact') }}" class="btn-outline">Book a Shoot</a>
+    </div>
   </div>
-</footer>
 
-<!-- LIGHTBOX (available on every page) -->
-<div class="lightbox" id="lightbox">
-  <div class="lb-close" id="lbClose">&#10005; Close</div>
-  <div class="lb-prev" id="lbPrev">&#8249;</div>
-  <img id="lbImg" src="" alt="">
-  <div class="lb-next" id="lbNext">&#8250;</div>
+  <!-- Right side: hero images -->
+  <div style="display: grid; grid-template-rows: 2fr 1fr; grid-template-columns: 1fr 1fr;">
+    <div style="grid-column: 1 / -1; overflow: hidden; position: relative;">
+      <img src="{{ url_for('static', filename='images/cecilstreet.jpg') }}"
+           alt="Portfolio" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.85);">
+      <span style="position: absolute; bottom: 1rem; left: 1rem; font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(245,240,235,0.5); background: rgba(12,12,12,0.6); padding: 0.3rem 0.7rem;">
+        Street — Nottingham 2025
+      </span>
+    </div>
+    <div style="overflow: hidden; border-top: 1px solid rgba(245,240,235,0.1); border-right: 1px solid rgba(245,240,235,0.1);">
+      <img src="{{ url_for('static', filename='images/monbrand1.jpg') }}"
+           alt="" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.8);">
+    </div>
+    <div style="overflow: hidden; border-top: 1px solid rgba(245,240,235,0.1);">
+      <img src="{{ url_for('static', filename='images/churchentry.jpg') }}"
+           alt="" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.8);">
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-track">
+    <span class="ticker-item">Church & Architecture</span>
+    <span class="ticker-item">Restaurants & Food</span>
+    <span class="ticker-item">Streetwear</span>
+    <span class="ticker-item">Brand Shoots</span>
+    <span class="ticker-item">Street Portraits</span>
+    <span class="ticker-item">Club Nights</span>
+    <span class="ticker-item">Available Now</span>
+    <span class="ticker-item">Based in Nottingham</span>
+    <span class="ticker-item">Church & Architecture</span>
+    <span class="ticker-item">Restaurants & Food</span>
+    <span class="ticker-item">Streetwear</span>
+    <span class="ticker-item">Brand Shoots</span>
+    <span class="ticker-item">Street Portraits</span>
+    <span class="ticker-item">Club Nights</span>
+    <span class="ticker-item">Available Now</span>
+    <span class="ticker-item">Based in Nottingham</span>
+  </div>
 </div>
 
+<!-- SHOTS OF THE YEAR -->
+<section class="section">
+  <div class="sec-head">
+    <div>
+      <p class="sec-label">Best of 2025</p>
+      <h2 class="sec-title">Shots of the Year</h2>
+    </div>
+    <a href="{{ url_for('portfolio') }}" class="sec-link">View all work →</a>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+
+    <div style="overflow: hidden; cursor: pointer;" onclick="openLightbox(featuredPhotos, 0)">
+      <img src="{{ url_for('static', filename='images/nyc_painting.jfif') }}"
+           alt="NYC Painting"
+           style="width: 100%; aspect-ratio: 3/4; object-fit: cover; filter: brightness(0.85); transition: transform 0.5s, filter 0.3s;"
+           onmouseover="this.style.transform='scale(1.04)';this.style.filter='brightness(1)'"
+           onmouseout="this.style.transform='scale(1)';this.style.filter='brightness(0.85)'">
+      <p style="font-family:'Barlow Condensed',Arial,sans-serif;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:#888;margin-top:0.5rem;">NYC Painting</p>
+    </div>
+
+    <div style="overflow: hidden; cursor: pointer;" onclick="openLightbox(featuredPhotos, 1)">
+      <img src="{{ url_for('static', filename='images/thrifts2.jfif') }}"
+           alt="Thrifts"
+           style="width: 100%; aspect-ratio: 3/4; object-fit: cover; filter: brightness(0.85); transition: transform 0.5s, filter 0.3s;"
+           onmouseover="this.style.transform='scale(1.04)';this.style.filter='brightness(1)'"
+           onmouseout="this.style.transform='scale(1)';this.style.filter='brightness(0.85)'">
+      <p style="font-family:'Barlow Condensed',Arial,sans-serif;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:#888;margin-top:0.5rem;">Thrifts</p>
+    </div>
+
+    <div style="overflow: hidden; cursor: pointer;" onclick="openLightbox(featuredPhotos, 2)">
+      <img src="{{ url_for('static', filename='images/art_gallery.jfif') }}"
+           alt="Art Gallery"
+           style="width: 100%; aspect-ratio: 3/4; object-fit: cover; filter: brightness(0.85); transition: transform 0.5s, filter 0.3s;"
+           onmouseover="this.style.transform='scale(1.04)';this.style.filter='brightness(1)'"
+           onmouseout="this.style.transform='scale(1)';this.style.filter='brightness(0.85)'">
+      <p style="font-family:'Barlow Condensed',Arial,sans-serif;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:#888;margin-top:0.5rem;">Art Gallery</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- SERVICES PREVIEW -->
+<section class="section section-alt">
+  <div class="sec-head">
+    <div>
+      <p class="sec-label">What I Offer</p>
+      <h2 class="sec-title">Services</h2>
+    </div>
+    <a href="{{ url_for('services') }}" class="sec-link">See all services →</a>
+  </div>
+  <div class="services-grid">
+    <div class="service-card">
+      <div class="service-icon">⛪</div>
+      <p class="service-name">Church & Architecture</p>
+      <p class="service-desc">Interiors, stained glass, ceremonies and architectural details.</p>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🍜</div>
+      <p class="service-name">Restaurants & Food</p>
+      <p class="service-desc">Atmosphere shots, dishes and social-ready content for your venue.</p>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">👟</div>
+      <p class="service-name">Streetwear & Fashion</p>
+      <p class="service-desc">Lookbooks and editorial street photography for personal brands.</p>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🚀</div>
+      <p class="service-name">Upcoming Brands</p>
+      <p class="service-desc">Launch shoots and campaign content for new brands.</p>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🎉</div>
+      <p class="service-name">Events & Club Nights</p>
+      <p class="service-desc">Full coverage of club nights, birthdays and events.</p>
+    </div>
+    <div class="service-card" style="display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;">
+      <p style="font-family:'Playfair Display',serif;font-size:1.1rem;color:#f5f0eb;margin-bottom:1rem;">Ready to book?</p>
+      <a href="{{ url_for('contact') }}" class="btn-primary">Get in Touch</a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
 <script>
-  // Mobile menu toggle
-  document.getElementById('burger').addEventListener('click', function() {
-    document.getElementById('mobMenu').classList.toggle('open');
-  });
-
-  // Lightbox
-  var lbPhotos = [];
-  var lbIndex  = 0;
-
-  function openLightbox(photos, index) {
-    lbPhotos = photos;
-    lbIndex  = index;
-    document.getElementById('lbImg').src = lbPhotos[lbIndex];
-    document.getElementById('lightbox').classList.add('open');
-  }
-
-  document.getElementById('lbClose').onclick = function() {
-    document.getElementById('lightbox').classList.remove('open');
-  };
-  document.getElementById('lbPrev').onclick = function() {
-    lbIndex = (lbIndex - 1 + lbPhotos.length) % lbPhotos.length;
-    document.getElementById('lbImg').src = lbPhotos[lbIndex];
-  };
-  document.getElementById('lbNext').onclick = function() {
-    lbIndex = (lbIndex + 1) % lbPhotos.length;
-    document.getElementById('lbImg').src = lbPhotos[lbIndex];
-  };
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape')      document.getElementById('lightbox').classList.remove('open');
-    if (e.key === 'ArrowLeft')   document.getElementById('lbPrev').click();
-    if (e.key === 'ArrowRight')  document.getElementById('lbNext').click();
-  });
+  var featuredPhotos = [
+    "{{ url_for('static', filename='images/nyc_painting.jfif') }}",
+    "{{ url_for('static', filename='images/thrifts2.jfif') }}",
+    "{{ url_for('static', filename='images/art_gallery.jfif') }}"
+  ];
 </script>
-
-{% block extra_js %}{% endblock %}
-</body>
-</html>
+{% endblock %}
