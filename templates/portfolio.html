@@ -20,10 +20,10 @@
     <button class="filter-btn" data-cat="street">Street</button>
   </div>
 
-  <!-- FULL GRID - ALL 40+ IMAGES -->
+  <!-- FULL GRID -->
   <div class="photo-grid" id="grid">
 
-    <!-- 0-4: CHURCH (EXISTING) -->
+    <!-- CHURCH -->
     <div class="grid-item" data-cat="church" onclick="openLightbox(allPhotos, 0)">
       <img src="{{ url_for('static', filename='images/churchfront.jpg') }}" alt="Church front">
       <div class="grid-overlay"><div><p class="cat">Church</p><p class="title">Church Front</p></div></div>
@@ -45,7 +45,7 @@
       <div class="grid-overlay"><div><p class="cat">Church</p><p class="title">The Script</p></div></div>
     </div>
 
-    <!-- 5-6: RESTAURANT (EXISTING) -->
+    <!-- RESTAURANT -->
     <div class="grid-item" data-cat="restaurant" onclick="openLightbox(allPhotos, 5)">
       <img src="{{ url_for('static', filename='images/chinafood.jpg') }}" alt="China food">
       <div class="grid-overlay"><div><p class="cat">Restaurant</p><p class="title">China Food</p></div></div>
@@ -55,5 +55,74 @@
       <div class="grid-overlay"><div><p class="cat">Restaurant</p><p class="title">Restaurant</p></div></div>
     </div>
 
-    <!-- 7-8: BRAND (EXISTING) -->
-    <div class="grid-item" data-cat="brand" onclick="openLightbox(allPhotos,
+    <!-- STREETWEAR -->
+    <div class="grid-item" data-cat="streetwear" onclick="openLightbox(allPhotos, 7)">
+      <img src="{{ url_for('static', filename='images/street1.jpg') }}" alt="Streetwear 1">
+      <div class="grid-overlay"><div><p class="cat">Streetwear</p><p class="title">Streetwear Look 1</p></div></div>
+    </div>
+    <div class="grid-item" data-cat="streetwear" onclick="openLightbox(allPhotos, 8)">
+      <img src="{{ url_for('static', filename='images/street2.jpg') }}" alt="Streetwear 2">
+      <div class="grid-overlay"><div><p class="cat">Streetwear</p><p class="title">Streetwear Look 2</p></div></div>
+    </div>
+
+    <!-- BRAND -->
+    <div class="grid-item" data-cat="brand" onclick="openLightbox(allPhotos, 9)">
+      <img src="{{ url_for('static', filename='images/brand1.jpg') }}" alt="Brand 1">
+      <div class="grid-overlay"><div><p class="cat">Brand</p><p class="title">Brand 1</p></div></div>
+    </div>
+    <div class="grid-item" data-cat="brand" onclick="openLightbox(allPhotos, 10)">
+      <img src="{{ url_for('static', filename='images/brand2.jpg') }}" alt="Brand 2">
+      <div class="grid-overlay"><div><p class="cat">Brand</p><p class="title">Brand 2</p></div></div>
+    </div>
+
+    <!-- STREET -->
+    <div class="grid-item" data-cat="street" onclick="openLightbox(allPhotos, 11)">
+      <img src="{{ url_for('static', filename='images/streetportrait1.jpg') }}" alt="Street 1">
+      <div class="grid-overlay"><div><p class="cat">Street</p><p class="title">Street Portrait 1</p></div></div>
+    </div>
+    <div class="grid-item" data-cat="street" onclick="openLightbox(allPhotos, 12)">
+      <img src="{{ url_for('static', filename='images/streetportrait2.jpg') }}" alt="Street 2">
+      <div class="grid-overlay"><div><p class="cat">Street</p><p class="title">Street Portrait 2</p></div></div>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  var allPhotos = [
+    "{{ url_for('static', filename='images/churchfront.jpg') }}",
+    "{{ url_for('static', filename='images/churchentry.jpg') }}",
+    "{{ url_for('static', filename='images/crypt.jpg') }}",
+    "{{ url_for('static', filename='images/churchwindow.jpg') }}",
+    "{{ url_for('static', filename='images/churchscript.jpg') }}",
+    "{{ url_for('static', filename='images/chinafood.jpg') }}",
+    "{{ url_for('static', filename='images/restuarant.jpg') }}",
+    "{{ url_for('static', filename='images/street1.jpg') }}",
+    "{{ url_for('static', filename='images/street2.jpg') }}",
+    "{{ url_for('static', filename='images/brand1.jpg') }}",
+    "{{ url_for('static', filename='images/brand2.jpg') }}",
+    "{{ url_for('static', filename='images/streetportrait1.jpg') }}",
+    "{{ url_for('static', filename='images/streetportrait2.jpg') }}"
+  ];
+
+  function openLightbox(arr, index) {
+    // Your existing lightbox JS function
+    console.log("Open photo", index, arr[index]);
+  }
+
+  // Filter buttons (optional if already in your JS)
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const cat = btn.dataset.cat;
+      document.querySelectorAll('.grid-item').forEach(item => {
+        item.style.display = (cat === 'all' || item.dataset.cat === cat) ? 'block' : 'none';
+      });
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+</script>
+{% endblock %}
