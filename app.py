@@ -1,16 +1,19 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
+from flask import Flask, render_template, request, jsonify, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
-from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required
-from datetime import datetime
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
+from datetime import datetime, timedelta
 import os
+import json
 
 app = Flask(__name__)
 
-# ── CONFIG ─────────────────────────────────────────
+# ── CONFIG ─────────────────────────────────────────────────────────────────────
 app.config['SECRET_KEY'] = 'tino-photography-secret-2026-upgrade'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///bookings.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tino.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['UPLOAD_FOLDER'] = os.path.join('static', 'images')
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload
 
 app.config['MAIL_SERVER'] = 'smtp.mail.me.com'
 app.config['MAIL_PORT'] = 587
@@ -19,10 +22,12 @@ app.config['MAIL_USERNAME'] = 'tinotend4official@icloud.com'
 app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD', '')
 app.config['MAIL_DEFAULT_SENDER'] = ('TINO Photography', 'tinotend4official@icloud.com')
 
+ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'gif', 'jfif', 'webp'}
+
 db = SQLAlchemy(app)
 mail = Mail(app)
 
-# ── LOGIN SETUP ────────────────────────────────────
+# ── LOGIN ───────────────────────────────────────────────────────────────────────
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'admin_login'
@@ -35,30 +40,104 @@ class AdminUser(UserMixin):
 def load_user(user_id):
     return AdminUser(user_id)
 
-# ── DATABASE MODEL ─────────────────────────────────
+# ── MODELS ──────────────────────────────────────────────────────────────────────
 class Booking(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100))
-    email = db.Column(db.String(100))
+    id         = db.Column(db.Integer, primary_key=True)
+    name       = db.Column(db.String(100))
+    email      = db.Column(db.String(100))
     shoot_type = db.Column(db.String(100))
-    message = db.Column(db.Text)
-    status = db.Column(db.String(50), default='new')
+    message    = db.Column(db.Text)
+    status     = db.Column(db.String(50), default='new')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-# ── ADMIN LOGIN ────────────────────────────────────
+class Photo(db.Model):
+    id         = db.Column(db.Integer, primary_key=True)
+    filename   = db.Column(db.String(200), unique=True)
+    title      = db.Column(db.String(200))
+    category   = db.Column(db.String(100))
+    featured   = db.Column(db.Boolean, default=False)
+    uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class Note(db.Model):
+    id         = db.Column(db.Integer, primary_key=True)
+    content    = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class PageView(db.Model):
+    id         = db.Column(db.Integer, primary_key=True)
+    page       = db.Column(db.String(100))
+    visited_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class SiteSettings(db.Model):
+    id         = db.Column(db.Integer, primary_key=True)
+    key        = db.Column(db.String(100), unique=True)
+    value      = db.Column(db.Text)
+
+# ── HELPERS ─────────────────────────────────────────────────────────────────────
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def track(page):
+    try:
+        db.session.add(PageView(page=page))
+        db.session.commit()
+    except:
+        pass
+
+def get_setting(key, default=''):
+    s = SiteSettings.query.filter_by(key=key).first()
+    return s.value if s else default
+
+def set_setting(key, value):
+    s = SiteSettings.query.filter_by(key=key).first()
+    if s:
+        s.value = value
+    else:
+        db.session.add(SiteSettings(key=key, value=value))
+    db.session.commit()
+
+# ── PUBLIC ROUTES ───────────────────────────────────────────────────────────────
+@app.route('/')
+def index():
+    track('home')
+    return render_template('index.html')
+
+@app.route('/portfolio')
+def portfolio():
+    track('portfolio')
+    photos = Photo.query.order_by(Photo.uploaded_at.desc()).all()
+    return render_template('portfolio.html', photos=photos)
+
+@app.route('/services')
+def services():
+    track('services')
+    return render_template('services.html')
+
+@app.route('/about')
+def about():
+    track('about')
+    return render_template('about.html')
+
+@app.route('/contact')
+def contact():
+    track('contact')
+    return render_template('contact.html')
+
+# ── SECRET LOGIN ROUTE (/backstage) ─────────────────────────────────────────────
+@app.route('/backstage')
+def backstage():
+    return redirect(url_for('admin_login'))
+
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-
         if username == 'tinotenda' and password == 'hillary2026':
-            user = AdminUser(1)
-            login_user(user)
+            login_user(AdminUser(1))
             return redirect(url_for('admin'))
-
         flash('Wrong username or password')
-
     return render_template('admin_login.html')
 
 @app.route('/admin/logout')
@@ -67,34 +146,67 @@ def admin_logout():
     logout_user()
     return redirect(url_for('index'))
 
-# ── ROUTES ─────────────────────────────────────────
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-@app.route('/portfolio')
-def portfolio():
-    return render_template('portfolio.html')
-
-@app.route('/services')
-def services():
-    return render_template('services.html')
-
-@app.route('/about')
-def about():
-    return render_template('about.html')
-
-@app.route('/contact')
-def contact():
-    return render_template('contact.html')
-
-# ── ADMIN DASHBOARD ────────────────────────────────
+# ── ADMIN DASHBOARD ─────────────────────────────────────────────────────────────
 @app.route('/admin')
 @login_required
 def admin():
-    bookings = Booking.query.order_by(Booking.id.desc()).all()
-    return render_template('admin.html', bookings=bookings)
+    bookings  = Booking.query.order_by(Booking.id.desc()).all()
+    photos    = Photo.query.order_by(Photo.uploaded_at.desc()).all()
+    notes     = Note.query.order_by(Note.updated_at.desc()).all()
+    settings  = {
+        'hero_title':    get_setting('hero_title',    'The Art of Real Shots.'),
+        'hero_subtitle': get_setting('hero_subtitle', 'Church interiors, restaurants, streetwear, brand campaigns & street portraits.'),
+        'about_bio':     get_setting('about_bio',     ''),
+        'instagram':     get_setting('instagram',     'https://www.instagram.com/tino4_real'),
+        'tiktok':        get_setting('tiktok',        'https://www.tiktok.com/@tino4real._'),
+        'location':      get_setting('location',      'Nottingham, UK'),
+        'taking_bookings': get_setting('taking_bookings', 'yes'),
+    }
 
+    # ── Analytics ──────────────────────────────────────────────────────────────
+    total_views  = PageView.query.count()
+    today_views  = PageView.query.filter(
+        PageView.visited_at >= datetime.utcnow().replace(hour=0, minute=0, second=0)
+    ).count()
+    week_views   = PageView.query.filter(
+        PageView.visited_at >= datetime.utcnow() - timedelta(days=7)
+    ).count()
+
+    page_counts = {}
+    for pv in PageView.query.all():
+        page_counts[pv.page] = page_counts.get(pv.page, 0) + 1
+
+    # Last 7 days chart data
+    chart_labels = []
+    chart_data   = []
+    for i in range(6, -1, -1):
+        day = datetime.utcnow() - timedelta(days=i)
+        label = day.strftime('%a')
+        count = PageView.query.filter(
+            PageView.visited_at >= day.replace(hour=0, minute=0, second=0),
+            PageView.visited_at <  day.replace(hour=23, minute=59, second=59)
+        ).count()
+        chart_labels.append(label)
+        chart_data.append(count)
+
+    analytics = {
+        'total':       total_views,
+        'today':       today_views,
+        'week':        week_views,
+        'page_counts': page_counts,
+        'chart_labels': json.dumps(chart_labels),
+        'chart_data':   json.dumps(chart_data),
+    }
+
+    return render_template('admin.html',
+        bookings=bookings,
+        photos=photos,
+        notes=notes,
+        settings=settings,
+        analytics=analytics
+    )
+
+# ── BOOKING STATUS ──────────────────────────────────────────────────────────────
 @app.route('/admin/mark/<int:bid>/<status>')
 @login_required
 def mark(bid, status):
@@ -103,50 +215,140 @@ def mark(bid, status):
     db.session.commit()
     return jsonify({'ok': True})
 
-# ── CONTACT FORM ───────────────────────────────────
+@app.route('/admin/booking/delete/<int:bid>', methods=['POST'])
+@login_required
+def delete_booking(bid):
+    b = Booking.query.get_or_404(bid)
+    db.session.delete(b)
+    db.session.commit()
+    return jsonify({'ok': True})
+
+# ── IMAGE UPLOAD ────────────────────────────────────────────────────────────────
+@app.route('/admin/upload', methods=['POST'])
+@login_required
+def upload_photo():
+    if 'file' not in request.files:
+        return jsonify({'ok': False, 'error': 'No file'}), 400
+    file = request.files['file']
+    title    = request.form.get('title', '').strip()
+    category = request.form.get('category', 'street').strip()
+    featured = request.form.get('featured', 'false') == 'true'
+
+    if file.filename == '':
+        return jsonify({'ok': False, 'error': 'Empty filename'}), 400
+    if not allowed_file(file.filename):
+        return jsonify({'ok': False, 'error': 'File type not allowed'}), 400
+
+    filename = file.filename
+    save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    file.save(save_path)
+
+    existing = Photo.query.filter_by(filename=filename).first()
+    if existing:
+        existing.title    = title
+        existing.category = category
+        existing.featured = featured
+    else:
+        db.session.add(Photo(filename=filename, title=title, category=category, featured=featured))
+    db.session.commit()
+    return jsonify({'ok': True, 'filename': filename})
+
+# ── EDIT PHOTO ──────────────────────────────────────────────────────────────────
+@app.route('/admin/photo/edit/<int:pid>', methods=['POST'])
+@login_required
+def edit_photo(pid):
+    p = Photo.query.get_or_404(pid)
+    p.title    = request.form.get('title', p.title)
+    p.category = request.form.get('category', p.category)
+    p.featured = request.form.get('featured', 'false') == 'true'
+    db.session.commit()
+    return jsonify({'ok': True})
+
+# ── DELETE PHOTO ─────────────────────────────────────────────────────────────────
+@app.route('/admin/photo/delete/<int:pid>', methods=['POST'])
+@login_required
+def delete_photo(pid):
+    p = Photo.query.get_or_404(pid)
+    try:
+        os.remove(os.path.join(app.config['UPLOAD_FOLDER'], p.filename))
+    except:
+        pass
+    db.session.delete(p)
+    db.session.commit()
+    return jsonify({'ok': True})
+
+# ── NOTES ───────────────────────────────────────────────────────────────────────
+@app.route('/admin/note/save', methods=['POST'])
+@login_required
+def save_note():
+    data    = request.get_json()
+    note_id = data.get('id')
+    content = data.get('content', '').strip()
+    if note_id:
+        n = Note.query.get(note_id)
+        if n:
+            n.content    = content
+            n.updated_at = datetime.utcnow()
+    else:
+        n = Note(content=content)
+        db.session.add(n)
+    db.session.commit()
+    return jsonify({'ok': True, 'id': n.id})
+
+@app.route('/admin/note/delete/<int:nid>', methods=['POST'])
+@login_required
+def delete_note(nid):
+    n = Note.query.get_or_404(nid)
+    db.session.delete(n)
+    db.session.commit()
+    return jsonify({'ok': True})
+
+# ── SITE SETTINGS ────────────────────────────────────────────────────────────────
+@app.route('/admin/settings/save', methods=['POST'])
+@login_required
+def save_settings():
+    data = request.get_json()
+    for key, value in data.items():
+        set_setting(key, value)
+    return jsonify({'ok': True})
+
+# ── CONTACT FORM ─────────────────────────────────────────────────────────────────
 @app.route('/submit', methods=['POST'])
 def submit():
-    data = request.get_json()
-    name = data.get('name', '').strip()
-    email = data.get('email', '').strip()
+    data       = request.get_json()
+    name       = data.get('name', '').strip()
+    email      = data.get('email', '').strip()
     shoot_type = data.get('shoot_type', '').strip()
-    message = data.get('message', '').strip()
+    message    = data.get('message', '').strip()
 
     if not all([name, email, shoot_type, message]):
         return jsonify({'success': False, 'error': 'All fields required'}), 400
 
-    booking = Booking(
-        name=name,
-        email=email,
-        shoot_type=shoot_type,
-        message=message
-    )
-
+    booking = Booking(name=name, email=email, shoot_type=shoot_type, message=message)
     db.session.add(booking)
     db.session.commit()
 
     try:
         msg = Message(
-            subject=f'New Booking Enquiry — {shoot_type}',
+            subject=f'New Booking — {shoot_type}',
             recipients=['tinotend4official@icloud.com'],
             reply_to=email,
             html=f"""
-<div style="font-family:Arial,sans-serif;max-width:600px;background:#111111;color:#f5f0eb;padding:32px;border-top:4px solid #e8000d;">
-  <h2 style="font-size:20px;">New Booking Request</h2>
+<div style="font-family:Arial,sans-serif;max-width:600px;background:#111;color:#f5f0eb;padding:32px;border-top:4px solid #e8000d;">
+  <h2>New Booking Request</h2>
   <p><strong>Name:</strong> {name}</p>
   <p><strong>Email:</strong> {email}</p>
   <p><strong>Shoot Type:</strong> {shoot_type}</p>
   <p><strong>Message:</strong> {message}</p>
-</div>
-"""
+</div>"""
         )
         mail.send(msg)
     except Exception as e:
-        print("Mail error:", e)
+        print('Mail error:', e)
 
     return jsonify({'success': True})
 
-# ── RUN APP ────────────────────────────────────────
+# ── RUN ──────────────────────────────────────────────────────────────────────────
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
