@@ -41,14 +41,6 @@ ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'gif', 'jfif', 'webp'}
 db   = SQLAlchemy(app)
 mail = Mail(app)
 
-@app.route('/admin/migrate')
-@login_required
-def migrate():
-    try:
-        db.engine.execute('ALTER TABLE photo ADD COLUMN IF NOT EXISTS url TEXT')
-        return 'Migration done'
-    except Exception as e:
-        return 'Error: ' + str(e)
 # ── LOGIN ───────────────────────────────────────────────────────────────────────
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -178,6 +170,18 @@ def admin_login():
 def admin_logout():
     logout_user()
     return redirect(url_for('index'))
+
+# ── MIGRATION — run once then remove ───────────────────────────────────────────
+@app.route('/admin/migrate')
+@login_required
+def migrate():
+    try:
+        with db.engine.connect() as conn:
+            conn.execute(db.text('ALTER TABLE photo ADD COLUMN IF NOT EXISTS url TEXT'))
+            conn.commit()
+        return 'Migration done — url column added successfully. Now remove this route from app.py'
+    except Exception as e:
+        return 'Error: ' + str(e)
 
 # ── ADMIN DASHBOARD ─────────────────────────────────────────────────────────────
 @app.route('/admin')
