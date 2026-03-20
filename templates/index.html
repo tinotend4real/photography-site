@@ -1,34 +1,36 @@
 {% extends "base.html" %}
-{% block title %}TINO Photography — Leicester{% endblock %}
+{% block title %}TINO Photography — Nottingham{% endblock %}
 
 {% block content %}
 
 <!-- HERO SECTION -->
-<section style="min-height: 100vh; display: grid; grid-template-columns: 1.1fr 0.9fr; border-bottom: 1px solid rgba(245,240,235,0.1);">
+<section style="position: relative; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 6rem 3rem 4rem; overflow: hidden;">
 
-  <!-- Left side: text -->
-  <div style="display: flex; flex-direction: column; justify-content: center; padding: 6rem 3rem 4rem; border-right: 1px solid rgba(245,240,235,0.1);">
+  <!-- Background image: art_gallery -->
+  <div style="position: absolute; inset: 0; z-index: 0;">
+    <img src="{{ url_for('static', filename='images/art_gallery.jfif') }}"
+         alt="Hero"
+         style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.35);">
+  </div>
+
+  <!-- Red line accent -->
+  <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: #e8000d; z-index: 1;"></div>
+
+  <!-- Text -->
+  <div style="position: relative; z-index: 2; max-width: 700px;">
     <p style="font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase; color: #e8000d; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem;">
       <span style="width: 40px; height: 1px; background: #e8000d; display: inline-block;"></span>
-      Leicester, UK — Est. 2024
+      Nottingham, UK — Est. 2024
     </p>
 
-    <h1 style="font-family: 'Playfair Display', Georgia, serif; font-size: clamp(3.5rem, 7vw, 7rem); font-weight: 900; line-height: 0.92; color: #f5f0eb; margin-bottom: 2rem;">
+    <h1 style="font-family: 'Playfair Display', Georgia, serif; font-size: clamp(3.5rem, 8vw, 8rem); font-weight: 900; line-height: 0.92; color: #f5f0eb; margin-bottom: 2rem;">
       The<br>Art of<br><em style="font-style: italic; color: #e8000d;">Real</em><br>Shots.
     </h1>
 
-    <p style="font-size: 1rem; line-height: 1.8; color: #888888; max-width: 380px; margin-bottom: 2rem;">
-      Church interiors, restaurants, streetwear, brand campaigns & street portraits.
-      Six months in — and just getting started.
+    <p style="font-size: 1rem; line-height: 1.8; color: #cccccc; max-width: 420px; margin-bottom: 2.5rem;">
+      Portraits, street, fashion, food & events across Nottingham.
+      Real people. Real places. Real moments.
     </p>
-
-    <div style="display: flex; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 2.5rem;">
-      <span style="font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; border: 1px solid #e8000d; color: #e8000d; padding: 0.4rem 0.9rem;">Church</span>
-      <span style="font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; border: 1px solid rgba(245,240,235,0.15); color: #888888; padding: 0.4rem 0.9rem;">Restaurants</span>
-      <span style="font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; border: 1px solid rgba(245,240,235,0.15); color: #888888; padding: 0.4rem 0.9rem;">Streetwear</span>
-      <span style="font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; border: 1px solid rgba(245,240,235,0.15); color: #888888; padding: 0.4rem 0.9rem;">Brands</span>
-      <span style="font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; border: 1px solid rgba(245,240,235,0.15); color: #888888; padding: 0.4rem 0.9rem;">Street</span>
-    </div>
 
     <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
       <a href="{{ url_for('portfolio') }}" class="btn-primary">View Work</a>
@@ -36,82 +38,85 @@
     </div>
   </div>
 
-  <!-- Right side: hero images (your existing ones) -->
-  <div style="display: grid; grid-template-rows: 2fr 1fr; grid-template-columns: 1fr 1fr;">
-    <div style="grid-column: 1 / -1; overflow: hidden; position: relative;">
-      <img src="{{ url_for('static', filename='images/cecilstreet.jpg') }}"
-           alt="Portfolio" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.85);">
-      <span style="position: absolute; bottom: 1rem; left: 1rem; font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(245,240,235,0.5); background: rgba(12,12,12,0.6); padding: 0.3rem 0.7rem;">
-        Street — Leicester 2025
-      </span>
-    </div>
-    <div style="overflow: hidden; border-top: 1px solid rgba(245,240,235,0.1); border-right: 1px solid rgba(245,240,235,0.1);">
-      <img src="{{ url_for('static', filename='images/monbrand1.jpg') }}"
-           alt="" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.8);">
-    </div>
-    <div style="overflow: hidden; border-top: 1px solid rgba(245,240,235,0.1);">
-      <img src="{{ url_for('static', filename='images/churchentry.jpg') }}"
-           alt="" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.8);">
-    </div>
+  <!-- Scroll hint -->
+  <div style="position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); z-index: 2; text-align: center;">
+    <p style="font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: #666;">Scroll</p>
+    <div style="width: 1px; height: 40px; background: #e8000d; margin: 0.4rem auto 0;"></div>
   </div>
 </section>
 
 <!-- TICKER -->
 <div class="ticker">
   <div class="ticker-track">
-    <span class="ticker-item">Church & Architecture</span>
-    <span class="ticker-item">Restaurants & Food</span>
-    <span class="ticker-item">Streetwear</span>
-    <span class="ticker-item">Brand Shoots</span>
-    <span class="ticker-item">Street Portraits</span>
-    <span class="ticker-item">Club Nights</span>
+    <span class="ticker-item">People</span>
+    <span class="ticker-item">Places</span>
+    <span class="ticker-item">Vibes</span>
+    <span class="ticker-item">Moments</span>
+    <span class="ticker-item">Portraits</span>
+    <span class="ticker-item">Street</span>
+    <span class="ticker-item">Fashion</span>
+    <span class="ticker-item">Events</span>
     <span class="ticker-item">Available Now</span>
-    <span class="ticker-item">Based in Leicester</span>
-    <span class="ticker-item">Church & Architecture</span>
-    <span class="ticker-item">Restaurants & Food</span>
-    <span class="ticker-item">Streetwear</span>
-    <span class="ticker-item">Brand Shoots</span>
-    <span class="ticker-item">Street Portraits</span>
-    <span class="ticker-item">Club Nights</span>
+    <span class="ticker-item">Based in Nottingham</span>
+    <span class="ticker-item">People</span>
+    <span class="ticker-item">Places</span>
+    <span class="ticker-item">Vibes</span>
+    <span class="ticker-item">Moments</span>
+    <span class="ticker-item">Portraits</span>
+    <span class="ticker-item">Street</span>
+    <span class="ticker-item">Fashion</span>
+    <span class="ticker-item">Events</span>
     <span class="ticker-item">Available Now</span>
-    <span class="ticker-item">Based in Leicester</span>
+    <span class="ticker-item">Based in Nottingham</span>
   </div>
 </div>
 
-<!-- LATEST SHOTS - YOUR EXACT 3 IMAGES -->
+<!-- SHOTS OF THE YEAR -->
 <section class="section">
   <div class="sec-head">
     <div>
-      <p class="sec-label">Selected Work</p>
-      <h2 class="sec-title">Latest Shots</h2>
+      <p class="sec-label">Standout Shots</p>
+      <h2 class="sec-title">The Work</h2>
     </div>
     <a href="{{ url_for('portfolio') }}" class="sec-link">View all work →</a>
   </div>
 
   <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
-    
-    <!-- IMAGE 1: nyc_painting.jfif (index 0) -->
-    <div style="overflow: hidden; cursor: pointer;" onclick="openLightbox(featuredPhotos, 0)">
-      <img src="{{ url_for('static', filename='images/nyc_painting.jfif') }}"
-           alt="NYC Painting" style="width: 100%; aspect-ratio: 3/4; object-fit: cover; filter: brightness(0.85); transition: transform 0.5s, filter 0.3s;"
-           onmouseover="this.style.transform='scale(1.04)';this.style.filter='brightness(1)'"
-           onmouseout="this.style.transform='scale(1)';this.style.filter='brightness(0.85)'">
-    </div>
 
-    <!-- IMAGE 2: thrifts2.jfif (index 1) -->
-    <div style="overflow: hidden; cursor: pointer;" onclick="openLightbox(featuredPhotos, 1)">
+    <div style="overflow: hidden; cursor: pointer; position: relative;" onclick="openLightbox(featuredPhotos, 0)">
       <img src="{{ url_for('static', filename='images/thrifts2.jfif') }}"
-           alt="Thrift Store Scene" style="width: 100%; aspect-ratio: 3/4; object-fit: cover; filter: brightness(0.85); transition: transform 0.5s, filter 0.3s;"
+           alt="Thrifts"
+           style="width: 100%; aspect-ratio: 3/4; object-fit: cover; filter: brightness(0.8); transition: transform 0.5s, filter 0.3s;"
            onmouseover="this.style.transform='scale(1.04)';this.style.filter='brightness(1)'"
-           onmouseout="this.style.transform='scale(1)';this.style.filter='brightness(0.85)'">
+           onmouseout="this.style.transform='scale(1)';this.style.filter='brightness(0.8)'">
+      <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 1rem; background: linear-gradient(transparent, rgba(0,0,0,0.8));">
+        <p style="font-family:'Barlow Condensed',Arial,sans-serif;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:#e8000d;margin:0;">Fashion</p>
+        <p style="font-family:'Playfair Display',Georgia,serif;font-size:0.95rem;color:#f5f0eb;margin:0;">Thrifts</p>
+      </div>
     </div>
 
-    <!-- IMAGE 3: chinafood.jpg (index 2) -->
-    <div style="overflow: hidden; cursor: pointer;" onclick="openLightbox(featuredPhotos, 2)">
-      <img src="{{ url_for('static', filename='images/chinafood.jpg') }}"
-           alt="China Food" style="width: 100%; aspect-ratio: 3/4; object-fit: cover; filter: brightness(0.85); transition: transform 0.5s, filter 0.3s;"
+    <div style="overflow: hidden; cursor: pointer; position: relative;" onclick="openLightbox(featuredPhotos, 1)">
+      <img src="{{ url_for('static', filename='images/night_out_notts.jfif') }}"
+           alt="Night Out Notts"
+           style="width: 100%; aspect-ratio: 3/4; object-fit: cover; filter: brightness(0.8); transition: transform 0.5s, filter 0.3s;"
            onmouseover="this.style.transform='scale(1.04)';this.style.filter='brightness(1)'"
-           onmouseout="this.style.transform='scale(1)';this.style.filter='brightness(0.85)'">
+           onmouseout="this.style.transform='scale(1)';this.style.filter='brightness(0.8)'">
+      <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 1rem; background: linear-gradient(transparent, rgba(0,0,0,0.8));">
+        <p style="font-family:'Barlow Condensed',Arial,sans-serif;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:#e8000d;margin:0;">Events</p>
+        <p style="font-family:'Playfair Display',Georgia,serif;font-size:0.95rem;color:#f5f0eb;margin:0;">Night Out Notts</p>
+      </div>
+    </div>
+
+    <div style="overflow: hidden; cursor: pointer; position: relative;" onclick="openLightbox(featuredPhotos, 2)">
+      <img src="{{ url_for('static', filename='images/cecilstreet.jpg') }}"
+           alt="Cecil Street"
+           style="width: 100%; aspect-ratio: 3/4; object-fit: cover; filter: brightness(0.8); transition: transform 0.5s, filter 0.3s;"
+           onmouseover="this.style.transform='scale(1.04)';this.style.filter='brightness(1)'"
+           onmouseout="this.style.transform='scale(1)';this.style.filter='brightness(0.8)'">
+      <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 1rem; background: linear-gradient(transparent, rgba(0,0,0,0.8));">
+        <p style="font-family:'Barlow Condensed',Arial,sans-serif;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:#e8000d;margin:0;">Street</p>
+        <p style="font-family:'Playfair Display',Georgia,serif;font-size:0.95rem;color:#f5f0eb;margin:0;">Cecil Street</p>
+      </div>
     </div>
 
   </div>
@@ -128,46 +133,45 @@
   </div>
   <div class="services-grid">
     <div class="service-card">
-      <div class="service-icon">⛪</div>
-      <p class="service-name">Church & Architecture</p>
-      <p class="service-desc">Interiors, stained glass, ceremonies and architectural details.</p>
+      <div class="service-icon">🧍</div>
+      <p class="service-name">Portraits</p>
+      <p class="service-desc">Real people, real expressions. No stiff poses — just you.</p>
     </div>
     <div class="service-card">
-      <div class="service-icon">🍜</div>
-      <p class="service-name">Restaurants & Food</p>
-      <p class="service-desc">Atmosphere shots, dishes and social-ready content for your venue.</p>
+      <div class="service-icon">🌆</div>
+      <p class="service-name">Street & Places</p>
+      <p class="service-desc">Cities, spots and scenes captured with intention.</p>
     </div>
     <div class="service-card">
       <div class="service-icon">👟</div>
-      <p class="service-name">Streetwear & Fashion</p>
-      <p class="service-desc">Lookbooks and editorial street photography for personal brands.</p>
+      <p class="service-name">Fashion & Streetwear</p>
+      <p class="service-desc">Lookbooks and fits that actually look fire.</p>
     </div>
     <div class="service-card">
-      <div class="service-icon">🚀</div>
-      <p class="service-name">Upcoming Brands</p>
-      <p class="service-desc">Launch shoots and campaign content for new brands.</p>
+      <div class="service-icon">🍜</div>
+      <p class="service-name">Food & Venues</p>
+      <p class="service-desc">Make your restaurant or menu look as good as it tastes.</p>
     </div>
     <div class="service-card">
       <div class="service-icon">🎉</div>
-      <p class="service-name">Events & Club Nights</p>
-      <p class="service-desc">Full coverage of club nights, birthdays and events.</p>
+      <p class="service-name">Events & Nights Out</p>
+      <p class="service-desc">Club nights, birthdays, gigs — I'll be there with the camera.</p>
     </div>
-    <div class="service-card" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-      <p style="font-family: 'Playfair Display', serif; font-size: 1.1rem; color: #f5f0eb; margin-bottom: 1rem;">Ready to book?</p>
-      <a href="{{ url_for('contact') }}" class="btn-primary">Get in Touch</a>
+    <div class="service-card" style="display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;">
+      <p style="font-family:'Playfair Display',serif;font-size:1.1rem;color:#f5f0eb;margin-bottom:1rem;">Got an idea?</p>
+      <a href="{{ url_for('contact') }}" class="btn-primary">Let's Talk</a>
     </div>
   </div>
 </section>
 
 {% endblock %}
 
-<!-- JAVASCRIPT FOR LIGHTBOX -->
 {% block extra_js %}
 <script>
   var featuredPhotos = [
-    "{{ url_for('static', filename='images/nyc_painting.jfif') }}",    // 0
-    "{{ url_for('static', filename='images/thrifts2.jfif') }}",        // 1
-    "{{ url_for('static', filename='images/chinafood.jpg') }}"         // 2
+    "{{ url_for('static', filename='images/thrifts2.jfif') }}",
+    "{{ url_for('static', filename='images/night_out_notts.jfif') }}",
+    "{{ url_for('static', filename='images/cecilstreet.jpg') }}"
   ];
 </script>
 {% endblock %}
