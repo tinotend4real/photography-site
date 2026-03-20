@@ -53,7 +53,9 @@
         <td><a href="mailto:{{ b.email }}" style="color:#e8000d;">{{ b.email }}</a></td>
         <td>{{ b.shoot_type }}</td>
         <td style="color:#888888;max-width:250px;font-size:0.82rem;">{{ b.message[:100] }}{% if b.message|length > 100 %}...{% endif %}</td>
-        <td style="color:#888888;white-space:nowrap;font-size:0.82rem;">{{ b.date }}</td>
+        <td style="color:#888888;white-space:nowrap;font-size:0.82rem;">
+          {% if b.created_at %}{{ b.created_at.strftime('%Y-%m-%d %H:%M') }}{% endif %}
+        </td>
         <td><span class="badge badge-{{ b.status }}" id="badge-{{ b.id }}">{{ b.status }}</span></td>
         <td>
           <button class="act-btn" onclick="setStatus({{ b.id }}, 'read')">Mark Read</button>
