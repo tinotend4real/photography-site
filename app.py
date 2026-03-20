@@ -41,6 +41,14 @@ ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'gif', 'jfif', 'webp'}
 db   = SQLAlchemy(app)
 mail = Mail(app)
 
+@app.route('/admin/migrate')
+@login_required
+def migrate():
+    try:
+        db.engine.execute('ALTER TABLE photo ADD COLUMN IF NOT EXISTS url TEXT')
+        return 'Migration done'
+    except Exception as e:
+        return 'Error: ' + str(e)
 # ── LOGIN ───────────────────────────────────────────────────────────────────────
 login_manager = LoginManager()
 login_manager.init_app(app)
