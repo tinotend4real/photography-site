@@ -5,23 +5,21 @@ from flask_login import LoginManager, UserMixin, login_user, logout_user, login_
 from datetime import datetime, timedelta
 import os
 import json
+import cloudinary
+import cloudinary.uploader
 
 app = Flask(__name__)
 
 # ── CONFIG ─────────────────────────────────────────────────────────────────────
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'tino-photography-secret-2026-upgrade')
 
-# ── DATABASE — PostgreSQL on Railway, SQLite locally ───────────────────────────
+# ── DATABASE ───────────────────────────────────────────────────────────────────
 database_url = os.environ.get('DATABASE_URL', 'sqlite:///tino.db')
 if database_url.startswith('postgres://'):
     database_url = database_url.replace('postgres://', 'postgresql://', 1)
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-# ── UPLOAD FOLDER ──────────────────────────────────────────────────────────────
-app.config['UPLOAD_FOLDER'] = os.path.join('static', 'images')
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 # ── MAIL ───────────────────────────────────────────────────────────────────────
 app.config['MAIL_SERVER']         = 'smtp.mail.me.com'
@@ -30,6 +28,13 @@ app.config['MAIL_USE_TLS']        = True
 app.config['MAIL_USERNAME']       = 'tinotend4official@icloud.com'
 app.config['MAIL_PASSWORD']       = os.environ.get('MAIL_PASSWORD', '')
 app.config['MAIL_DEFAULT_SENDER'] = ('TINO Photography', 'tinotend4official@icloud.com')
+
+# ── CLOUDINARY ─────────────────────────────────────────────────────────────────
+cloudinary.config(
+    cloud_name = os.environ.get('CLOUDINARY_CLOUD_NAME', 'dpnv6wqth'),
+    api_key    = os.environ.get('CLOUDINARY_API_KEY',    '659647557914374'),
+    api_secret = os.environ.get('CLOUDINARY_API_SECRET', 'wo0_XC_dqLW730Wh-qFuWObA13M')
+)
 
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'gif', 'jfif', 'webp'}
 
@@ -62,6 +67,7 @@ class Booking(db.Model):
 class Photo(db.Model):
     id          = db.Column(db.Integer, primary_key=True)
     filename    = db.Column(db.String(200), unique=True)
+    url         = db.Column(db.Text)
     title       = db.Column(db.String(200))
     category    = db.Column(db.String(100))
     featured    = db.Column(db.Boolean, default=False)
@@ -83,7 +89,7 @@ class SiteSettings(db.Model):
     key   = db.Column(db.String(100), unique=True)
     value = db.Column(db.Text)
 
-# ── CREATE TABLES on startup ────────────────────────────────────────────────────
+# ── CREATE TABLES ───────────────────────────────────────────────────────────────
 with app.app_context():
     db.create_all()
 
@@ -143,7 +149,7 @@ def contact():
     track('contact')
     return render_template('contact.html')
 
-# ── SECRET LOGIN ROUTE ──────────────────────────────────────────────────────────
+# ── SECRET LOGIN ────────────────────────────────────────────────────────────────
 @app.route('/backstage')
 def backstage():
     return redirect(url_for('admin_login'))
@@ -187,7 +193,6 @@ def admin():
         'taking_bookings': get_setting('taking_bookings', 'yes'),
     }
 
-    # Analytics
     try:
         total_views = PageView.query.count()
         today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
@@ -195,11 +200,9 @@ def admin():
         week_views  = PageView.query.filter(
             PageView.visited_at >= datetime.utcnow() - timedelta(days=7)
         ).count()
-
         page_counts = {}
         for pv in PageView.query.all():
             page_counts[pv.page] = page_counts.get(pv.page, 0) + 1
-
         chart_labels, chart_data = [], []
         for i in range(6, -1, -1):
             day       = datetime.utcnow() - timedelta(days=i)
@@ -250,7 +253,7 @@ def delete_booking(bid):
     db.session.commit()
     return jsonify({'ok': True})
 
-# ── IMAGE UPLOAD ────────────────────────────────────────────────────────────────
+# ── IMAGE UPLOAD — Cloudinary ───────────────────────────────────────────────────
 @app.route('/admin/upload', methods=['POST'])
 @login_required
 def upload_photo():
@@ -263,25 +266,31 @@ def upload_photo():
 
     if file.filename == '':
         return jsonify({'ok': False, 'error': 'Empty filename'}), 400
-    if not allowed_file(file.filename):
-        return jsonify({'ok': False, 'error': 'File type not allowed'}), 400
 
-    filename  = file.filename
-    save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    file.save(save_path)
+    try:
+        result   = cloudinary.uploader.upload(file, folder='tino_photography')
+        url      = result['secure_url']
+        filename = result['public_id'].replace('tino_photography/', '')
 
-    existing = Photo.query.filter_by(filename=filename).first()
-    if existing:
-        existing.title    = title
-        existing.category = category
-        existing.featured = featured
-    else:
-        db.session.add(Photo(
-            filename=filename, title=title,
-            category=category, featured=featured
-        ))
-    db.session.commit()
-    return jsonify({'ok': True, 'filename': filename})
+        existing = Photo.query.filter_by(filename=filename).first()
+        if existing:
+            existing.title    = title
+            existing.category = category
+            existing.featured = featured
+            existing.url      = url
+        else:
+            db.session.add(Photo(
+                filename=filename,
+                url=url,
+                title=title,
+                category=category,
+                featured=featured
+            ))
+        db.session.commit()
+        return jsonify({'ok': True, 'url': url})
+    except Exception as e:
+        print('Upload error:', e)
+        return jsonify({'ok': False, 'error': str(e)}), 500
 
 # ── EDIT PHOTO ──────────────────────────────────────────────────────────────────
 @app.route('/admin/photo/edit/<int:pid>', methods=['POST'])
@@ -294,15 +303,15 @@ def edit_photo(pid):
     db.session.commit()
     return jsonify({'ok': True})
 
-# ── DELETE PHOTO ─────────────────────────────────────────────────────────────────
+# ── DELETE PHOTO — Cloudinary ───────────────────────────────────────────────────
 @app.route('/admin/photo/delete/<int:pid>', methods=['POST'])
 @login_required
 def delete_photo(pid):
     p = Photo.query.get_or_404(pid)
     try:
-        os.remove(os.path.join(app.config['UPLOAD_FOLDER'], p.filename))
-    except:
-        pass
+        cloudinary.uploader.destroy('tino_photography/' + p.filename)
+    except Exception as e:
+        print('Cloudinary delete error:', e)
     db.session.delete(p)
     db.session.commit()
     return jsonify({'ok': True})
