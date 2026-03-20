@@ -1,8 +1,14 @@
+Here's the full `admin.html` — paste the whole thing:
+
+```html
 {% extends "base.html" %}
 {% block title %}Admin Dashboard — TINO Photography{% endblock %}
 
 {% block extra_css %}
 <style>
+  /* Override base */
+  main { padding-top: 0 !important; }
+
   /* ── ADMIN LAYOUT ── */
   .admin-layout {
     display: grid;
@@ -46,18 +52,17 @@
     text-align: left;
     transition: all 0.2s;
     border-left: 2px solid transparent;
+    text-decoration: none;
   }
   .sidebar-link:hover { color: #f5f0eb; background: rgba(245,240,235,0.03); }
   .sidebar-link.active { color: #e8000d; border-left-color: #e8000d; background: rgba(232,0,13,0.05); }
   .sidebar-icon { font-size: 1rem; width: 20px; }
 
   /* ── MAIN CONTENT ── */
-  .admin-main { padding: 2.5rem 2rem; background: #0c0c0c; }
+  .admin-main { padding: 2.5rem 2rem; background: #0c0c0c; overflow-y: auto; }
 
-  /* ── PANEL SECTIONS ── */
-  .admin-panel {
-    display: none;
-  }
+  /* ── PANELS ── */
+  .admin-panel { display: none; }
   .admin-panel.active { display: block; }
 
   .panel-title {
@@ -122,12 +127,8 @@
   }
 
   /* ── PAGE BREAKDOWN ── */
-  .page-breakdown { display: flex; flex-direction: column; gap: 0.5rem; }
-  .pb-row {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
+  .page-breakdown { display: flex; flex-direction: column; gap: 0.6rem; }
+  .pb-row { display: flex; align-items: center; gap: 1rem; }
   .pb-label {
     font-family: 'Barlow Condensed', Arial, sans-serif;
     font-size: 0.7rem;
@@ -137,7 +138,7 @@
     min-width: 90px;
   }
   .pb-bar-wrap { flex: 1; background: #1a1a1a; height: 6px; }
-  .pb-bar { height: 100%; background: #e8000d; transition: width 1s; }
+  .pb-bar { height: 100%; background: #e8000d; }
   .pb-count {
     font-family: 'Barlow Condensed', Arial, sans-serif;
     font-size: 0.7rem;
@@ -146,7 +147,7 @@
     text-align: right;
   }
 
-  /* ── UPLOAD AREA ── */
+  /* ── UPLOAD ZONE ── */
   .upload-zone {
     border: 2px dashed rgba(245,240,235,0.1);
     padding: 3rem 2rem;
@@ -204,7 +205,7 @@
     margin-bottom: 0.4rem;
   }
 
-  /* ── IMAGE GRID (admin) ── */
+  /* ── IMAGE GRID ── */
   .img-admin-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -214,7 +215,6 @@
     background: #111;
     border: 1px solid rgba(245,240,235,0.07);
     overflow: hidden;
-    position: relative;
   }
   .img-admin-card img {
     width: 100%;
@@ -224,9 +224,7 @@
     transition: filter 0.2s;
   }
   .img-admin-card:hover img { filter: brightness(1); }
-  .img-admin-info {
-    padding: 0.6rem 0.75rem;
-  }
+  .img-admin-info { padding: 0.6rem 0.75rem; }
   .img-admin-info input,
   .img-admin-info select {
     width: 100%;
@@ -260,8 +258,8 @@
   }
   .img-save-btn { color: #4caf50; border-color: rgba(76,175,80,0.3); }
   .img-save-btn:hover { background: rgba(76,175,80,0.1); }
-  .img-del-btn  { color: #e8000d; border-color: rgba(232,0,13,0.3); }
-  .img-del-btn:hover  { background: rgba(232,0,13,0.1); }
+  .img-del-btn { color: #e8000d; border-color: rgba(232,0,13,0.3); }
+  .img-del-btn:hover { background: rgba(232,0,13,0.1); }
 
   /* ── NOTES ── */
   .notes-grid {
@@ -313,7 +311,7 @@
   }
   .note-save-btn { color: #4caf50; border-color: rgba(76,175,80,0.3); }
   .note-save-btn:hover { background: rgba(76,175,80,0.1); }
-  .note-del-btn  { color: #e8000d; border-color: rgba(232,0,13,0.3); }
+  .note-del-btn { color: #e8000d; border-color: rgba(232,0,13,0.3); }
   .note-del-btn:hover { background: rgba(232,0,13,0.1); }
   .add-note-btn {
     font-family: 'Barlow Condensed', Arial, sans-serif;
@@ -393,11 +391,8 @@
   }
   .settings-save-btn:hover { opacity: 0.85; }
 
-  /* ── BOOKINGS TABLE ── */
-  .booking-detail-row {
-    background: rgba(232,0,13,0.03);
-    display: none;
-  }
+  /* ── BOOKINGS ── */
+  .booking-detail-row { background: rgba(232,0,13,0.03); display: none; }
   .booking-detail-row.open { display: table-row; }
   .booking-detail-cell {
     padding: 1rem 1rem 1.5rem 2rem;
@@ -427,11 +422,22 @@
     pointer-events: none;
   }
   .toast.show { opacity: 1; transform: translateY(0); }
-  .toast.err  { border-left-color: #e8000d; }
+  .toast.err { border-left-color: #e8000d; }
 
+  /* ── RESPONSIVE ── */
   @media (max-width: 900px) {
     .admin-layout { grid-template-columns: 1fr; }
-    .admin-sidebar { position: static; height: auto; flex-direction: row; display: flex; overflow-x: auto; padding: 0.5rem 0; border-right: none; border-bottom: 1px solid rgba(245,240,235,0.08); }
+    .admin-sidebar {
+      position: static;
+      height: auto;
+      display: flex;
+      flex-direction: row;
+      overflow-x: auto;
+      padding: 0.5rem 0;
+      border-right: none;
+      border-bottom: 1px solid rgba(245,240,235,0.08);
+    }
+    .sidebar-label { display: none; }
     .stats-row-4 { grid-template-columns: 1fr 1fr; }
     .upload-form { grid-template-columns: 1fr 1fr; }
     .settings-grid { grid-template-columns: 1fr; }
@@ -440,7 +446,6 @@
 {% endblock %}
 
 {% block content %}
-
 <div class="admin-layout">
 
   <!-- SIDEBAR -->
@@ -452,7 +457,6 @@
     <button class="sidebar-link" onclick="showPanel('bookings', this)">
       <span class="sidebar-icon">📬</span> Bookings
     </button>
-
     <div class="sidebar-label">Content</div>
     <button class="sidebar-link" onclick="showPanel('images', this)">
       <span class="sidebar-icon">🖼️</span> Images
@@ -460,22 +464,20 @@
     <button class="sidebar-link" onclick="showPanel('notes', this)">
       <span class="sidebar-icon">📝</span> Notes
     </button>
-
     <div class="sidebar-label">Website</div>
     <button class="sidebar-link" onclick="showPanel('settings', this)">
       <span class="sidebar-icon">⚙️</span> Site Settings
     </button>
-
-    <div class="sidebar-label" style="margin-top:auto;">Account</div>
+    <div class="sidebar-label">Account</div>
     <a class="sidebar-link" href="{{ url_for('admin_logout') }}" style="color:#e8000d;">
       <span class="sidebar-icon">🚪</span> Logout
     </a>
   </aside>
 
   <!-- MAIN -->
-  <main class="admin-main">
+  <div class="admin-main">
 
-    <!-- ── ANALYTICS ── -->
+    <!-- ANALYTICS -->
     <div class="admin-panel active" id="panel-analytics">
       <p class="panel-title">Analytics</p>
       <p class="panel-sub">Site traffic overview</p>
@@ -483,15 +485,15 @@
       <div class="stats-row-4">
         <div class="stat-card">
           <div class="num">{{ analytics.total }}</div>
-          <div class="lbl">Total Page Views</div>
+          <div class="lbl">Total Views</div>
         </div>
         <div class="stat-card">
           <div class="num">{{ analytics.today }}</div>
-          <div class="lbl">Views Today</div>
+          <div class="lbl">Today</div>
         </div>
         <div class="stat-card">
           <div class="num">{{ analytics.week }}</div>
-          <div class="lbl">Views This Week</div>
+          <div class="lbl">This Week</div>
         </div>
         <div class="stat-card">
           <div class="num">{{ bookings | selectattr('status','eq','new') | list | length }}</div>
@@ -499,20 +501,18 @@
         </div>
       </div>
 
-      <!-- Chart -->
       <div class="chart-wrap">
         <p class="chart-title">Daily Views — Last 7 Days</p>
         <canvas id="viewsChart" height="80"></canvas>
       </div>
 
-      <!-- Page breakdown -->
       <div class="chart-wrap">
         <p class="chart-title">Views by Page</p>
         <div class="page-breakdown" id="pageBreakdown"></div>
       </div>
     </div>
 
-    <!-- ── BOOKINGS ── -->
+    <!-- BOOKINGS -->
     <div class="admin-panel" id="panel-bookings">
       <p class="panel-title">Bookings</p>
       <p class="panel-sub">{{ bookings | length }} total enquiries</p>
@@ -578,12 +578,11 @@
       {% endif %}
     </div>
 
-    <!-- ── IMAGES ── -->
+    <!-- IMAGES -->
     <div class="admin-panel" id="panel-images">
       <p class="panel-title">Images</p>
       <p class="panel-sub">Upload, label and manage your photos</p>
 
-      <!-- Drop zone -->
       <div class="upload-zone" id="dropZone">
         <input type="file" id="fileInput" accept="image/*" multiple>
         <div class="upload-icon">📷</div>
@@ -591,7 +590,6 @@
         <p style="font-size:0.75rem;margin-top:0.3rem;">JPG, PNG, JFIF, WEBP — max 16MB each</p>
       </div>
 
-      <!-- Upload form -->
       <div class="upload-form">
         <div>
           <label>Title</label>
@@ -619,10 +617,8 @@
         </div>
       </div>
 
-      <!-- Preview of selected files -->
       <div id="filePreview" style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1.5rem;"></div>
 
-      <!-- Existing images -->
       <p class="chart-title" style="margin-bottom:1rem;">Library — {{ photos | length }} images</p>
       <div class="img-admin-grid" id="imgGrid">
         {% for p in photos %}
@@ -650,7 +646,7 @@
       </div>
     </div>
 
-    <!-- ── NOTES ── -->
+    <!-- NOTES -->
     <div class="admin-panel" id="panel-notes">
       <p class="panel-title">Notes</p>
       <p class="panel-sub">Personal reminders, shoot ideas, to-dos</p>
@@ -661,9 +657,7 @@
         {% for n in notes %}
         <div class="note-card" id="note-{{ n.id }}">
           <textarea placeholder="Write something..." id="notecontent-{{ n.id }}">{{ n.content }}</textarea>
-          <div class="note-meta">
-            Updated {{ n.updated_at.strftime('%d %b %Y, %H:%M') if n.updated_at else '' }}
-          </div>
+          <div class="note-meta">Updated {{ n.updated_at.strftime('%d %b %Y, %H:%M') if n.updated_at else '' }}</div>
           <div class="note-actions">
             <button class="note-save-btn" onclick="saveNote({{ n.id }})">Save</button>
             <button class="note-del-btn"  onclick="deleteNote({{ n.id }})">Delete</button>
@@ -673,13 +667,12 @@
       </div>
     </div>
 
-    <!-- ── SETTINGS ── -->
+    <!-- SETTINGS -->
     <div class="admin-panel" id="panel-settings">
       <p class="panel-title">Site Settings</p>
-      <p class="panel-sub">Edit your website content without touching code</p>
+      <p class="panel-sub">Edit your website without touching code</p>
 
       <div class="settings-grid">
-
         <div class="settings-group">
           <p class="settings-group-title">Homepage</p>
           <div class="setting-field">
@@ -720,23 +713,19 @@
           </div>
           <button class="settings-save-btn" onclick="saveSettings(['location','instagram','tiktok','about_bio'])">Save Contact Settings</button>
         </div>
-
       </div>
     </div>
 
-  </main>
+  </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
-
 {% endblock %}
 
 {% block extra_js %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script>
 
-// ── SIDEBAR NAV ───────────────────────────────────────────────────────────────
 function showPanel(name, btn) {
   document.querySelectorAll('.admin-panel').forEach(function(p) { p.classList.remove('active'); });
   document.querySelectorAll('.sidebar-link').forEach(function(b) { b.classList.remove('active'); });
@@ -744,7 +733,6 @@ function showPanel(name, btn) {
   btn.classList.add('active');
 }
 
-// ── TOAST ─────────────────────────────────────────────────────────────────────
 function toast(msg, isErr) {
   var t = document.getElementById('toast');
   t.textContent = msg;
@@ -752,7 +740,6 @@ function toast(msg, isErr) {
   setTimeout(function() { t.className = 'toast'; }, 3000);
 }
 
-// ── ANALYTICS CHART ───────────────────────────────────────────────────────────
 var chartLabels = {{ analytics.chart_labels | safe }};
 var chartData   = {{ analytics.chart_data   | safe }};
 var pageCounts  = {{ analytics.page_counts  | tojson }};
@@ -766,7 +753,7 @@ new Chart(document.getElementById('viewsChart'), {
       backgroundColor: 'rgba(232,0,13,0.6)',
       borderColor: '#e8000d',
       borderWidth: 1,
-      borderRadius: 2,
+      borderRadius: 2
     }]
   },
   options: {
@@ -778,8 +765,7 @@ new Chart(document.getElementById('viewsChart'), {
   }
 });
 
-// Page breakdown bars
-var total = Object.values(pageCounts).reduce(function(a,b){return a+b;}, 0) || 1;
+var total = Object.values(pageCounts).reduce(function(a,b){ return a+b; }, 0) || 1;
 var bd = document.getElementById('pageBreakdown');
 Object.entries(pageCounts).forEach(function(entry) {
   var page = entry[0], count = entry[1];
@@ -791,7 +777,6 @@ Object.entries(pageCounts).forEach(function(entry) {
   '</div>';
 });
 
-// ── BOOKINGS ──────────────────────────────────────────────────────────────────
 function toggleDetail(id) {
   var row = document.getElementById('detail-' + id);
   row.classList.toggle('open');
@@ -809,13 +794,13 @@ function setStatus(id, status) {
 function deleteBooking(id) {
   if (!confirm('Delete this booking?')) return;
   fetch('/admin/booking/delete/' + id, { method: 'POST' }).then(function() {
-    var row = document.getElementById('detail-' + id);
-    if (row) row.remove();
+    document.getElementById('detail-' + id).remove();
+    var mainRow = document.querySelector('tr[onclick="toggleDetail(' + id + ')"]');
+    if (mainRow) mainRow.remove();
     toast('Booking deleted');
   });
 }
 
-// ── IMAGE UPLOAD ──────────────────────────────────────────────────────────────
 var selectedFiles = [];
 
 document.getElementById('fileInput').addEventListener('change', function() {
@@ -838,9 +823,7 @@ function renderPreviews() {
   pv.innerHTML = '';
   selectedFiles.forEach(function(f) {
     var url = URL.createObjectURL(f);
-    pv.innerHTML += '<div style="position:relative;width:70px;height:70px;">' +
-      '<img src="' + url + '" style="width:70px;height:70px;object-fit:cover;filter:brightness(0.85);">' +
-    '</div>';
+    pv.innerHTML += '<img src="' + url + '" style="width:70px;height:70px;object-fit:cover;filter:brightness(0.85);">';
   });
 }
 
@@ -850,7 +833,6 @@ function uploadFiles() {
   var cat      = document.getElementById('upCat').value;
   var featured = document.getElementById('upFeatured').value;
   var done = 0;
-
   selectedFiles.forEach(function(file) {
     var fd = new FormData();
     fd.append('file', file);
@@ -861,7 +843,7 @@ function uploadFiles() {
       .then(function(r) { return r.json(); })
       .then(function(data) {
         done++;
-        if (data.ok && done === selectedFiles.length) {
+        if (done === selectedFiles.length) {
           toast('Uploaded ' + done + ' image' + (done > 1 ? 's' : ''));
           setTimeout(function() { location.reload(); }, 1200);
         }
@@ -869,7 +851,6 @@ function uploadFiles() {
   });
 }
 
-// ── EDIT / DELETE PHOTOS ──────────────────────────────────────────────────────
 function savePhoto(id) {
   var fd = new FormData();
   fd.append('title',    document.getElementById('title-' + id).value);
@@ -880,7 +861,7 @@ function savePhoto(id) {
 }
 
 function deletePhoto(id) {
-  if (!confirm('Delete this image from your site?')) return;
+  if (!confirm('Delete this image?')) return;
   fetch('/admin/photo/delete/' + id, { method: 'POST' }).then(function() {
     var card = document.getElementById('imgcard-' + id);
     if (card) card.remove();
@@ -888,16 +869,13 @@ function deletePhoto(id) {
   });
 }
 
-// ── NOTES ─────────────────────────────────────────────────────────────────────
 function addNote() {
   var grid = document.getElementById('notesGrid');
   var card = document.createElement('div');
   card.className = 'note-card';
   card.id = 'note-new';
   card.innerHTML = '<textarea placeholder="Write something..." id="notecontent-new"></textarea>' +
-    '<div class="note-actions">' +
-    '<button class="note-save-btn" onclick="saveNote(\'new\')">Save</button>' +
-    '</div>';
+    '<div class="note-actions"><button class="note-save-btn" onclick="saveNote(\'new\')">Save</button></div>';
   grid.prepend(card);
 }
 
@@ -909,7 +887,7 @@ function saveNote(id) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ id: id === 'new' ? null : id, content: content })
   }).then(function(r) { return r.json(); })
-    .then(function(data) {
+    .then(function() {
       toast('Note saved');
       if (id === 'new') setTimeout(function() { location.reload(); }, 1000);
     });
@@ -924,7 +902,6 @@ function deleteNote(id) {
   });
 }
 
-// ── SITE SETTINGS ─────────────────────────────────────────────────────────────
 function saveSettings(keys) {
   var data = {};
   keys.forEach(function(k) {
@@ -940,3 +917,6 @@ function saveSettings(keys) {
 
 </script>
 {% endblock %}
+```
+
+That's the complete file. Push it and let me know if the nav shows up now!
