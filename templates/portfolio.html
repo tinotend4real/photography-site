@@ -11,7 +11,6 @@
 
 <section class="section">
 
-  <!-- FILTERS -->
   <div class="filters">
     <button class="filter-btn active" data-cat="all">All Work</button>
     <button class="filter-btn" data-cat="people">People</button>
@@ -20,47 +19,46 @@
     <button class="filter-btn" data-cat="moments">Moments</button>
   </div>
 
-  <!-- PHOTO GRID -->
   <div class="photo-grid" id="grid">
 
     {% set images = [
-      {'file':'tinoroom.jpg',           'cat':'people',  'title':'Room Portrait'},
-      {'file':'cecilstreet.jpg',        'cat':'people',  'title':'Cecil Street'},
-      {'file':'me&dylan.jpg',           'cat':'people',  'title':'Me & Dylan'},
-      {'file':'dylanpark.jpg',          'cat':'people',  'title':'Dylan Park'},
-      {'file':'dylancar.jpg',           'cat':'people',  'title':'Dylan Car'},
-      {'file':'gino.jfif',              'cat':'people',  'title':'Gino'},
-      {'file':'tino_tunnel.jfif',       'cat':'people',  'title':'Tunnel'},
-      {'file':'drip.jfif',              'cat':'vibes',   'title':'Drip'},
-      {'file':'suitvibes.jfif',         'cat':'vibes',   'title':'Suit Vibes'},
-      {'file':'thrifts.jfif',           'cat':'vibes',   'title':'Thrifts 1'},
-      {'file':'thrifts2.jfif',          'cat':'vibes',   'title':'Thrifts 2'},
-      {'file':'timbboots.jpg',          'cat':'vibes',   'title':'Timb Boots'},
-      {'file':'tino_nike.jfif',         'cat':'vibes',   'title':'Nike Shoot'},
-      {'file':'boohman_tracksuit.jfif', 'cat':'vibes',   'title':'Tracksuit'},
-      {'file':'streetview.jpg',         'cat':'vibes',   'title':'Street Look'},
-      {'file':'night_out_notts.jfif',   'cat':'moments', 'title':'Night Out Notts'},
-      {'file':'fireworks.jfif',         'cat':'moments', 'title':'Fireworks'},
-      {'file':'chinafood.jpg',          'cat':'moments', 'title':'China Food'},
-      {'file':'restuarant.jpg',         'cat':'moments', 'title':'Restaurant'},
-      {'file':'starbucks.jfif',         'cat':'moments', 'title':'Starbucks'},
-      {'file':'monbrand1.jpg',          'cat':'moments', 'title':'Brand Shoot 1'},
-      {'file':'monbrand2.jpg',          'cat':'moments', 'title':'Brand Shoot 2'},
-      {'file':'bedroom1.jpg',           'cat':'moments', 'title':'Bedroom Shoot'},
-      {'file':'boats.jfif',             'cat':'places',  'title':'Boats'},
-      {'file':'boats_views.jfif',       'cat':'places',  'title':'Boats View'},
-      {'file':'art_gallery.jfif',       'cat':'places',  'title':'Art Gallery'},
-      {'file':'nyc_painting.jfif',      'cat':'places',  'title':'NYC Painting'},
-      {'file':'cambridge_painting.jfif','cat':'places',  'title':'Cambridge Painting'},
-      {'file':'robot_painting.jfif',    'cat':'places',  'title':'Robot Painting'},
-      {'file':'color_painting.jfif',    'cat':'places',  'title':'Colour Painting'},
-      {'file':'paper_works.jfif',       'cat':'places',  'title':'Paper Works'},
-      {'file':'linc_works.jfif',        'cat':'places',  'title':'Linc Works'},
-      {'file':'ocean_view.jfif',        'cat':'places',  'title':'Ocean View'},
-      {'file':'blue_green_Building.jfif','cat':'places', 'title':'Blue Green Building'},
-      {'file':'flowers.jpg',            'cat':'places',  'title':'Flowers'},
-      {'file':'churchfront.jpg',        'cat':'places',  'title':'Church Front'},
-      {'file':'churchentry.jpg',        'cat':'places',  'title':'Church Entry'}
+      {'file':'tinoroom.jpg',            'cat':'people',  'title':'Room Portrait'},
+      {'file':'cecilstreet.jpg',         'cat':'people',  'title':'Cecil Street'},
+      {'file':'me&dylan.jpg',            'cat':'people',  'title':'Me & Dylan'},
+      {'file':'dylanpark.jpg',           'cat':'people',  'title':'Dylan Park'},
+      {'file':'dylancar.jpg',            'cat':'people',  'title':'Dylan Car'},
+      {'file':'gino.jfif',               'cat':'people',  'title':'Gino'},
+      {'file':'tino_tunnel.jfif',        'cat':'people',  'title':'Tunnel'},
+      {'file':'drip.jfif',               'cat':'vibes',   'title':'Drip'},
+      {'file':'suitvibes.jfif',          'cat':'vibes',   'title':'Suit Vibes'},
+      {'file':'thrifts.jfif',            'cat':'vibes',   'title':'Thrifts 1'},
+      {'file':'thrifts2.jfif',           'cat':'vibes',   'title':'Thrifts 2'},
+      {'file':'timbboots.jpg',           'cat':'vibes',   'title':'Timb Boots'},
+      {'file':'tino_nike.jfif',          'cat':'vibes',   'title':'Nike Shoot'},
+      {'file':'boohman_tracksuit.jfif',  'cat':'vibes',   'title':'Tracksuit'},
+      {'file':'streetview.jpg',          'cat':'vibes',   'title':'Street Look'},
+      {'file':'night_out_notts.jfif',    'cat':'moments', 'title':'Night Out Notts'},
+      {'file':'fireworks.jfif',          'cat':'moments', 'title':'Fireworks'},
+      {'file':'chinafood.jpg',           'cat':'moments', 'title':'China Food'},
+      {'file':'restuarant.jpg',          'cat':'moments', 'title':'Restaurant'},
+      {'file':'starbucks.jfif',          'cat':'moments', 'title':'Starbucks'},
+      {'file':'monbrand1.jpg',           'cat':'moments', 'title':'Brand Shoot 1'},
+      {'file':'monbrand2.jpg',           'cat':'moments', 'title':'Brand Shoot 2'},
+      {'file':'bedroom1.jpg',            'cat':'moments', 'title':'Bedroom Shoot'},
+      {'file':'boats.jfif',              'cat':'places',  'title':'Boats'},
+      {'file':'boats_views.jfif',        'cat':'places',  'title':'Boats View'},
+      {'file':'art_gallery.jfif',        'cat':'places',  'title':'Art Gallery'},
+      {'file':'nyc_painting.jfif',       'cat':'places',  'title':'NYC Painting'},
+      {'file':'cambridge_painting.jfif', 'cat':'places',  'title':'Cambridge Painting'},
+      {'file':'robot_painting.jfif',     'cat':'places',  'title':'Robot Painting'},
+      {'file':'color_painting.jfif',     'cat':'places',  'title':'Colour Painting'},
+      {'file':'paper_works.jfif',        'cat':'places',  'title':'Paper Works'},
+      {'file':'linc_works.jfif',         'cat':'places',  'title':'Linc Works'},
+      {'file':'ocean_view.jfif',         'cat':'places',  'title':'Ocean View'},
+      {'file':'blue_green_Building.jfif','cat':'places',  'title':'Blue Green Building'},
+      {'file':'flowers.jpg',             'cat':'places',  'title':'Flowers'},
+      {'file':'churchfront.jpg',         'cat':'places',  'title':'Church Front'},
+      {'file':'churchentry.jpg',         'cat':'places',  'title':'Church Entry'}
     ] %}
 
     {% for img in images %}
@@ -75,6 +73,18 @@
     </div>
     {% endfor %}
 
+    {% for p in photos %}
+    <div class="grid-item" data-cat="{{ p.category }}" onclick="openLightbox(allPhotos, {{ images|length + loop.index0 }})">
+      <img src="{{ p.url }}" alt="{{ p.title }}">
+      <div class="grid-overlay">
+        <div>
+          <p class="cat">{{ p.category | capitalize }}</p>
+          <p class="title">{{ p.title }}</p>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+
   </div>
 </section>
 
@@ -84,7 +94,10 @@
 <script>
   var allPhotos = [
     {% for img in images %}
-    "{{ url_for('static', filename='images/' + img.file) }}"{% if not loop.last %},{% endif %}
+    "{{ url_for('static', filename='images/' + img.file) }}",
+    {% endfor %}
+    {% for p in photos %}
+    "{{ p.url }}"{% if not loop.last %},{% endif %}
     {% endfor %}
   ];
 
