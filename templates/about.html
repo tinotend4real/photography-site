@@ -12,41 +12,39 @@
   <div class="about-grid">
 
     <div class="about-img">
-      <img src="{{ url_for('static', filename='images/tinoroom.jpg') }}" alt="Tino">
+      {% if s.about_photo %}
+      <img src="{{ s.about_photo }}" alt="{{ s.about_name }}">
+      {% else %}
+      <img src="{{ url_for('static', filename='images/tinoroom.jpg') }}" alt="{{ s.about_name }}">
+      {% endif %}
       <div class="about-img-badge">
-        <span class="badge-num">6</span>
+        <span class="badge-num">{{ s.about_months }}</span>
         <span class="badge-lbl">Months<br>Shooting</span>
       </div>
     </div>
 
     <div class="about-text">
       <p class="sec-label">About Me</p>
-      <h2 class="sec-title">Tino</h2>
+      <h2 class="sec-title">{{ s.about_name }}</h2>
 
-      <p>I didn't start photography because I wanted to be a photographer. I started because I kept seeing moments that deserved to be remembered properly — and my phone wasn't doing them justice.</p>
-
-      <p>Six months ago I picked up a camera for the first time. No course, no mentor, no plan. Just me figuring it out, shot by shot. And somewhere between the first blurry attempt and now, something clicked — not just the shutter.</p>
-
-      <p>I'm based in <strong>Nottingham</strong> and I shoot everything. <strong>Church interiors</strong> where the light comes through stained glass and hits the floor like something from another world. <strong>Restaurants</strong> where the atmosphere is half the meal. <strong>Streetwear looks</strong> that deserve more than a bathroom mirror selfie. <strong>Brands</strong> that are just getting started and need someone who gets the hustle. <strong>Street portraits</strong> of real people in real places — no studio, no fake backdrop, just life.</p>
-
-      <p>What drives me is the idea that <strong>every scene has a version of itself that most people walk past</strong>. My job is to find that version. The angle nobody tried. The moment just before or just after the obvious one. The light that only lasts thirty seconds.</p>
-
-      <p>I'm not interested in over-edited, filter-heavy, looks-like-everyone-else photography. I want my work to have a feeling. When you look at one of my shots, I want you to remember where you were when you first saw it.</p>
-
-      <p>Six months in. A lot more to come.</p>
+      {% if s.about_bio1 %}<p>{{ s.about_bio1 }}</p>{% endif %}
+      {% if s.about_bio2 %}<p>{{ s.about_bio2 }}</p>{% endif %}
+      {% if s.about_bio3 %}<p>{{ s.about_bio3 }}</p>{% endif %}
+      {% if s.about_bio4 %}<p>{{ s.about_bio4 }}</p>{% endif %}
+      {% if s.about_bio5 %}<p>{{ s.about_bio5 }}</p>{% endif %}
 
       <div class="stats-row">
         <div>
-          <div class="stat-n">40+</div>
-          <div class="stat-l">Shots in Portfolio</div>
+          <div class="stat-n">{{ s.about_stat1_n }}</div>
+          <div class="stat-l">{{ s.about_stat1_l }}</div>
         </div>
         <div>
-          <div class="stat-n">5+</div>
-          <div class="stat-l">Categories</div>
+          <div class="stat-n">{{ s.about_stat2_n }}</div>
+          <div class="stat-l">{{ s.about_stat2_l }}</div>
         </div>
         <div>
-          <div class="stat-n">24h</div>
-          <div class="stat-l">Turnaround</div>
+          <div class="stat-n">{{ s.about_stat3_n }}</div>
+          <div class="stat-l">{{ s.about_stat3_l }}</div>
         </div>
       </div>
 
@@ -59,31 +57,26 @@
   </div>
 </section>
 
-<!-- WHAT DRIVES ME -->
+<!-- PHILOSOPHY -->
 <section class="section section-alt">
   <p class="sec-label">The Philosophy</p>
   <h2 class="sec-title">How I See It</h2>
-
   <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 2rem;">
-
     <div class="service-card">
       <div class="service-icon">👁️</div>
       <p class="service-name">Find the Angle</p>
       <p class="service-desc">The obvious shot is never the best shot. I move, I wait, I crouch, I climb — whatever it takes to find the frame that makes people stop scrolling.</p>
     </div>
-
     <div class="service-card">
       <div class="service-icon">⚡</div>
       <p class="service-name">Chase the Light</p>
-      <p class="service-desc">Good light changes everything. I've waited forty minutes for a cloud to move. I'll shoot the same spot at three different times of day. Light is the real subject.</p>
+      <p class="service-desc">Good light changes everything. I've waited forty minutes for a cloud to move. Light is the real subject.</p>
     </div>
-
     <div class="service-card">
       <div class="service-icon">🎯</div>
       <p class="service-name">Keep it Real</p>
-      <p class="service-desc">No fake poses. No heavy filters. No making something look like something it isn't. Real moments, honest photography — that's what lasts.</p>
+      <p class="service-desc">No fake poses. No heavy filters. Real moments, honest photography — that's what lasts.</p>
     </div>
-
   </div>
 </section>
 
@@ -91,76 +84,69 @@
 <section class="section">
   <p class="sec-label">Specialisms</p>
   <h2 class="sec-title">What I Shoot</h2>
-
   <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 2rem;">
 
     <div style="position: relative; overflow: hidden; cursor: pointer;" onclick="openLightbox(aboutPhotos, 0)">
-      <img src="{{ url_for('static', filename='images/churchfront.jpg') }}"
-           alt="Church"
-           style="width: 100%; aspect-ratio: 4/3; object-fit: cover; filter: brightness(0.7); transition: transform 0.5s, filter 0.3s;"
+      <img src="{{ url_for('static', filename='images/churchfront.jpg') }}" alt="Church"
+           style="width:100%;aspect-ratio:4/3;object-fit:cover;filter:brightness(0.7);transition:transform 0.5s,filter 0.3s;"
            onmouseover="this.style.transform='scale(1.05)';this.style.filter='brightness(0.9)'"
            onmouseout="this.style.transform='scale(1)';this.style.filter='brightness(0.7)'">
-      <div style="position: absolute; bottom: 1rem; left: 1rem;">
+      <div style="position:absolute;bottom:1rem;left:1rem;">
         <p style="font-family:'Barlow Condensed',Arial,sans-serif;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:#e8000d;margin:0;">Church</p>
         <p style="font-family:'Playfair Display',Georgia,serif;font-size:1rem;color:#f5f0eb;margin:0;">Architecture</p>
       </div>
     </div>
 
     <div style="position: relative; overflow: hidden; cursor: pointer;" onclick="openLightbox(aboutPhotos, 1)">
-      <img src="{{ url_for('static', filename='images/chinafood.jpg') }}"
-           alt="Restaurant"
-           style="width: 100%; aspect-ratio: 4/3; object-fit: cover; filter: brightness(0.7); transition: transform 0.5s, filter 0.3s;"
+      <img src="{{ url_for('static', filename='images/chinafood.jpg') }}" alt="Restaurant"
+           style="width:100%;aspect-ratio:4/3;object-fit:cover;filter:brightness(0.7);transition:transform 0.5s,filter 0.3s;"
            onmouseover="this.style.transform='scale(1.05)';this.style.filter='brightness(0.9)'"
            onmouseout="this.style.transform='scale(1)';this.style.filter='brightness(0.7)'">
-      <div style="position: absolute; bottom: 1rem; left: 1rem;">
+      <div style="position:absolute;bottom:1rem;left:1rem;">
         <p style="font-family:'Barlow Condensed',Arial,sans-serif;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:#e8000d;margin:0;">Food</p>
         <p style="font-family:'Playfair Display',Georgia,serif;font-size:1rem;color:#f5f0eb;margin:0;">Restaurants</p>
       </div>
     </div>
 
     <div style="position: relative; overflow: hidden; cursor: pointer;" onclick="openLightbox(aboutPhotos, 2)">
-      <img src="{{ url_for('static', filename='images/monbrand1.jpg') }}"
-           alt="Brand"
-           style="width: 100%; aspect-ratio: 4/3; object-fit: cover; filter: brightness(0.7); transition: transform 0.5s, filter 0.3s;"
+      <img src="{{ url_for('static', filename='images/monbrand1.jpg') }}" alt="Brand"
+           style="width:100%;aspect-ratio:4/3;object-fit:cover;filter:brightness(0.7);transition:transform 0.5s,filter 0.3s;"
            onmouseover="this.style.transform='scale(1.05)';this.style.filter='brightness(0.9)'"
            onmouseout="this.style.transform='scale(1)';this.style.filter='brightness(0.7)'">
-      <div style="position: absolute; bottom: 1rem; left: 1rem;">
+      <div style="position:absolute;bottom:1rem;left:1rem;">
         <p style="font-family:'Barlow Condensed',Arial,sans-serif;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:#e8000d;margin:0;">Brand</p>
         <p style="font-family:'Playfair Display',Georgia,serif;font-size:1rem;color:#f5f0eb;margin:0;">Campaigns</p>
       </div>
     </div>
 
     <div style="position: relative; overflow: hidden; cursor: pointer;" onclick="openLightbox(aboutPhotos, 3)">
-      <img src="{{ url_for('static', filename='images/drip.jfif') }}"
-           alt="Streetwear"
-           style="width: 100%; aspect-ratio: 4/3; object-fit: cover; filter: brightness(0.7); transition: transform 0.5s, filter 0.3s;"
+      <img src="{{ url_for('static', filename='images/drip.jfif') }}" alt="Streetwear"
+           style="width:100%;aspect-ratio:4/3;object-fit:cover;filter:brightness(0.7);transition:transform 0.5s,filter 0.3s;"
            onmouseover="this.style.transform='scale(1.05)';this.style.filter='brightness(0.9)'"
            onmouseout="this.style.transform='scale(1)';this.style.filter='brightness(0.7)'">
-      <div style="position: absolute; bottom: 1rem; left: 1rem;">
+      <div style="position:absolute;bottom:1rem;left:1rem;">
         <p style="font-family:'Barlow Condensed',Arial,sans-serif;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:#e8000d;margin:0;">Fashion</p>
         <p style="font-family:'Playfair Display',Georgia,serif;font-size:1rem;color:#f5f0eb;margin:0;">Streetwear</p>
       </div>
     </div>
 
     <div style="position: relative; overflow: hidden; cursor: pointer;" onclick="openLightbox(aboutPhotos, 4)">
-      <img src="{{ url_for('static', filename='images/cecilstreet.jpg') }}"
-           alt="Street"
-           style="width: 100%; aspect-ratio: 4/3; object-fit: cover; filter: brightness(0.7); transition: transform 0.5s, filter 0.3s;"
+      <img src="{{ url_for('static', filename='images/cecilstreet.jpg') }}" alt="Street"
+           style="width:100%;aspect-ratio:4/3;object-fit:cover;filter:brightness(0.7);transition:transform 0.5s,filter 0.3s;"
            onmouseover="this.style.transform='scale(1.05)';this.style.filter='brightness(0.9)'"
            onmouseout="this.style.transform='scale(1)';this.style.filter='brightness(0.7)'">
-      <div style="position: absolute; bottom: 1rem; left: 1rem;">
+      <div style="position:absolute;bottom:1rem;left:1rem;">
         <p style="font-family:'Barlow Condensed',Arial,sans-serif;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:#e8000d;margin:0;">Street</p>
         <p style="font-family:'Playfair Display',Georgia,serif;font-size:1rem;color:#f5f0eb;margin:0;">Portraits</p>
       </div>
     </div>
 
     <div style="position: relative; overflow: hidden; cursor: pointer;" onclick="openLightbox(aboutPhotos, 5)">
-      <img src="{{ url_for('static', filename='images/night_out_notts.jfif') }}"
-           alt="Events"
-           style="width: 100%; aspect-ratio: 4/3; object-fit: cover; filter: brightness(0.7); transition: transform 0.5s, filter 0.3s;"
+      <img src="{{ url_for('static', filename='images/night_out_notts.jfif') }}" alt="Events"
+           style="width:100%;aspect-ratio:4/3;object-fit:cover;filter:brightness(0.7);transition:transform 0.5s,filter 0.3s;"
            onmouseover="this.style.transform='scale(1.05)';this.style.filter='brightness(0.9)'"
            onmouseout="this.style.transform='scale(1)';this.style.filter='brightness(0.7)'">
-      <div style="position: absolute; bottom: 1rem; left: 1rem;">
+      <div style="position:absolute;bottom:1rem;left:1rem;">
         <p style="font-family:'Barlow Condensed',Arial,sans-serif;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:#e8000d;margin:0;">Events</p>
         <p style="font-family:'Playfair Display',Georgia,serif;font-size:1rem;color:#f5f0eb;margin:0;">Nights Out</p>
       </div>
@@ -170,13 +156,14 @@
 </section>
 
 <!-- CTA -->
-<section class="section section-alt" style="text-align: center; padding: 5rem 2rem;">
+<section class="section section-alt" style="text-align:center;padding:5rem 2rem;">
   <p class="sec-label">Let's Work</p>
-  <h2 class="sec-title" style="margin-bottom: 1rem;">Got an idea?<br>Let's make it real.</h2>
-  <p style="color: #888; font-size: 0.95rem; max-width: 480px; margin: 0 auto 2rem; line-height: 1.8;">
-    Whether you know exactly what you want or just have a feeling — get in touch. I work with all budgets across Nottingham and the Midlands.
+  <h2 class="sec-title" style="margin-bottom:1rem;">Got an idea?<br>Let's make it real.</h2>
+  <p style="color:#888;font-size:0.95rem;max-width:480px;margin:0 auto 2rem;line-height:1.8;">
+    Whether you know exactly what you want or just have a feeling — get in touch.
+    I work with all budgets across {{ s.about_location }} and the Midlands.
   </p>
-  <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+  <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
     <a href="{{ url_for('contact') }}" class="btn-primary">Book a Shoot</a>
     <a href="https://www.instagram.com/tino4_real" target="_blank" class="btn-outline">Follow on Instagram</a>
   </div>
