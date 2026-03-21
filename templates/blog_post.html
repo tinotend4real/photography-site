@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{{ post.title }} — TINO Photography{% endblock %}
+
+{% block content %}
+
+<div class="page-banner">
+  <p class="label">{{ post.category | capitalize }} · {{ post.created_at.strftime('%d %b %Y') }}</p>
+  <h1>{{ post.title }}</h1>
+</div>
+
+{% if post.cover_url %}
+<div style="width:100%;max-height:500px;overflow:hidden;">
+  <img src="{{ post.cover_url }}" alt="{{ post.title }}" style="width:100%;max-height:500px;object-fit:cover;filter:brightness(0.85);">
+</div>
+{% endif %}
+
+<section class="section" style="max-width:780px;margin:0 auto;">
+
+  <div style="font-size:1rem;line-height:2;color:#aaa;">
+    {{ post.body | replace('\n', '<br>') | safe }}
+  </div>
+
+  <div style="margin-top:4rem;padding-top:2rem;border-top:1px solid rgba(245,240,235,0.1);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+    <a href="{{ url_for('blog') }}" style="font-family:'Barlow Condensed',Arial,sans-serif;font-size:0.75rem;letter-spacing:0.15em;text-transform:uppercase;color:#888;">← Back to Blog</a>
+    <a href="{{ url_for('contact') }}" class="btn-primary">Book a Shoot</a>
+  </div>
+
+</section>
+
+{% endblock %}
