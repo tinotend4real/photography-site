@@ -126,7 +126,8 @@ def set_setting(key, value):
 @app.route('/')
 def index():
     track('home')
-    return render_template('index.html')
+    featured = Photo.query.filter_by(featured=True).order_by(Photo.uploaded_at.desc()).all()
+    return render_template('index.html', featured=featured)
 
 @app.route('/portfolio')
 def portfolio():
