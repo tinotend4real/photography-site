@@ -1,68 +1,96 @@
-{% extends "base.html" %}
-{% block title %}Blog — TINO Photography{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}TINO Photography — Nottingham{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Barlow:wght@300;400;500&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
 
-{% block content %}
+<!-- NAV -->
+<nav>
+  <a href="{{ url_for('index') }}" class="nav-logo">TINO<span>.</span></a>
+  <ul class="nav-links">
+    <li><a href="{{ url_for('portfolio') }}" {% if request.endpoint == 'portfolio' %}class="active"{% endif %}>Portfolio</a></li>
+    <li><a href="{{ url_for('services') }}"  {% if request.endpoint == 'services'  %}class="active"{% endif %}>Services</a></li>
+    <li><a href="{{ url_for('about') }}"     {% if request.endpoint == 'about'     %}class="active"{% endif %}>About</a></li>
+    <li><a href="{{ url_for('blog') }}"      {% if request.endpoint in ['blog', 'blog_post'] %}class="active"{% endif %}>Blog</a></li>
+    <li><a href="{{ url_for('contact') }}" class="nav-book">Book Now</a></li>
+  </ul>
+  <button class="nav-burger" id="burger">&#9776;</button>
+</nav>
 
-<div class="page-banner">
-  <p class="label">From the Lens</p>
-  <h1>The Blog</h1>
-  <p>Behind the scenes, shoot recaps, tips and thoughts from Nottingham.</p>
+<!-- MOBILE MENU -->
+<div class="mob-menu" id="mobMenu">
+  <a href="{{ url_for('portfolio') }}">Portfolio</a>
+  <a href="{{ url_for('services') }}">Services</a>
+  <a href="{{ url_for('about') }}">About</a>
+  <a href="{{ url_for('blog') }}">Blog</a>
+  <a href="{{ url_for('contact') }}">Book Now</a>
 </div>
 
-<section class="section">
+<!-- PAGE CONTENT -->
+<main>
+  {% block content %}{% endblock %}
+</main>
 
-  {% if posts %}
-
-  <!-- FEATURED POST — first one is big -->
-  {% set first = posts[0] %}
-  <div style="margin-bottom:3rem;">
-    <a href="{{ url_for('blog_post', slug=first.slug) }}" style="display:grid;grid-template-columns:1fr 1fr;gap:0;background:#111;border:1px solid rgba(245,240,235,0.08);overflow:hidden;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#e8000d'" onmouseout="this.style.borderColor='rgba(245,240,235,0.08)'">
-      {% if first.cover_url %}
-      <img src="{{ first.cover_url }}" alt="{{ first.title }}" style="width:100%;height:100%;object-fit:cover;filter:brightness(0.85);min-height:350px;">
-      {% else %}
-      <div style="background:#1a1a1a;display:flex;align-items:center;justify-content:center;min-height:350px;font-size:3rem;">📷</div>
-      {% endif %}
-      <div style="padding:3rem 2.5rem;display:flex;flex-direction:column;justify-content:center;">
-        <p style="font-family:'Barlow Condensed',Arial,sans-serif;font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:#e8000d;margin-bottom:0.75rem;">{{ first.category | capitalize }} · {{ first.created_at.strftime('%d %b %Y') }}</p>
-        <h2 style="font-family:'Playfair Display',Georgia,serif;font-size:clamp(1.5rem,3vw,2.2rem);font-weight:900;color:#f5f0eb;line-height:1.1;margin-bottom:1rem;">{{ first.title }}</h2>
-        <p style="color:#888;font-size:0.9rem;line-height:1.8;margin-bottom:1.5rem;">{{ first.body[:200] }}{% if first.body|length > 200 %}...{% endif %}</p>
-        <span style="font-family:'Barlow Condensed',Arial,sans-serif;font-size:0.75rem;letter-spacing:0.15em;text-transform:uppercase;color:#e8000d;">Read More →</span>
-      </div>
-    </a>
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 TINO Photography — Nottingham, UK</p>
+  <div class="footer-links">
+    <a href="https://www.instagram.com/tino4_real" target="_blank">Instagram</a>
+    <a href="https://www.tiktok.com/@tino4real._" target="_blank">TikTok</a>
+    <a href="{{ url_for('blog') }}">Blog</a>
+    <a href="{{ url_for('admin') }}">Admin</a>
   </div>
+</footer>
 
-  <!-- REST OF POSTS -->
-  {% if posts|length > 1 %}
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;">
-    {% for post in posts[1:] %}
-    <a href="{{ url_for('blog_post', slug=post.slug) }}" style="display:block;background:#111;border:1px solid rgba(245,240,235,0.08);overflow:hidden;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#e8000d'" onmouseout="this.style.borderColor='rgba(245,240,235,0.08)'">
-      {% if post.cover_url %}
-      <img src="{{ post.cover_url }}" alt="{{ post.title }}" style="width:100%;aspect-ratio:16/9;object-fit:cover;filter:brightness(0.85);">
-      {% else %}
-      <div style="aspect-ratio:16/9;background:#1a1a1a;display:flex;align-items:center;justify-content:center;font-size:2rem;">📷</div>
-      {% endif %}
-      <div style="padding:1.5rem;">
-        <p style="font-family:'Barlow Condensed',Arial,sans-serif;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:#e8000d;margin-bottom:0.5rem;">{{ post.category | capitalize }} · {{ post.created_at.strftime('%d %b %Y') }}</p>
-        <h3 style="font-family:'Playfair Display',Georgia,serif;font-size:1.15rem;font-weight:900;color:#f5f0eb;line-height:1.2;margin-bottom:0.75rem;">{{ post.title }}</h3>
-        <p style="color:#666;font-size:0.83rem;line-height:1.7;margin-bottom:1rem;">{{ post.body[:120] }}{% if post.body|length > 120 %}...{% endif %}</p>
-        <span style="font-family:'Barlow Condensed',Arial,sans-serif;font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:#e8000d;">Read More →</span>
-      </div>
-    </a>
-    {% endfor %}
-  </div>
-  {% endif %}
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <div class="lb-close" id="lbClose">&#10005; Close</div>
+  <div class="lb-prev" id="lbPrev">&#8249;</div>
+  <img id="lbImg" src="" alt="">
+  <div class="lb-next" id="lbNext">&#8250;</div>
+</div>
 
-  {% else %}
+<script>
+  document.getElementById('burger').addEventListener('click', function() {
+    document.getElementById('mobMenu').classList.toggle('open');
+  });
 
-  <!-- No posts yet -->
-  <div style="text-align:center;padding:6rem 2rem;border:1px dashed rgba(245,240,235,0.08);">
-    <p style="font-size:3rem;margin-bottom:1rem;">📷</p>
-    <p style="font-family:'Playfair Display',Georgia,serif;font-size:1.5rem;color:#f5f0eb;margin-bottom:0.75rem;">Nothing here yet.</p>
-    <p style="color:#555;font-size:0.9rem;">First post coming soon.</p>
-  </div>
+  var lbPhotos = [];
+  var lbIndex  = 0;
 
-  {% endif %}
+  function openLightbox(photos, index) {
+    lbPhotos = photos;
+    lbIndex  = index;
+    document.getElementById('lbImg').src = lbPhotos[lbIndex];
+    document.getElementById('lightbox').classList.add('open');
+  }
 
-</section>
+  document.getElementById('lbClose').onclick = function() {
+    document.getElementById('lightbox').classList.remove('open');
+  };
+  document.getElementById('lbPrev').onclick = function() {
+    lbIndex = (lbIndex - 1 + lbPhotos.length) % lbPhotos.length;
+    document.getElementById('lbImg').src = lbPhotos[lbIndex];
+  };
+  document.getElementById('lbNext').onclick = function() {
+    lbIndex = (lbIndex + 1) % lbPhotos.length;
+    document.getElementById('lbImg').src = lbPhotos[lbIndex];
+  };
+  document.addEventListener('keydown', function(e) {
+    if (!document.getElementById('lightbox').classList.contains('open')) return;
+    if (e.key === 'Escape')     document.getElementById('lightbox').classList.remove('open');
+    if (e.key === 'ArrowLeft')  document.getElementById('lbPrev').click();
+    if (e.key === 'ArrowRight') document.getElementById('lbNext').click();
+  });
+</script>
 
-{% endblock %}
+{% block extra_js %}{% endblock %}
+</body>
+</html>
