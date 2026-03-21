@@ -479,6 +479,14 @@ def submit():
         print('Mail error:', e)
     return jsonify({'success': True})
 
+#____blog_settings_addition______________________________________________________
+
+@app.route('/admin/blog/get/<int:pid>')
+@login_required
+def get_blog(pid):
+    p = BlogPost.query.get_or_404(pid)
+    return jsonify({'body': p.body, 'title': p.title})
+    
 # ── RUN ──────────────────────────────────────────────────────────────────────────
 if __name__ == '__main__':
     app.run(debug=True)
