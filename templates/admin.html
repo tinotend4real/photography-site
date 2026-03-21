@@ -65,7 +65,7 @@
   .add-note-btn { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; background: none; border: 1px dashed rgba(245,240,235,0.15); color: #555; padding: 0.7rem 1.5rem; cursor: pointer; transition: all 0.2s; }
   .add-note-btn:hover { border-color: #e8000d; color: #e8000d; }
   .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-  .settings-group { background: #111; border: 1px solid rgba(245,240,235,0.07); padding: 1.5rem; }
+  .settings-group { background: #111; border: 1px solid rgba(245,240,235,0.07); padding: 1.5rem; margin-bottom: 1.5rem; }
   .settings-group-title { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: #e8000d; margin-bottom: 1.2rem; padding-bottom: 0.6rem; border-bottom: 1px solid rgba(232,0,13,0.2); }
   .setting-field { margin-bottom: 1rem; }
   .setting-field label { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.58rem; letter-spacing: 0.18em; text-transform: uppercase; color: #555; display: block; margin-bottom: 0.4rem; }
@@ -77,6 +77,26 @@
   .booking-detail-row { background: rgba(232,0,13,0.03); display: none; }
   .booking-detail-row.open { display: table-row; }
   .booking-detail-cell { padding: 1rem 1rem 1.5rem 2rem; color: #888; font-size: 0.85rem; line-height: 1.7; border-bottom: 1px solid rgba(245,240,235,0.06); }
+  /* ── BLOG ── */
+  .blog-list { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1.5rem; }
+  .blog-card { background: #111; border: 1px solid rgba(245,240,235,0.07); padding: 1.2rem 1.5rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+  .blog-card-info { flex: 1; }
+  .blog-card-title { font-family: 'Playfair Display', Georgia, serif; font-size: 1rem; color: #f5f0eb; margin-bottom: 0.3rem; }
+  .blog-card-meta { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: #555; }
+  .blog-card-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+  .blog-editor { background: #111; border: 1px solid rgba(245,240,235,0.07); padding: 1.5rem; margin-bottom: 1.5rem; display: none; }
+  .blog-editor.active { display: block; }
+  .blog-editor-title { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: #e8000d; margin-bottom: 1.2rem; padding-bottom: 0.6rem; border-bottom: 1px solid rgba(232,0,13,0.2); }
+  .blog-field { margin-bottom: 1rem; }
+  .blog-field label { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.58rem; letter-spacing: 0.18em; text-transform: uppercase; color: #555; display: block; margin-bottom: 0.4rem; }
+  .blog-field input, .blog-field select, .blog-field textarea { width: 100%; background: #0c0c0c; border: 1px solid rgba(245,240,235,0.08); color: #f5f0eb; padding: 0.65rem 0.85rem; font-family: 'Barlow', Arial, sans-serif; font-size: 0.85rem; outline: none; transition: border-color 0.2s; }
+  .blog-field input:focus, .blog-field select:focus, .blog-field textarea:focus { border-color: #e8000d; }
+  .blog-field textarea { resize: vertical; min-height: 200px; line-height: 1.7; }
+  .blog-actions { display: flex; gap: 0.75rem; margin-top: 1rem; }
+  .pub-badge { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.2rem 0.6rem; border: 1px solid; }
+  .pub-badge.yes { color: #4caf50; border-color: rgba(76,175,80,0.4); }
+  .pub-badge.no  { color: #888; border-color: rgba(245,240,235,0.15); }
+  /* ── TOAST ── */
   .toast { position: fixed; bottom: 2rem; right: 2rem; background: #111; border-left: 3px solid #4caf50; color: #f5f0eb; padding: 0.9rem 1.5rem; font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; z-index: 9999; opacity: 0; transform: translateY(10px); transition: all 0.3s; pointer-events: none; }
   .toast.show { opacity: 1; transform: translateY(0); }
   .toast.err { border-left-color: #e8000d; }
@@ -93,20 +113,25 @@
 
 {% block content %}
 <div class="admin-layout">
+
   <aside class="admin-sidebar">
     <div class="sidebar-label">Dashboard</div>
     <button class="sidebar-link active" onclick="showPanel('analytics', this)"><span class="sidebar-icon">📊</span> Analytics</button>
     <button class="sidebar-link" onclick="showPanel('bookings', this)"><span class="sidebar-icon">📬</span> Bookings</button>
     <div class="sidebar-label">Content</div>
     <button class="sidebar-link" onclick="showPanel('images', this)"><span class="sidebar-icon">🖼️</span> Images</button>
+    <button class="sidebar-link" onclick="showPanel('blog', this)"><span class="sidebar-icon">✍️</span> Blog</button>
     <button class="sidebar-link" onclick="showPanel('notes', this)"><span class="sidebar-icon">📝</span> Notes</button>
     <div class="sidebar-label">Website</div>
-    <button class="sidebar-link" onclick="showPanel('settings', this)"><span class="sidebar-icon">⚙️</span> Site Settings</button>
+    <button class="sidebar-link" onclick="showPanel('pages', this)"><span class="sidebar-icon">🏠</span> Page Editor</button>
+    <button class="sidebar-link" onclick="showPanel('settings', this)"><span class="sidebar-icon">⚙️</span> Settings</button>
     <div class="sidebar-label">Account</div>
     <a class="sidebar-link" href="{{ url_for('admin_logout') }}" style="color:#e8000d;"><span class="sidebar-icon">🚪</span> Logout</a>
   </aside>
+
   <div class="admin-main">
 
+    <!-- ANALYTICS -->
     <div class="admin-panel active" id="panel-analytics">
       <p class="panel-title">Analytics</p>
       <p class="panel-sub">Site traffic overview</p>
@@ -126,6 +151,7 @@
       </div>
     </div>
 
+    <!-- BOOKINGS -->
     <div class="admin-panel" id="panel-bookings">
       <p class="panel-title">Bookings</p>
       <p class="panel-sub">{{ bookings | length }} total enquiries</p>
@@ -160,10 +186,11 @@
         </tbody>
       </table>
       {% else %}
-      <div style="text-align:center;padding:4rem;border:1px dashed rgba(245,240,235,0.08);color:#444;font-family:'Barlow Condensed',Arial,sans-serif;letter-spacing:0.15em;text-transform:uppercase;font-size:0.8rem;">No enquiries yet — share your site and they will come.</div>
+      <div style="text-align:center;padding:4rem;border:1px dashed rgba(245,240,235,0.08);color:#444;font-family:'Barlow Condensed',Arial,sans-serif;letter-spacing:0.15em;text-transform:uppercase;font-size:0.8rem;">No enquiries yet.</div>
       {% endif %}
     </div>
 
+    <!-- IMAGES -->
     <div class="admin-panel" id="panel-images">
       <p class="panel-title">Images</p>
       <p class="panel-sub">Upload, label and manage your photos</p>
@@ -183,7 +210,7 @@
             <option value="moments">Moments</option>
           </select>
         </div>
-        <div><label>Featured?</label>
+        <div><label>Featured on homepage?</label>
           <select id="upFeatured">
             <option value="false">No</option>
             <option value="true">Yes — show on homepage</option>
@@ -196,7 +223,7 @@
       <div class="img-admin-grid" id="imgGrid">
         {% for p in photos %}
         <div class="img-admin-card" id="imgcard-{{ p.id }}">
-          <img src="{{ url_for('static', filename='images/' + p.filename) }}" alt="{{ p.title }}">
+          <img src="{{ p.url }}" alt="{{ p.title }}">
           <div class="img-admin-info">
             <input type="text" value="{{ p.title }}" id="title-{{ p.id }}" placeholder="Title">
             <select id="cat-{{ p.id }}">
@@ -207,7 +234,7 @@
             </select>
             <select id="feat-{{ p.id }}">
               <option value="false" {% if not p.featured %}selected{% endif %}>Not Featured</option>
-              <option value="true"  {% if p.featured     %}selected{% endif %}>Featured</option>
+              <option value="true"  {% if p.featured     %}selected{% endif %}>Featured — on homepage</option>
             </select>
           </div>
           <div class="img-admin-actions">
@@ -219,6 +246,66 @@
       </div>
     </div>
 
+    <!-- BLOG -->
+    <div class="admin-panel" id="panel-blog">
+      <p class="panel-title">Blog</p>
+      <p class="panel-sub">{{ posts | length }} posts — write, edit and publish</p>
+
+      <button class="btn-primary" onclick="openBlogEditor(null)" style="margin-bottom:1.5rem;">+ New Post</button>
+
+      <!-- Blog editor -->
+      <div class="blog-editor" id="blogEditor">
+        <p class="blog-editor-title" id="blogEditorTitle">New Post</p>
+        <input type="hidden" id="blogId">
+        <div class="blog-field"><label>Title</label><input type="text" id="blogTitle" placeholder="Post title..."></div>
+        <div class="blog-field"><label>Category</label>
+          <select id="blogCategory">
+            <option value="behind-the-scenes">Behind the Scenes</option>
+            <option value="shoot-recap">Shoot Recap</option>
+            <option value="tips">Photography Tips</option>
+            <option value="general">General</option>
+          </select>
+        </div>
+        <div class="blog-field"><label>Cover Image URL — upload an image first then paste its Cloudinary URL here</label><input type="text" id="blogCover" placeholder="https://res.cloudinary.com/..."></div>
+        <div class="blog-field"><label>Body — write your post here</label><textarea id="blogBody" placeholder="Write your post..."></textarea></div>
+        <div class="blog-field"><label>Published?</label>
+          <select id="blogPublished">
+            <option value="false">Draft — not visible on site</option>
+            <option value="true">Published — live on site</option>
+          </select>
+        </div>
+        <div class="blog-actions">
+          <button class="btn-primary" onclick="saveBlog()">Save Post</button>
+          <button class="act-btn" onclick="closeBlogEditor()">Cancel</button>
+        </div>
+      </div>
+
+      <div class="blog-list" id="blogList">
+        {% for post in posts %}
+        <div class="blog-card" id="blogcard-{{ post.id }}">
+          <div class="blog-card-info">
+            <p class="blog-card-title">{{ post.title }}</p>
+            <p class="blog-card-meta">
+              {{ post.category }} &nbsp;·&nbsp;
+              {{ post.created_at.strftime('%d %b %Y') if post.created_at else '' }} &nbsp;·&nbsp;
+              <span class="pub-badge {% if post.published %}yes{% else %}no{% endif %}">{% if post.published %}Published{% else %}Draft{% endif %}</span>
+            </p>
+          </div>
+          <div class="blog-card-actions">
+            {% if post.published %}
+            <a href="/blog/{{ post.slug }}" target="_blank" class="act-btn" style="display:inline-block;">View</a>
+            {% endif %}
+            <button class="act-btn" onclick="openBlogEditor({{ post.id }}, '{{ post.title|replace("'", "\\'") }}', '{{ post.category }}', '{{ post.cover_url or "" }}', '{{ post.published }}', `{{ post.body|replace('`', '\\`')|replace('\\', '\\\\') }}`)">Edit</button>
+            <button class="act-btn" style="color:#e8000d;" onclick="deleteBlog({{ post.id }})">Delete</button>
+          </div>
+        </div>
+        {% else %}
+        <div style="text-align:center;padding:3rem;border:1px dashed rgba(245,240,235,0.08);color:#444;font-family:'Barlow Condensed',Arial,sans-serif;letter-spacing:0.15em;text-transform:uppercase;font-size:0.8rem;">No posts yet — write your first one above.</div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- NOTES -->
     <div class="admin-panel" id="panel-notes">
       <p class="panel-title">Notes</p>
       <p class="panel-sub">Personal reminders, shoot ideas, to-dos</p>
@@ -237,61 +324,101 @@
       </div>
     </div>
 
+    <!-- PAGE EDITOR -->
+    <div class="admin-panel" id="panel-pages">
+      <p class="panel-title">Page Editor</p>
+      <p class="panel-sub">Edit text and images on every page without touching code</p>
+
+      <!-- Homepage -->
+      <div class="settings-group">
+        <p class="settings-group-title">🏠 Homepage</p>
+        <div class="setting-field"><label>Hero Title</label><input type="text" id="set-hero_title" value="{{ settings.hero_title }}"></div>
+        <div class="setting-field"><label>Hero Subtitle</label><textarea id="set-hero_subtitle">{{ settings.hero_subtitle }}</textarea></div>
+        <div class="setting-field"><label>Taking Bookings?</label>
+          <select id="set-taking_bookings">
+            <option value="yes" {% if settings.taking_bookings == 'yes' %}selected{% endif %}>Yes — open for bookings</option>
+            <option value="no"  {% if settings.taking_bookings == 'no'  %}selected{% endif %}>No — closed</option>
+          </select>
+        </div>
+        <p style="font-family:'Barlow Condensed',Arial,sans-serif;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:#555;margin-bottom:0.5rem;">Homepage featured images — upload images then mark them as Featured in the Images panel. They'll appear on the homepage automatically.</p>
+        <button class="settings-save-btn" onclick="saveSettings(['hero_title','hero_subtitle','taking_bookings'])">Save Homepage</button>
+      </div>
+
+      <!-- About page -->
+      <div class="settings-group">
+        <p class="settings-group-title">👤 About Page</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+          <div class="setting-field"><label>Your Name</label><input type="text" id="set-about_name" value="{{ settings.about_name }}"></div>
+          <div class="setting-field"><label>Location</label><input type="text" id="set-about_location" value="{{ settings.about_location }}"></div>
+        </div>
+        <div class="setting-field"><label>Profile Photo URL — upload a photo first then paste its URL here</label><input type="text" id="set-about_photo" value="{{ settings.about_photo }}" placeholder="https://res.cloudinary.com/..."></div>
+        <div class="setting-field"><label>Months Shooting (badge number)</label><input type="text" id="set-about_months" value="{{ settings.about_months }}"></div>
+        <div class="setting-field"><label>Bio Paragraph 1</label><textarea id="set-about_bio1">{{ settings.about_bio1 }}</textarea></div>
+        <div class="setting-field"><label>Bio Paragraph 2</label><textarea id="set-about_bio2">{{ settings.about_bio2 }}</textarea></div>
+        <div class="setting-field"><label>Bio Paragraph 3</label><textarea id="set-about_bio3">{{ settings.about_bio3 }}</textarea></div>
+        <div class="setting-field"><label>Bio Paragraph 4</label><textarea id="set-about_bio4">{{ settings.about_bio4 }}</textarea></div>
+        <div class="setting-field"><label>Bio Paragraph 5</label><textarea id="set-about_bio5">{{ settings.about_bio5 }}</textarea></div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;">
+          <div class="setting-field"><label>Stat 1 Number</label><input type="text" id="set-about_stat1_n" value="{{ settings.about_stat1_n }}"></div>
+          <div class="setting-field"><label>Stat 1 Label</label><input type="text" id="set-about_stat1_l" value="{{ settings.about_stat1_l }}"></div>
+          <div></div>
+          <div class="setting-field"><label>Stat 2 Number</label><input type="text" id="set-about_stat2_n" value="{{ settings.about_stat2_n }}"></div>
+          <div class="setting-field"><label>Stat 2 Label</label><input type="text" id="set-about_stat2_l" value="{{ settings.about_stat2_l }}"></div>
+          <div></div>
+          <div class="setting-field"><label>Stat 3 Number</label><input type="text" id="set-about_stat3_n" value="{{ settings.about_stat3_n }}"></div>
+          <div class="setting-field"><label>Stat 3 Label</label><input type="text" id="set-about_stat3_l" value="{{ settings.about_stat3_l }}"></div>
+        </div>
+        <button class="settings-save-btn" onclick="saveSettings(['about_name','about_location','about_photo','about_months','about_bio1','about_bio2','about_bio3','about_bio4','about_bio5','about_stat1_n','about_stat1_l','about_stat2_n','about_stat2_l','about_stat3_n','about_stat3_l'])">Save About Page</button>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
     <div class="admin-panel" id="panel-settings">
-      <p class="panel-title">Site Settings</p>
-      <p class="panel-sub">Edit your website without touching code</p>
-      <div class="settings-grid">
-        <div class="settings-group">
-          <p class="settings-group-title">Homepage</p>
-          <div class="setting-field"><label>Hero Title</label><input type="text" id="set-hero_title" value="{{ settings.hero_title }}"></div>
-          <div class="setting-field"><label>Hero Subtitle</label><textarea id="set-hero_subtitle">{{ settings.hero_subtitle }}</textarea></div>
-          <div class="setting-field"><label>Taking Bookings?</label>
-            <select id="set-taking_bookings">
-              <option value="yes" {% if settings.taking_bookings == 'yes' %}selected{% endif %}>Yes — open for bookings</option>
-              <option value="no"  {% if settings.taking_bookings == 'no'  %}selected{% endif %}>No — closed</option>
-            </select>
-          </div>
-          <button class="settings-save-btn" onclick="saveSettings(['hero_title','hero_subtitle','taking_bookings'])">Save Homepage Settings</button>
-        </div>
-        <div class="settings-group">
-          <p class="settings-group-title">About & Contact</p>
-          <div class="setting-field"><label>Location</label><input type="text" id="set-location" value="{{ settings.location }}"></div>
-          <div class="setting-field"><label>Instagram URL</label><input type="text" id="set-instagram" value="{{ settings.instagram }}"></div>
-          <div class="setting-field"><label>TikTok URL</label><input type="text" id="set-tiktok" value="{{ settings.tiktok }}"></div>
-          <div class="setting-field"><label>Bio (About page)</label><textarea id="set-about_bio">{{ settings.about_bio }}</textarea></div>
-          <button class="settings-save-btn" onclick="saveSettings(['location','instagram','tiktok','about_bio'])">Save Contact Settings</button>
-        </div>
+      <p class="panel-title">Settings</p>
+      <p class="panel-sub">Social links and site details</p>
+      <div class="settings-group">
+        <p class="settings-group-title">Social & Contact</p>
+        <div class="setting-field"><label>Instagram URL</label><input type="text" id="set-instagram" value="{{ settings.instagram }}"></div>
+        <div class="setting-field"><label>TikTok URL</label><input type="text" id="set-tiktok" value="{{ settings.tiktok }}"></div>
+        <div class="setting-field"><label>Location (shown in footer)</label><input type="text" id="set-location" value="{{ settings.location }}"></div>
+        <button class="settings-save-btn" onclick="saveSettings(['instagram','tiktok','location'])">Save Settings</button>
       </div>
     </div>
 
   </div>
 </div>
+
 <div class="toast" id="toast"></div>
 {% endblock %}
 
 {% block extra_js %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script>
+
 function showPanel(name, btn) {
   document.querySelectorAll('.admin-panel').forEach(function(p) { p.classList.remove('active'); });
   document.querySelectorAll('.sidebar-link').forEach(function(b) { b.classList.remove('active'); });
   document.getElementById('panel-' + name).classList.add('active');
   btn.classList.add('active');
 }
+
 function toast(msg, isErr) {
   var t = document.getElementById('toast');
   t.textContent = msg;
   t.className = 'toast show' + (isErr ? ' err' : '');
   setTimeout(function() { t.className = 'toast'; }, 3000);
 }
+
 var chartLabels = {{ analytics.chart_labels | safe }};
 var chartData   = {{ analytics.chart_data   | safe }};
 var pageCounts  = {{ analytics.page_counts  | tojson }};
+
 new Chart(document.getElementById('viewsChart'), {
   type: 'bar',
   data: { labels: chartLabels, datasets: [{ data: chartData, backgroundColor: 'rgba(232,0,13,0.6)', borderColor: '#e8000d', borderWidth: 1, borderRadius: 2 }] },
   options: { plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#555' }, grid: { color: 'rgba(255,255,255,0.04)' } }, y: { ticks: { color: '#555' }, grid: { color: 'rgba(255,255,255,0.04)' }, beginAtZero: true } } }
 });
+
 var total = Object.values(pageCounts).reduce(function(a,b){ return a+b; }, 0) || 1;
 var bd = document.getElementById('pageBreakdown');
 Object.entries(pageCounts).forEach(function(entry) {
@@ -299,7 +426,9 @@ Object.entries(pageCounts).forEach(function(entry) {
   var pct = Math.round((count / total) * 100);
   bd.innerHTML += '<div class="pb-row"><span class="pb-label">' + page + '</span><div class="pb-bar-wrap"><div class="pb-bar" style="width:' + pct + '%"></div></div><span class="pb-count">' + count + '</span></div>';
 });
+
 function toggleDetail(id) { document.getElementById('detail-' + id).classList.toggle('open'); }
+
 function setStatus(id, status) {
   fetch('/admin/mark/' + id + '/' + status).then(function() {
     var badge = document.getElementById('badge-' + id);
@@ -308,6 +437,7 @@ function setStatus(id, status) {
     toast('Status updated');
   });
 }
+
 function deleteBooking(id) {
   if (!confirm('Delete this booking?')) return;
   fetch('/admin/booking/delete/' + id, { method: 'POST' }).then(function() {
@@ -318,17 +448,20 @@ function deleteBooking(id) {
     toast('Booking deleted');
   });
 }
+
 var selectedFiles = [];
 document.getElementById('fileInput').addEventListener('change', function() { selectedFiles = Array.from(this.files); renderPreviews(); });
 var dz = document.getElementById('dropZone');
 dz.addEventListener('dragover', function(e) { e.preventDefault(); dz.classList.add('dragover'); });
 dz.addEventListener('dragleave', function() { dz.classList.remove('dragover'); });
 dz.addEventListener('drop', function(e) { e.preventDefault(); dz.classList.remove('dragover'); selectedFiles = Array.from(e.dataTransfer.files); renderPreviews(); });
+
 function renderPreviews() {
   var pv = document.getElementById('filePreview');
   pv.innerHTML = '';
   selectedFiles.forEach(function(f) { var url = URL.createObjectURL(f); pv.innerHTML += '<img src="' + url + '" style="width:70px;height:70px;object-fit:cover;filter:brightness(0.85);">'; });
 }
+
 function uploadFiles() {
   if (!selectedFiles.length) { toast('No files selected', true); return; }
   var title = document.getElementById('upTitle').value.trim();
@@ -338,9 +471,13 @@ function uploadFiles() {
   selectedFiles.forEach(function(file) {
     var fd = new FormData();
     fd.append('file', file); fd.append('title', title || file.name.replace(/\.[^.]+$/, '')); fd.append('category', cat); fd.append('featured', featured);
-    fetch('/admin/upload', { method: 'POST', body: fd }).then(function(r) { return r.json(); }).then(function() { done++; if (done === selectedFiles.length) { toast('Uploaded ' + done + ' image' + (done > 1 ? 's' : '')); setTimeout(function() { location.reload(); }, 1200); } }).catch(function() { toast('Upload failed', true); });
+    fetch('/admin/upload', { method: 'POST', body: fd })
+      .then(function(r) { return r.json(); })
+      .then(function() { done++; if (done === selectedFiles.length) { toast('Uploaded ' + done + ' image' + (done > 1 ? 's' : '')); setTimeout(function() { location.reload(); }, 1200); } })
+      .catch(function() { toast('Upload failed', true); });
   });
 }
+
 function savePhoto(id) {
   var fd = new FormData();
   fd.append('title', document.getElementById('title-' + id).value);
@@ -348,10 +485,62 @@ function savePhoto(id) {
   fd.append('featured', document.getElementById('feat-' + id).value);
   fetch('/admin/photo/edit/' + id, { method: 'POST', body: fd }).then(function() { toast('Saved'); });
 }
+
 function deletePhoto(id) {
-  if (!confirm('Delete this image?')) return;
-  fetch('/admin/photo/delete/' + id, { method: 'POST' }).then(function() { var card = document.getElementById('imgcard-' + id); if (card) card.remove(); toast('Image deleted'); });
+  if (!confirm('Delete this image permanently?')) return;
+  fetch('/admin/photo/delete/' + id, { method: 'POST' }).then(function() {
+    var card = document.getElementById('imgcard-' + id);
+    if (card) { card.style.opacity = '0'; card.style.transition = 'opacity 0.3s'; setTimeout(function() { card.remove(); }, 300); }
+    toast('Image deleted');
+  });
 }
+
+function openBlogEditor(id, title, category, cover, published, body) {
+  var editor = document.getElementById('blogEditor');
+  editor.classList.add('active');
+  editor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.getElementById('blogId').value = id || '';
+  document.getElementById('blogTitle').value = title || '';
+  document.getElementById('blogCategory').value = category || 'general';
+  document.getElementById('blogCover').value = cover || '';
+  document.getElementById('blogBody').value = body || '';
+  document.getElementById('blogPublished').value = published === 'True' || published === true ? 'true' : 'false';
+  document.getElementById('blogEditorTitle').textContent = id ? 'Edit Post' : 'New Post';
+}
+
+function closeBlogEditor() {
+  document.getElementById('blogEditor').classList.remove('active');
+  document.getElementById('blogId').value = '';
+  document.getElementById('blogTitle').value = '';
+  document.getElementById('blogBody').value = '';
+  document.getElementById('blogCover').value = '';
+}
+
+function saveBlog() {
+  var id        = document.getElementById('blogId').value;
+  var title     = document.getElementById('blogTitle').value.trim();
+  var body      = document.getElementById('blogBody').value.trim();
+  var cover     = document.getElementById('blogCover').value.trim();
+  var category  = document.getElementById('blogCategory').value;
+  var published = document.getElementById('blogPublished').value === 'true';
+  if (!title) { toast('Title is required', true); return; }
+  fetch('/admin/blog/save', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id: id ? parseInt(id) : null, title: title, body: body, cover_url: cover, category: category, published: published })
+  }).then(function(r) { return r.json(); })
+    .then(function() { toast('Post saved'); closeBlogEditor(); setTimeout(function() { location.reload(); }, 1000); });
+}
+
+function deleteBlog(id) {
+  if (!confirm('Delete this post?')) return;
+  fetch('/admin/blog/delete/' + id, { method: 'POST' }).then(function() {
+    var card = document.getElementById('blogcard-' + id);
+    if (card) card.remove();
+    toast('Post deleted');
+  });
+}
+
 function addNote() {
   var grid = document.getElementById('notesGrid');
   var card = document.createElement('div');
@@ -359,20 +548,24 @@ function addNote() {
   card.innerHTML = '<textarea placeholder="Write something..." id="notecontent-new"></textarea><div class="note-actions"><button class="note-save-btn" onclick="saveNote(\'new\')">Save</button></div>';
   grid.prepend(card);
 }
+
 function saveNote(id) {
   var content = document.getElementById('notecontent-' + id).value.trim();
   if (!content) { toast('Note is empty', true); return; }
   fetch('/admin/note/save', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: id === 'new' ? null : id, content: content }) })
     .then(function(r) { return r.json(); }).then(function() { toast('Note saved'); if (id === 'new') setTimeout(function() { location.reload(); }, 1000); });
 }
+
 function deleteNote(id) {
   if (!confirm('Delete this note?')) return;
   fetch('/admin/note/delete/' + id, { method: 'POST' }).then(function() { var card = document.getElementById('note-' + id); if (card) card.remove(); toast('Note deleted'); });
 }
+
 function saveSettings(keys) {
   var data = {};
   keys.forEach(function(k) { var el = document.getElementById('set-' + k); if (el) data[k] = el.value; });
-  fetch('/admin/settings/save', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(function() { toast('Settings saved'); });
+  fetch('/admin/settings/save', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(function() { toast('Saved successfully'); });
 }
+
 </script>
 {% endblock %}
