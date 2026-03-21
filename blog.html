@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Blog — TINO Photography{% endblock %}
+
+{% block content %}
+
+<div class="page-banner">
+  <p class="label">From the Lens</p>
+  <h1>The Blog</h1>
+  <p>Behind the scenes, shoot recaps, tips and thoughts from Nottingham.</p>
+</div>
+
+<section class="section">
+
+  {% if posts %}
+
+  <!-- FEATURED POST — first one is big -->
+  {% set first = posts[0] %}
+  <div style="margin-bottom:3rem;">
+    <a href="{{ url_for('blog_post', slug=first.slug) }}" style="display:grid;grid-template-columns:1fr 1fr;gap:0;background:#111;border:1px solid rgba(245,240,235,0.08);overflow:hidden;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#e8000d'" onmouseout="this.style.borderColor='rgba(245,240,235,0.08)'">
+      {% if first.cover_url %}
+      <img src="{{ first.cover_url }}" alt="{{ first.title }}" style="width:100%;height:100%;object-fit:cover;filter:brightness(0.85);min-height:350px;">
+      {% else %}
+      <div style="background:#1a1a1a;display:flex;align-items:center;justify-content:center;min-height:350px;font-size:3rem;">📷</div>
+      {% endif %}
+      <div style="padding:3rem 2.5rem;display:flex;flex-direction:column;justify-content:center;">
+        <p style="font-family:'Barlow Condensed',Arial,sans-serif;font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:#e8000d;margin-bottom:0.75rem;">{{ first.category | capitalize }} · {{ first.created_at.strftime('%d %b %Y') }}</p>
+        <h2 style="font-family:'Playfair Display',Georgia,serif;font-size:clamp(1.5rem,3vw,2.2rem);font-weight:900;color:#f5f0eb;line-height:1.1;margin-bottom:1rem;">{{ first.title }}</h2>
+        <p style="color:#888;font-size:0.9rem;line-height:1.8;margin-bottom:1.5rem;">{{ first.body[:200] }}{% if first.body|length > 200 %}...{% endif %}</p>
+        <span style="font-family:'Barlow Condensed',Arial,sans-serif;font-size:0.75rem;letter-spacing:0.15em;text-transform:uppercase;color:#e8000d;">Read More →</span>
+      </div>
+    </a>
+  </div>
+
+  <!-- REST OF POSTS -->
+  {% if posts|length > 1 %}
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;">
+    {% for post in posts[1:] %}
+    <a href="{{ url_for('blog_post', slug=post.slug) }}" style="display:block;background:#111;border:1px solid rgba(245,240,235,0.08);overflow:hidden;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#e8000d'" onmouseout="this.style.borderColor='rgba(245,240,235,0.08)'">
+      {% if post.cover_url %}
+      <img src="{{ post.cover_url }}" alt="{{ post.title }}" style="width:100%;aspect-ratio:16/9;object-fit:cover;filter:brightness(0.85);">
+      {% else %}
+      <div style="aspect-ratio:16/9;background:#1a1a1a;display:flex;align-items:center;justify-content:center;font-size:2rem;">📷</div>
+      {% endif %}
+      <div style="padding:1.5rem;">
+        <p style="font-family:'Barlow Condensed',Arial,sans-serif;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:#e8000d;margin-bottom:0.5rem;">{{ post.category | capitalize }} · {{ post.created_at.strftime('%d %b %Y') }}</p>
+        <h3 style="font-family:'Playfair Display',Georgia,serif;font-size:1.15rem;font-weight:900;color:#f5f0eb;line-height:1.2;margin-bottom:0.75rem;">{{ post.title }}</h3>
+        <p style="color:#666;font-size:0.83rem;line-height:1.7;margin-bottom:1rem;">{{ post.body[:120] }}{% if post.body|length > 120 %}...{% endif %}</p>
+        <span style="font-family:'Barlow Condensed',Arial,sans-serif;font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:#e8000d;">Read More →</span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% else %}
+
+  <!-- No posts yet -->
+  <div style="text-align:center;padding:6rem 2rem;border:1px dashed rgba(245,240,235,0.08);">
+    <p style="font-size:3rem;margin-bottom:1rem;">📷</p>
+    <p style="font-family:'Playfair Display',Georgia,serif;font-size:1.5rem;color:#f5f0eb;margin-bottom:0.75rem;">Nothing here yet.</p>
+    <p style="color:#555;font-size:0.9rem;">First post coming soon.</p>
+  </div>
+
+  {% endif %}
+
+</section>
+
+{% endblock %}
