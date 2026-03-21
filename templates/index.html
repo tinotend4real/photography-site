@@ -6,7 +6,7 @@
 <!-- HERO SECTION -->
 <section style="position: relative; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 6rem 3rem 4rem; overflow: hidden;">
 
-  <!-- Background image: art_gallery -->
+  <!-- Background image -->
   <div style="position: absolute; inset: 0; z-index: 0;">
     <img src="{{ url_for('static', filename='images/art_gallery.jfif') }}"
          alt="Hero"
@@ -18,30 +18,30 @@
 
   <!-- Text -->
   <div style="position: relative; z-index: 2; max-width: 700px;">
-    <p style="font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase; color: #e8000d; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem;">
-      <span style="width: 40px; height: 1px; background: #e8000d; display: inline-block;"></span>
+    <p style="font-family:'Barlow Condensed',Arial,sans-serif;font-size:0.7rem;letter-spacing:0.25em;text-transform:uppercase;color:#e8000d;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem;">
+      <span style="width:40px;height:1px;background:#e8000d;display:inline-block;"></span>
       Nottingham, UK — Est. 2024
     </p>
 
-    <h1 style="font-family: 'Playfair Display', Georgia, serif; font-size: clamp(3.5rem, 8vw, 8rem); font-weight: 900; line-height: 0.92; color: #f5f0eb; margin-bottom: 2rem;">
-      The<br>Art of<br><em style="font-style: italic; color: #e8000d;">Real</em><br>Shots.
+    <h1 style="font-family:'Playfair Display',Georgia,serif;font-size:clamp(3.5rem,8vw,8rem);font-weight:900;line-height:0.92;color:#f5f0eb;margin-bottom:2rem;">
+      The<br>Art of<br><em style="font-style:italic;color:#e8000d;">Real</em><br>Shots.
     </h1>
 
-    <p style="font-size: 1rem; line-height: 1.8; color: #cccccc; max-width: 420px; margin-bottom: 2.5rem;">
+    <p style="font-size:1rem;line-height:1.8;color:#cccccc;max-width:420px;margin-bottom:2.5rem;">
       Portraits, street, fashion, food & events across Nottingham.
       Real people. Real places. Real moments.
     </p>
 
-    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;">
       <a href="{{ url_for('portfolio') }}" class="btn-primary">View Work</a>
       <a href="{{ url_for('contact') }}" class="btn-outline">Book a Shoot</a>
     </div>
   </div>
 
   <!-- Scroll hint -->
-  <div style="position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); z-index: 2; text-align: center;">
-    <p style="font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: #666;">Scroll</p>
-    <div style="width: 1px; height: 40px; background: #e8000d; margin: 0.4rem auto 0;"></div>
+  <div style="position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);z-index:2;text-align:center;">
+    <p style="font-family:'Barlow Condensed',Arial,sans-serif;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:#666;">Scroll</p>
+    <div style="width:1px;height:40px;background:#e8000d;margin:0.4rem auto 0;"></div>
   </div>
 </section>
 
@@ -71,7 +71,7 @@
   </div>
 </div>
 
-<!-- SHOTS OF THE YEAR -->
+<!-- STANDOUT SHOTS -->
 <section class="section">
   <div class="sec-head">
     <div>
@@ -81,49 +81,86 @@
     <a href="{{ url_for('portfolio') }}" class="sec-link">View all work →</a>
   </div>
 
-  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
-
-    <div style="overflow: hidden; cursor: pointer; position: relative;" onclick="openLightbox(featuredPhotos, 0)">
-      <img src="{{ url_for('static', filename='images/thrifts2.jfif') }}"
-           alt="Thrifts"
-           style="width: 100%; aspect-ratio: 3/4; object-fit: cover; filter: brightness(0.8); transition: transform 0.5s, filter 0.3s;"
+  {% if featured %}
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px;">
+    {% for p in featured %}
+    <div style="overflow:hidden;cursor:pointer;position:relative;" onclick="openLightbox(featuredPhotos, {{ loop.index0 }})">
+      <img src="{{ p.url }}" alt="{{ p.title }}"
+           style="width:100%;aspect-ratio:3/4;object-fit:cover;filter:brightness(0.8);transition:transform 0.5s,filter 0.3s;"
            onmouseover="this.style.transform='scale(1.04)';this.style.filter='brightness(1)'"
            onmouseout="this.style.transform='scale(1)';this.style.filter='brightness(0.8)'">
-      <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 1rem; background: linear-gradient(transparent, rgba(0,0,0,0.8));">
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:1rem;background:linear-gradient(transparent,rgba(0,0,0,0.8));">
+        <p style="font-family:'Barlow Condensed',Arial,sans-serif;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:#e8000d;margin:0;">{{ p.category | capitalize }}</p>
+        <p style="font-family:'Playfair Display',Georgia,serif;font-size:0.95rem;color:#f5f0eb;margin:0;">{{ p.title }}</p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+    <div style="overflow:hidden;cursor:pointer;position:relative;" onclick="openLightbox(featuredPhotos, 0)">
+      <img src="{{ url_for('static', filename='images/thrifts2.jfif') }}" alt="Thrifts"
+           style="width:100%;aspect-ratio:3/4;object-fit:cover;filter:brightness(0.8);transition:transform 0.5s,filter 0.3s;"
+           onmouseover="this.style.transform='scale(1.04)';this.style.filter='brightness(1)'"
+           onmouseout="this.style.transform='scale(1)';this.style.filter='brightness(0.8)'">
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:1rem;background:linear-gradient(transparent,rgba(0,0,0,0.8));">
         <p style="font-family:'Barlow Condensed',Arial,sans-serif;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:#e8000d;margin:0;">Fashion</p>
         <p style="font-family:'Playfair Display',Georgia,serif;font-size:0.95rem;color:#f5f0eb;margin:0;">Thrifts</p>
       </div>
     </div>
-
-    <div style="overflow: hidden; cursor: pointer; position: relative;" onclick="openLightbox(featuredPhotos, 1)">
-      <img src="{{ url_for('static', filename='images/night_out_notts.jfif') }}"
-           alt="Night Out Notts"
-           style="width: 100%; aspect-ratio: 3/4; object-fit: cover; filter: brightness(0.8); transition: transform 0.5s, filter 0.3s;"
+    <div style="overflow:hidden;cursor:pointer;position:relative;" onclick="openLightbox(featuredPhotos, 1)">
+      <img src="{{ url_for('static', filename='images/night_out_notts.jfif') }}" alt="Night Out"
+           style="width:100%;aspect-ratio:3/4;object-fit:cover;filter:brightness(0.8);transition:transform 0.5s,filter 0.3s;"
            onmouseover="this.style.transform='scale(1.04)';this.style.filter='brightness(1)'"
            onmouseout="this.style.transform='scale(1)';this.style.filter='brightness(0.8)'">
-      <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 1rem; background: linear-gradient(transparent, rgba(0,0,0,0.8));">
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:1rem;background:linear-gradient(transparent,rgba(0,0,0,0.8));">
         <p style="font-family:'Barlow Condensed',Arial,sans-serif;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:#e8000d;margin:0;">Events</p>
         <p style="font-family:'Playfair Display',Georgia,serif;font-size:0.95rem;color:#f5f0eb;margin:0;">Night Out Notts</p>
       </div>
     </div>
-
-    <div style="overflow: hidden; cursor: pointer; position: relative;" onclick="openLightbox(featuredPhotos, 2)">
-      <img src="{{ url_for('static', filename='images/cecilstreet.jpg') }}"
-           alt="Cecil Street"
-           style="width: 100%; aspect-ratio: 3/4; object-fit: cover; filter: brightness(0.8); transition: transform 0.5s, filter 0.3s;"
+    <div style="overflow:hidden;cursor:pointer;position:relative;" onclick="openLightbox(featuredPhotos, 2)">
+      <img src="{{ url_for('static', filename='images/cecilstreet.jpg') }}" alt="Cecil Street"
+           style="width:100%;aspect-ratio:3/4;object-fit:cover;filter:brightness(0.8);transition:transform 0.5s,filter 0.3s;"
            onmouseover="this.style.transform='scale(1.04)';this.style.filter='brightness(1)'"
            onmouseout="this.style.transform='scale(1)';this.style.filter='brightness(0.8)'">
-      <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 1rem; background: linear-gradient(transparent, rgba(0,0,0,0.8));">
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:1rem;background:linear-gradient(transparent,rgba(0,0,0,0.8));">
         <p style="font-family:'Barlow Condensed',Arial,sans-serif;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:#e8000d;margin:0;">Street</p>
         <p style="font-family:'Playfair Display',Georgia,serif;font-size:0.95rem;color:#f5f0eb;margin:0;">Cecil Street</p>
       </div>
     </div>
-
   </div>
+  {% endif %}
 </section>
 
-<!-- SERVICES PREVIEW -->
+<!-- LATEST BLOG POSTS -->
+{% if latest_posts %}
 <section class="section section-alt">
+  <div class="sec-head">
+    <div>
+      <p class="sec-label">From the Blog</p>
+      <h2 class="sec-title">Latest Posts</h2>
+    </div>
+    <a href="{{ url_for('blog') }}" class="sec-link">All posts →</a>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;">
+    {% for post in latest_posts %}
+    <a href="{{ url_for('blog_post', slug=post.slug) }}" style="display:block;background:#141414;border:1px solid rgba(245,240,235,0.08);transition:border-color 0.2s;" onmouseover="this.style.borderColor='#e8000d'" onmouseout="this.style.borderColor='rgba(245,240,235,0.08)'">
+      {% if post.cover_url %}
+      <img src="{{ post.cover_url }}" alt="{{ post.title }}" style="width:100%;aspect-ratio:16/9;object-fit:cover;filter:brightness(0.85);">
+      {% endif %}
+      <div style="padding:1.2rem;">
+        <p style="font-family:'Barlow Condensed',Arial,sans-serif;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:#e8000d;margin-bottom:0.4rem;">{{ post.category | capitalize }}</p>
+        <p style="font-family:'Playfair Display',Georgia,serif;font-size:1.1rem;color:#f5f0eb;margin-bottom:0.5rem;">{{ post.title }}</p>
+        <p style="font-size:0.8rem;color:#888;">{{ post.created_at.strftime('%d %b %Y') }}</p>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<!-- SERVICES PREVIEW -->
+<section class="section {% if not latest_posts %}section-alt{% endif %}">
   <div class="sec-head">
     <div>
       <p class="sec-label">What I Offer</p>
@@ -169,9 +206,15 @@
 {% block extra_js %}
 <script>
   var featuredPhotos = [
-    "{{ url_for('static', filename='images/thrifts2.jfif') }}",
-    "{{ url_for('static', filename='images/night_out_notts.jfif') }}",
-    "{{ url_for('static', filename='images/cecilstreet.jpg') }}"
+    {% if featured %}
+      {% for p in featured %}
+      "{{ p.url }}"{% if not loop.last %},{% endif %}
+      {% endfor %}
+    {% else %}
+      "{{ url_for('static', filename='images/thrifts2.jfif') }}",
+      "{{ url_for('static', filename='images/night_out_notts.jfif') }}",
+      "{{ url_for('static', filename='images/cecilstreet.jpg') }}"
+    {% endif %}
   ];
 </script>
 {% endblock %}
