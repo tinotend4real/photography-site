@@ -89,6 +89,17 @@ class SiteSettings(db.Model):
     key   = db.Column(db.String(100), unique=True)
     value = db.Column(db.Text)
 
+class BlogPost(db.Model):
+    id           = db.Column(db.Integer, primary_key=True)
+    title        = db.Column(db.String(200))
+    slug         = db.Column(db.String(200), unique=True)
+    body         = db.Column(db.Text)
+    cover_url    = db.Column(db.Text)
+    category     = db.Column(db.String(100), default='general')
+    published    = db.Column(db.Boolean, default=False)
+    created_at   = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at   = db.Column(db.DateTime, default=datetime.utcnow)
+
 # ── CREATE TABLES ───────────────────────────────────────────────────────────────
 with app.app_context():
     db.create_all()
@@ -122,12 +133,20 @@ def set_setting(key, value):
     except:
         db.session.rollback()
 
+def slugify(text):
+    import re
+    text = text.lower().strip()
+    text = re.sub(r'[^\w\s-]', '', text)
+    text = re.sub(r'[\s_-]+', '-', text)
+    return text
+
 # ── PUBLIC ROUTES ───────────────────────────────────────────────────────────────
 @app.route('/')
 def index():
     track('home')
     featured = Photo.query.filter_by(featured=True).order_by(Photo.uploaded_at.desc()).all()
-    return render_template('index.html', featured=featured)
+    latest_posts = BlogPost.query.filter_by(published=True).order_by(BlogPost.created_at.desc()).limit(3).all()
+    return render_template('index.html', featured=featured, latest_posts=latest_posts)
 
 @app.route('/portfolio')
 def portfolio():
@@ -143,12 +162,40 @@ def services():
 @app.route('/about')
 def about():
     track('about')
-    return render_template('about.html')
+    about_settings = {
+        'about_name':     get_setting('about_name',     'Tino'),
+        'about_location': get_setting('about_location', 'Nottingham'),
+        'about_bio1':     get_setting('about_bio1',     "I didn't start photography because I wanted to be a photographer. I started because I kept seeing moments that deserved to be remembered properly."),
+        'about_bio2':     get_setting('about_bio2',     "Six months ago I picked up a camera for the first time. No course, no mentor, no plan. Just me figuring it out, shot by shot."),
+        'about_bio3':     get_setting('about_bio3',     "I'm based in Nottingham and I shoot everything."),
+        'about_bio4':     get_setting('about_bio4',     "What drives me is the idea that every scene has a version of itself that most people walk past."),
+        'about_bio5':     get_setting('about_bio5',     "Six months in. A lot more to come."),
+        'about_photo':    get_setting('about_photo',    ''),
+        'about_months':   get_setting('about_months',   '6'),
+        'about_stat1_n':  get_setting('about_stat1_n',  '40+'),
+        'about_stat1_l':  get_setting('about_stat1_l',  'Shots in Portfolio'),
+        'about_stat2_n':  get_setting('about_stat2_n',  '5+'),
+        'about_stat2_l':  get_setting('about_stat2_l',  'Categories'),
+        'about_stat3_n':  get_setting('about_stat3_n',  '24h'),
+        'about_stat3_l':  get_setting('about_stat3_l',  'Turnaround'),
+    }
+    return render_template('about.html', s=about_settings)
 
 @app.route('/contact')
 def contact():
     track('contact')
     return render_template('contact.html')
+
+@app.route('/blog')
+def blog():
+    track('blog')
+    posts = BlogPost.query.filter_by(published=True).order_by(BlogPost.created_at.desc()).all()
+    return render_template('blog.html', posts=posts)
+
+@app.route('/blog/<slug>')
+def blog_post(slug):
+    post = BlogPost.query.filter_by(slug=slug, published=True).first_or_404()
+    return render_template('blog_post.html', post=post)
 
 # ── SECRET LOGIN ────────────────────────────────────────────────────────────────
 @app.route('/backstage')
@@ -177,21 +224,36 @@ def admin_logout():
 @login_required
 def admin():
     try:
-        bookings = Booking.query.order_by(Booking.id.desc()).all()
-        photos   = Photo.query.order_by(Photo.uploaded_at.desc()).all()
-        notes    = Note.query.order_by(Note.updated_at.desc()).all()
+        bookings  = Booking.query.order_by(Booking.id.desc()).all()
+        photos    = Photo.query.order_by(Photo.uploaded_at.desc()).all()
+        notes     = Note.query.order_by(Note.updated_at.desc()).all()
+        posts     = BlogPost.query.order_by(BlogPost.created_at.desc()).all()
     except:
         db.session.rollback()
-        bookings, photos, notes = [], [], []
+        bookings, photos, notes, posts = [], [], [], []
 
     settings = {
         'hero_title':      get_setting('hero_title',      'The Art of Real Shots.'),
         'hero_subtitle':   get_setting('hero_subtitle',   'Portraits, street, fashion, food & events across Nottingham.'),
-        'about_bio':       get_setting('about_bio',       ''),
+        'taking_bookings': get_setting('taking_bookings', 'yes'),
         'instagram':       get_setting('instagram',       'https://www.instagram.com/tino4_real'),
         'tiktok':          get_setting('tiktok',          'https://www.tiktok.com/@tino4real._'),
         'location':        get_setting('location',        'Nottingham, UK'),
-        'taking_bookings': get_setting('taking_bookings', 'yes'),
+        'about_name':      get_setting('about_name',      'Tino'),
+        'about_location':  get_setting('about_location',  'Nottingham'),
+        'about_bio1':      get_setting('about_bio1',      ''),
+        'about_bio2':      get_setting('about_bio2',      ''),
+        'about_bio3':      get_setting('about_bio3',      ''),
+        'about_bio4':      get_setting('about_bio4',      ''),
+        'about_bio5':      get_setting('about_bio5',      ''),
+        'about_photo':     get_setting('about_photo',     ''),
+        'about_months':    get_setting('about_months',    '6'),
+        'about_stat1_n':   get_setting('about_stat1_n',   '40+'),
+        'about_stat1_l':   get_setting('about_stat1_l',   'Shots in Portfolio'),
+        'about_stat2_n':   get_setting('about_stat2_n',   '5+'),
+        'about_stat2_l':   get_setting('about_stat2_l',   'Categories'),
+        'about_stat3_n':   get_setting('about_stat3_n',   '24h'),
+        'about_stat3_l':   get_setting('about_stat3_l',   'Turnaround'),
     }
 
     try:
@@ -233,6 +295,7 @@ def admin():
         bookings=bookings,
         photos=photos,
         notes=notes,
+        posts=posts,
         settings=settings,
         analytics=analytics
     )
@@ -254,7 +317,7 @@ def delete_booking(bid):
     db.session.commit()
     return jsonify({'ok': True})
 
-# ── IMAGE UPLOAD — Cloudinary ───────────────────────────────────────────────────
+# ── IMAGE UPLOAD ────────────────────────────────────────────────────────────────
 @app.route('/admin/upload', methods=['POST'])
 @login_required
 def upload_photo():
@@ -264,15 +327,12 @@ def upload_photo():
     title    = request.form.get('title', '').strip()
     category = request.form.get('category', 'people').strip()
     featured = request.form.get('featured', 'false') == 'true'
-
     if file.filename == '':
         return jsonify({'ok': False, 'error': 'Empty filename'}), 400
-
     try:
         result   = cloudinary.uploader.upload(file, folder='tino_photography')
         url      = result['secure_url']
         filename = result['public_id'].replace('tino_photography/', '')
-
         existing = Photo.query.filter_by(filename=filename).first()
         if existing:
             existing.title    = title
@@ -280,17 +340,10 @@ def upload_photo():
             existing.featured = featured
             existing.url      = url
         else:
-            db.session.add(Photo(
-                filename=filename,
-                url=url,
-                title=title,
-                category=category,
-                featured=featured
-            ))
+            db.session.add(Photo(filename=filename, url=url, title=title, category=category, featured=featured))
         db.session.commit()
         return jsonify({'ok': True, 'url': url})
     except Exception as e:
-        print('Upload error:', e)
         return jsonify({'ok': False, 'error': str(e)}), 500
 
 # ── EDIT PHOTO ──────────────────────────────────────────────────────────────────
@@ -304,7 +357,7 @@ def edit_photo(pid):
     db.session.commit()
     return jsonify({'ok': True})
 
-# ── DELETE PHOTO — Cloudinary ───────────────────────────────────────────────────
+# ── DELETE PHOTO ─────────────────────────────────────────────────────────────────
 @app.route('/admin/photo/delete/<int:pid>', methods=['POST'])
 @login_required
 def delete_photo(pid):
@@ -313,6 +366,48 @@ def delete_photo(pid):
         cloudinary.uploader.destroy('tino_photography/' + p.filename)
     except Exception as e:
         print('Cloudinary delete error:', e)
+    db.session.delete(p)
+    db.session.commit()
+    return jsonify({'ok': True})
+
+# ── BLOG ROUTES ──────────────────────────────────────────────────────────────────
+@app.route('/admin/blog/save', methods=['POST'])
+@login_required
+def save_blog():
+    data      = request.get_json()
+    post_id   = data.get('id')
+    title     = data.get('title', '').strip()
+    body      = data.get('body', '').strip()
+    cover_url = data.get('cover_url', '').strip()
+    category  = data.get('category', 'general').strip()
+    published = data.get('published', False)
+
+    if post_id:
+        p = BlogPost.query.get(post_id)
+        if p:
+            p.title      = title
+            p.body       = body
+            p.cover_url  = cover_url
+            p.category   = category
+            p.published  = published
+            p.updated_at = datetime.utcnow()
+            if not p.slug:
+                p.slug = slugify(title)
+    else:
+        slug = slugify(title)
+        existing = BlogPost.query.filter_by(slug=slug).first()
+        if existing:
+            slug = slug + '-' + str(int(datetime.utcnow().timestamp()))
+        p = BlogPost(title=title, slug=slug, body=body, cover_url=cover_url, category=category, published=published)
+        db.session.add(p)
+
+    db.session.commit()
+    return jsonify({'ok': True, 'id': p.id, 'slug': p.slug})
+
+@app.route('/admin/blog/delete/<int:pid>', methods=['POST'])
+@login_required
+def delete_blog(pid):
+    p = BlogPost.query.get_or_404(pid)
     db.session.delete(p)
     db.session.commit()
     return jsonify({'ok': True})
@@ -360,14 +455,11 @@ def submit():
     email      = data.get('email', '').strip()
     shoot_type = data.get('shoot_type', '').strip()
     message    = data.get('message', '').strip()
-
     if not all([name, email, shoot_type, message]):
         return jsonify({'success': False, 'error': 'All fields required'}), 400
-
     booking = Booking(name=name, email=email, shoot_type=shoot_type, message=message)
     db.session.add(booking)
     db.session.commit()
-
     try:
         msg = Message(
             subject=f'New Booking — {shoot_type}',
@@ -385,7 +477,6 @@ def submit():
         mail.send(msg)
     except Exception as e:
         print('Mail error:', e)
-
     return jsonify({'success': True})
 
 # ── RUN ──────────────────────────────────────────────────────────────────────────
