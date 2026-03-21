@@ -18,6 +18,7 @@
     <li><a href="{{ url_for('portfolio') }}" {% if request.endpoint == 'portfolio' %}class="active"{% endif %}>Portfolio</a></li>
     <li><a href="{{ url_for('services') }}"  {% if request.endpoint == 'services'  %}class="active"{% endif %}>Services</a></li>
     <li><a href="{{ url_for('about') }}"     {% if request.endpoint == 'about'     %}class="active"{% endif %}>About</a></li>
+    <li><a href="{{ url_for('blog') }}"      {% if request.endpoint in ['blog', 'blog_post'] %}class="active"{% endif %}>Blog</a></li>
     <li><a href="{{ url_for('contact') }}" class="nav-book">Book Now</a></li>
   </ul>
   <button class="nav-burger" id="burger">&#9776;</button>
@@ -28,6 +29,7 @@
   <a href="{{ url_for('portfolio') }}">Portfolio</a>
   <a href="{{ url_for('services') }}">Services</a>
   <a href="{{ url_for('about') }}">About</a>
+  <a href="{{ url_for('blog') }}">Blog</a>
   <a href="{{ url_for('contact') }}">Book Now</a>
 </div>
 
@@ -42,6 +44,7 @@
   <div class="footer-links">
     <a href="https://www.instagram.com/tino4_real" target="_blank">Instagram</a>
     <a href="https://www.tiktok.com/@tino4real._" target="_blank">TikTok</a>
+    <a href="{{ url_for('blog') }}">Blog</a>
     <a href="{{ url_for('admin') }}">Admin</a>
   </div>
 </footer>
