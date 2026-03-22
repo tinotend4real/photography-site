@@ -90,15 +90,15 @@ class SiteSettings(db.Model):
     value = db.Column(db.Text)
 
 class BlogPost(db.Model):
-    id           = db.Column(db.Integer, primary_key=True)
-    title        = db.Column(db.String(200))
-    slug         = db.Column(db.String(200), unique=True)
-    body         = db.Column(db.Text)
-    cover_url    = db.Column(db.Text)
-    category     = db.Column(db.String(100), default='general')
-    published    = db.Column(db.Boolean, default=False)
-    created_at   = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at   = db.Column(db.DateTime, default=datetime.utcnow)
+    id         = db.Column(db.Integer, primary_key=True)
+    title      = db.Column(db.String(200))
+    slug       = db.Column(db.String(200), unique=True)
+    body       = db.Column(db.Text)
+    cover_url  = db.Column(db.Text)
+    category   = db.Column(db.String(100), default='general')
+    published  = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 # ── CREATE TABLES ───────────────────────────────────────────────────────────────
 with app.app_context():
@@ -144,9 +144,15 @@ def slugify(text):
 @app.route('/')
 def index():
     track('home')
-    featured = Photo.query.filter_by(featured=True).order_by(Photo.uploaded_at.desc()).all()
+    featured     = Photo.query.filter_by(featured=True).order_by(Photo.uploaded_at.desc()).all()
     latest_posts = BlogPost.query.filter_by(published=True).order_by(BlogPost.created_at.desc()).limit(3).all()
-    return render_template('index.html', featured=featured, latest_posts=latest_posts)
+    hero = {
+        'bg':       get_setting('hero_bg',       ''),
+        'title':    get_setting('hero_title',    'The Art of Real Shots.'),
+        'subtitle': get_setting('hero_subtitle', 'Portraits, street, fashion, food & events across Nottingham. Real people. Real places. Real moments.'),
+        'location': get_setting('hero_location', 'Nottingham, UK — Est. 2024'),
+    }
+    return render_template('index.html', featured=featured, latest_posts=latest_posts, hero=hero)
 
 @app.route('/portfolio')
 def portfolio():
@@ -157,7 +163,34 @@ def portfolio():
 @app.route('/services')
 def services():
     track('services')
-    return render_template('services.html')
+    services_settings = {
+        's1_name':  get_setting('s1_name',  'Portraits & Headshots'),
+        's1_desc':  get_setting('s1_desc',  'Whether it\'s for LinkedIn, social media, press shots or just something to remember a moment — I\'ll make sure you look good.'),
+        's1_price': get_setting('s1_price', 'From £30–£50'),
+        's2_name':  get_setting('s2_name',  'Fashion & Streetwear'),
+        's2_desc':  get_setting('s2_desc',  'Lookbooks, fit pics, brand content — shot on location around Nottingham or wherever you want.'),
+        's2_price': get_setting('s2_price', 'From £40–£70'),
+        's3_name':  get_setting('s3_name',  'Events & Club Nights'),
+        's3_desc':  get_setting('s3_desc',  'Full coverage of your night. Fast edits, shareable files ready to post.'),
+        's3_price': get_setting('s3_price', 'From £60–£100'),
+        's4_name':  get_setting('s4_name',  'Food & Restaurants'),
+        's4_desc':  get_setting('s4_desc',  'Atmosphere shots, plated dishes and interior photos for menus, Instagram and Google listings.'),
+        's4_price': get_setting('s4_price', 'From £50–£80'),
+        's5_name':  get_setting('s5_name',  'Brand & Product Shoots'),
+        's5_desc':  get_setting('s5_desc',  'Launch shoots, product photography and campaign content for upcoming brands.'),
+        's5_price': get_setting('s5_price', 'From £40–£80'),
+        's6_name':  get_setting('s6_name',  'Street & Documentary'),
+        's6_desc':  get_setting('s6_desc',  'Candid street photography, location shoots and documentary-style coverage.'),
+        's6_price': get_setting('s6_price', 'From £30–£60'),
+        's7_name':  get_setting('s7_name',  'Architecture & Interiors'),
+        's7_desc':  get_setting('s7_desc',  'Churches, buildings, interiors and architectural details across the Midlands.'),
+        's7_price': get_setting('s7_price', 'From £50–£80'),
+        's8_name':  get_setting('s8_name',  'Something Else?'),
+        's8_desc':  get_setting('s8_desc',  'Got something in mind that doesn\'t fit a category? I shoot everything.'),
+        's8_price': get_setting('s8_price', 'Price on request'),
+        'services_note': get_setting('services_note', 'All prices are rough guides. I\'m a beginner building my portfolio and I\'d rather shoot something great at a fair price than overcharge and underdeliver.'),
+    }
+    return render_template('services.html', s=services_settings)
 
 @app.route('/about')
 def about():
@@ -184,7 +217,14 @@ def about():
 @app.route('/contact')
 def contact():
     track('contact')
-    return render_template('contact.html')
+    contact_settings = {
+        'contact_email':    get_setting('contact_email',    'tinotend4official@icloud.com'),
+        'contact_location': get_setting('contact_location', 'Nottingham, UK'),
+        'contact_response': get_setting('contact_response', 'Within 24 hours'),
+        'contact_instagram':get_setting('instagram',        'https://www.instagram.com/tino4_real'),
+        'contact_status':   get_setting('taking_bookings',  'yes'),
+    }
+    return render_template('contact.html', s=contact_settings)
 
 @app.route('/blog')
 def blog():
@@ -224,10 +264,10 @@ def admin_logout():
 @login_required
 def admin():
     try:
-        bookings  = Booking.query.order_by(Booking.id.desc()).all()
-        photos    = Photo.query.order_by(Photo.uploaded_at.desc()).all()
-        notes     = Note.query.order_by(Note.updated_at.desc()).all()
-        posts     = BlogPost.query.order_by(BlogPost.created_at.desc()).all()
+        bookings = Booking.query.order_by(Booking.id.desc()).all()
+        photos   = Photo.query.order_by(Photo.uploaded_at.desc()).all()
+        notes    = Note.query.order_by(Note.updated_at.desc()).all()
+        posts    = BlogPost.query.order_by(BlogPost.created_at.desc()).all()
     except:
         db.session.rollback()
         bookings, photos, notes, posts = [], [], [], []
@@ -235,6 +275,8 @@ def admin():
     settings = {
         'hero_title':      get_setting('hero_title',      'The Art of Real Shots.'),
         'hero_subtitle':   get_setting('hero_subtitle',   'Portraits, street, fashion, food & events across Nottingham.'),
+        'hero_location':   get_setting('hero_location',   'Nottingham, UK — Est. 2024'),
+        'hero_bg':         get_setting('hero_bg',         ''),
         'taking_bookings': get_setting('taking_bookings', 'yes'),
         'instagram':       get_setting('instagram',       'https://www.instagram.com/tino4_real'),
         'tiktok':          get_setting('tiktok',          'https://www.tiktok.com/@tino4real._'),
@@ -254,6 +296,34 @@ def admin():
         'about_stat2_l':   get_setting('about_stat2_l',   'Categories'),
         'about_stat3_n':   get_setting('about_stat3_n',   '24h'),
         'about_stat3_l':   get_setting('about_stat3_l',   'Turnaround'),
+        's1_name':         get_setting('s1_name',         'Portraits & Headshots'),
+        's1_desc':         get_setting('s1_desc',         ''),
+        's1_price':        get_setting('s1_price',        'From £30–£50'),
+        's2_name':         get_setting('s2_name',         'Fashion & Streetwear'),
+        's2_desc':         get_setting('s2_desc',         ''),
+        's2_price':        get_setting('s2_price',        'From £40–£70'),
+        's3_name':         get_setting('s3_name',         'Events & Club Nights'),
+        's3_desc':         get_setting('s3_desc',         ''),
+        's3_price':        get_setting('s3_price',        'From £60–£100'),
+        's4_name':         get_setting('s4_name',         'Food & Restaurants'),
+        's4_desc':         get_setting('s4_desc',         ''),
+        's4_price':        get_setting('s4_price',        'From £50–£80'),
+        's5_name':         get_setting('s5_name',         'Brand & Product Shoots'),
+        's5_desc':         get_setting('s5_desc',         ''),
+        's5_price':        get_setting('s5_price',        'From £40–£80'),
+        's6_name':         get_setting('s6_name',         'Street & Documentary'),
+        's6_desc':         get_setting('s6_desc',         ''),
+        's6_price':        get_setting('s6_price',        'From £30–£60'),
+        's7_name':         get_setting('s7_name',         'Architecture & Interiors'),
+        's7_desc':         get_setting('s7_desc',         ''),
+        's7_price':        get_setting('s7_price',        'From £50–£80'),
+        's8_name':         get_setting('s8_name',         'Something Else?'),
+        's8_desc':         get_setting('s8_desc',         ''),
+        's8_price':        get_setting('s8_price',        'Price on request'),
+        'services_note':   get_setting('services_note',   ''),
+        'contact_email':   get_setting('contact_email',   'tinotend4official@icloud.com'),
+        'contact_location':get_setting('contact_location','Nottingham, UK'),
+        'contact_response':get_setting('contact_response','Within 24 hours'),
     }
 
     try:
@@ -381,7 +451,6 @@ def save_blog():
     cover_url = data.get('cover_url', '').strip()
     category  = data.get('category', 'general').strip()
     published = data.get('published', False)
-
     if post_id:
         p = BlogPost.query.get(post_id)
         if p:
@@ -400,7 +469,6 @@ def save_blog():
             slug = slug + '-' + str(int(datetime.utcnow().timestamp()))
         p = BlogPost(title=title, slug=slug, body=body, cover_url=cover_url, category=category, published=published)
         db.session.add(p)
-
     db.session.commit()
     return jsonify({'ok': True, 'id': p.id, 'slug': p.slug})
 
@@ -411,6 +479,12 @@ def delete_blog(pid):
     db.session.delete(p)
     db.session.commit()
     return jsonify({'ok': True})
+
+@app.route('/admin/blog/get/<int:pid>')
+@login_required
+def get_blog(pid):
+    p = BlogPost.query.get_or_404(pid)
+    return jsonify({'body': p.body, 'title': p.title})
 
 # ── NOTES ───────────────────────────────────────────────────────────────────────
 @app.route('/admin/note/save', methods=['POST'])
@@ -479,14 +553,6 @@ def submit():
         print('Mail error:', e)
     return jsonify({'success': True})
 
-#____blog_settings_addition______________________________________________________
-
-@app.route('/admin/blog/get/<int:pid>')
-@login_required
-def get_blog(pid):
-    p = BlogPost.query.get_or_404(pid)
-    return jsonify({'body': p.body, 'title': p.title})
-    
 # ── RUN ──────────────────────────────────────────────────────────────────────────
 if __name__ == '__main__':
     app.run(debug=True)
