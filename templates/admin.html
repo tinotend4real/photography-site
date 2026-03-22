@@ -64,7 +64,6 @@
   .note-del-btn:hover { background: rgba(232,0,13,0.1); }
   .add-note-btn { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; background: none; border: 1px dashed rgba(245,240,235,0.15); color: #555; padding: 0.7rem 1.5rem; cursor: pointer; transition: all 0.2s; }
   .add-note-btn:hover { border-color: #e8000d; color: #e8000d; }
-  .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
   .settings-group { background: #111; border: 1px solid rgba(245,240,235,0.07); padding: 1.5rem; margin-bottom: 1.5rem; }
   .settings-group-title { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: #e8000d; margin-bottom: 1.2rem; padding-bottom: 0.6rem; border-bottom: 1px solid rgba(232,0,13,0.2); }
   .setting-field { margin-bottom: 1rem; }
@@ -74,6 +73,8 @@
   .setting-field textarea { resize: vertical; min-height: 80px; }
   .settings-save-btn { width: 100%; background: #e8000d; color: #f5f0eb; border: none; padding: 0.8rem; font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase; cursor: pointer; margin-top: 1rem; transition: opacity 0.2s; }
   .settings-save-btn:hover { opacity: 0.85; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
   .booking-detail-row { background: rgba(232,0,13,0.03); display: none; }
   .booking-detail-row.open { display: table-row; }
   .booking-detail-cell { padding: 1rem 1rem 1.5rem 2rem; color: #888; font-size: 0.85rem; line-height: 1.7; border-bottom: 1px solid rgba(245,240,235,0.06); }
@@ -97,9 +98,10 @@
   .blog-editor.open { display: block; }
   .blog-editor input, .blog-editor textarea, .blog-editor select { width: 100%; background: #0c0c0c; border: 1px solid rgba(245,240,235,0.08); color: #f5f0eb; padding: 0.65rem 0.85rem; font-family: 'Barlow', Arial, sans-serif; font-size: 0.9rem; outline: none; transition: border-color 0.2s; margin-bottom: 0.75rem; }
   .blog-editor input:focus, .blog-editor textarea:focus, .blog-editor select:focus { border-color: #e8000d; }
-  .blog-editor textarea { resize: vertical; min-height: 200px; }
+  .blog-editor textarea { resize: vertical; min-height: 300px; }
   .blog-editor label { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.58rem; letter-spacing: 0.18em; text-transform: uppercase; color: #555; display: block; margin-bottom: 0.3rem; }
   .blog-editor-actions { display: flex; gap: 0.75rem; margin-top: 0.5rem; }
+  .tip { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: #444; padding: 0.75rem; background: rgba(232,0,13,0.04); border-left: 2px solid #e8000d; margin-bottom: 1rem; }
   .toast { position: fixed; bottom: 2rem; right: 2rem; background: #111; border-left: 3px solid #4caf50; color: #f5f0eb; padding: 0.9rem 1.5rem; font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; z-index: 9999; opacity: 0; transform: translateY(10px); transition: all 0.3s; pointer-events: none; }
   .toast.show { opacity: 1; transform: translateY(0); }
   .toast.err { border-left-color: #e8000d; }
@@ -109,7 +111,7 @@
     .sidebar-label { display: none; }
     .stats-row-4 { grid-template-columns: 1fr 1fr; }
     .upload-form { grid-template-columns: 1fr 1fr; }
-    .settings-grid { grid-template-columns: 1fr; }
+    .two-col, .three-col { grid-template-columns: 1fr; }
   }
 </style>
 {% endblock %}
@@ -126,10 +128,13 @@
     <button class="sidebar-link" onclick="showPanel('images', this)"><span class="sidebar-icon">🖼️</span> Images</button>
     <button class="sidebar-link" onclick="showPanel('blog', this)"><span class="sidebar-icon">✍️</span> Blog</button>
     <button class="sidebar-link" onclick="showPanel('notes', this)"><span class="sidebar-icon">📝</span> Notes</button>
-    <div class="sidebar-label">Website</div>
-    <button class="sidebar-link" onclick="showPanel('pages', this)"><span class="sidebar-icon">🏠</span> Page Editor</button>
-    <button class="sidebar-link" onclick="showPanel('settings', this)"><span class="sidebar-icon">⚙️</span> Settings</button>
+    <div class="sidebar-label">Edit Pages</div>
+    <button class="sidebar-link" onclick="showPanel('page-home', this)"><span class="sidebar-icon">🏠</span> Homepage</button>
+    <button class="sidebar-link" onclick="showPanel('page-about', this)"><span class="sidebar-icon">👤</span> About</button>
+    <button class="sidebar-link" onclick="showPanel('page-services', this)"><span class="sidebar-icon">💼</span> Services</button>
+    <button class="sidebar-link" onclick="showPanel('page-contact', this)"><span class="sidebar-icon">📞</span> Contact</button>
     <div class="sidebar-label">Account</div>
+    <button class="sidebar-link" onclick="showPanel('settings', this)"><span class="sidebar-icon">⚙️</span> Settings</button>
     <a class="sidebar-link" href="{{ url_for('admin_logout') }}" style="color:#e8000d;"><span class="sidebar-icon">🚪</span> Logout</a>
   </aside>
 
@@ -198,6 +203,7 @@
     <div class="admin-panel" id="panel-images">
       <p class="panel-title">Images</p>
       <p class="panel-sub">Upload, label and manage your photos</p>
+      <div class="tip">💡 To show an image on the homepage — upload it here then set it to <strong>Featured ⭐</strong></div>
       <div class="upload-zone" id="dropZone">
         <input type="file" id="fileInput" accept="image/*" multiple>
         <div class="upload-icon">📷</div>
@@ -217,7 +223,7 @@
         <div><label>Featured on homepage?</label>
           <select id="upFeatured">
             <option value="false">No</option>
-            <option value="true">Yes — show on homepage</option>
+            <option value="true">Yes — show on homepage ⭐</option>
           </select>
         </div>
         <div><label>&nbsp;</label><button class="btn-primary" onclick="uploadFiles()" style="width:100%;padding:0.7rem;">Upload</button></div>
@@ -238,7 +244,7 @@
             </select>
             <select id="feat-{{ p.id }}">
               <option value="false" {% if not p.featured %}selected{% endif %}>Not Featured</option>
-              <option value="true"  {% if p.featured     %}selected{% endif %}>Featured ⭐</option>
+              <option value="true"  {% if p.featured     %}selected{% endif %}>Featured ⭐ Homepage</option>
             </select>
           </div>
           <div class="img-admin-actions">
@@ -254,10 +260,7 @@
     <div class="admin-panel" id="panel-blog">
       <p class="panel-title">Blog</p>
       <p class="panel-sub">Write, edit and publish posts</p>
-
       <button class="btn-primary" onclick="openBlogEditor(null)" style="margin-bottom:1.5rem;">+ New Post</button>
-
-      <!-- Blog editor -->
       <div class="blog-editor" id="blogEditor">
         <input type="hidden" id="editPostId">
         <div class="setting-field"><label>Title</label><input type="text" id="editTitle" placeholder="Post title..."></div>
@@ -270,8 +273,8 @@
             <option value="client-story">Client Story</option>
           </select>
         </div>
-        <div class="setting-field"><label>Cover Image URL — upload an image first, copy its URL from the library</label><input type="text" id="editCoverUrl" placeholder="https://res.cloudinary.com/..."></div>
-        <div class="setting-field"><label>Body — write your post here</label><textarea id="editBody" style="min-height:300px;" placeholder="Write your post..."></textarea></div>
+        <div class="setting-field"><label>Cover Image URL — upload an image first, copy its URL from the library above</label><input type="text" id="editCoverUrl" placeholder="https://res.cloudinary.com/..."></div>
+        <div class="setting-field"><label>Body — write your full post here</label><textarea id="editBody" style="min-height:300px;" placeholder="Write your post..."></textarea></div>
         <div class="setting-field"><label>Status</label>
           <select id="editPublished">
             <option value="false">Draft — not visible on site</option>
@@ -280,28 +283,21 @@
         </div>
         <div class="blog-editor-actions">
           <button class="btn-primary" onclick="saveBlogPost()">Save Post</button>
-          <button class="settings-save-btn" style="width:auto;background:#1a1a1a;border:1px solid rgba(245,240,235,0.1);" onclick="closeBlogEditor()">Cancel</button>
+          <button style="background:#1a1a1a;border:1px solid rgba(245,240,235,0.1);color:#888;padding:0.8rem 1.5rem;font-family:'Barlow Condensed',Arial,sans-serif;font-size:0.75rem;letter-spacing:0.15em;text-transform:uppercase;cursor:pointer;" onclick="closeBlogEditor()">Cancel</button>
         </div>
       </div>
-
-      <!-- Blog list -->
       <div class="blog-list">
         {% for post in posts %}
         <div class="blog-card" id="blogcard-{{ post.id }}">
-          {% if post.cover_url %}
-          <img class="blog-card-cover" src="{{ post.cover_url }}" alt="{{ post.title }}">
-          {% else %}
-          <div class="blog-card-cover-empty">📝</div>
-          {% endif %}
+          {% if post.cover_url %}<img class="blog-card-cover" src="{{ post.cover_url }}" alt="{{ post.title }}">
+          {% else %}<div class="blog-card-cover-empty">📝</div>{% endif %}
           <div class="blog-card-info">
             <p class="blog-card-title">{{ post.title }}</p>
             <p class="blog-card-meta">{{ post.category }} · {{ post.created_at.strftime('%d %b %Y') }} · {% if post.published %}<span style="color:#4caf50;">Published</span>{% else %}<span style="color:#888;">Draft</span>{% endif %}</p>
           </div>
           <div class="blog-card-actions">
             <button class="blog-edit-btn" onclick="openBlogEditor({{ post.id }}, '{{ post.title|replace("'", "\\'") }}', '{{ post.category }}', '{{ post.cover_url or "" }}', {{ 'true' if post.published else 'false' }})">Edit</button>
-            <button class="blog-pub-btn {% if post.published %}unpub{% endif %}" onclick="togglePublish({{ post.id }}, {{ 'false' if post.published else 'true' }})">
-              {% if post.published %}Unpublish{% else %}Publish{% endif %}
-            </button>
+            <button class="blog-pub-btn {% if post.published %}unpub{% endif %}" onclick="togglePublish({{ post.id }}, {{ 'false' if post.published else 'true' }})">{% if post.published %}Unpublish{% else %}Publish{% endif %}</button>
             <button class="blog-del-btn" onclick="deleteBlog({{ post.id }})">Delete</button>
           </div>
         </div>
@@ -324,50 +320,75 @@
           <div class="note-meta">Updated {{ n.updated_at.strftime('%d %b %Y, %H:%M') if n.updated_at else '' }}</div>
           <div class="note-actions">
             <button class="note-save-btn" onclick="saveNote({{ n.id }})">Save</button>
-            <button class="note-del-btn"  onclick="deleteNote({{ n.id }})">Delete</button>
+            <button class="note-del-btn" onclick="deleteNote({{ n.id }})">Delete</button>
           </div>
         </div>
         {% endfor %}
       </div>
     </div>
 
-    <!-- PAGE EDITOR -->
-    <div class="admin-panel" id="panel-pages">
-      <p class="panel-title">Page Editor</p>
-      <p class="panel-sub">Edit every page on your site without touching code</p>
+    <!-- HOMEPAGE EDITOR -->
+    <div class="admin-panel" id="panel-page-home">
+      <p class="panel-title">Homepage</p>
+      <p class="panel-sub">Edit everything on the homepage</p>
 
-      <!-- Homepage -->
       <div class="settings-group">
-        <p class="settings-group-title">🏠 Homepage</p>
+        <p class="settings-group-title">Hero Section</p>
+        <div class="tip">To change the background image — upload it in Images, copy the URL from the image card, paste it below</div>
+        <div class="setting-field"><label>Background Image URL</label><input type="text" id="set-hero_bg" value="{{ settings.hero_bg }}" placeholder="https://res.cloudinary.com/..."></div>
+        <div class="setting-field"><label>Location Text</label><input type="text" id="set-hero_location" value="{{ settings.hero_location }}"></div>
         <div class="setting-field"><label>Hero Title</label><input type="text" id="set-hero_title" value="{{ settings.hero_title }}"></div>
         <div class="setting-field"><label>Hero Subtitle</label><textarea id="set-hero_subtitle">{{ settings.hero_subtitle }}</textarea></div>
+        <button class="settings-save-btn" onclick="saveSettings(['hero_bg','hero_location','hero_title','hero_subtitle'])">Save Hero Section</button>
+      </div>
+
+      <div class="settings-group">
+        <p class="settings-group-title">Standout Shots</p>
+        <div class="tip">Go to Images → upload your photos → set them to Featured ⭐ — they appear here automatically. To remove a shot, go to Images and untick Featured.</div>
+        <p style="color:#555;font-size:0.85rem;">Currently featuring {{ photos | selectattr('featured') | list | length }} image(s) on the homepage.</p>
+      </div>
+
+      <div class="settings-group">
+        <p class="settings-group-title">Booking Status</p>
         <div class="setting-field"><label>Taking Bookings?</label>
           <select id="set-taking_bookings">
             <option value="yes" {% if settings.taking_bookings == 'yes' %}selected{% endif %}>Yes — open for bookings</option>
             <option value="no"  {% if settings.taking_bookings == 'no'  %}selected{% endif %}>No — closed</option>
           </select>
         </div>
-        <p style="font-family:'Barlow Condensed',Arial,sans-serif;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:#555;margin-top:0.5rem;">
-          💡 To change homepage photos — go to Images, upload your photo, then set it to <strong style="color:#f5f0eb;">Featured ⭐</strong>
-        </p>
-        <button class="settings-save-btn" onclick="saveSettings(['hero_title','hero_subtitle','taking_bookings'])">Save Homepage</button>
+        <button class="settings-save-btn" onclick="saveSettings(['taking_bookings'])">Save</button>
       </div>
+    </div>
 
-      <!-- About page -->
+    <!-- ABOUT EDITOR -->
+    <div class="admin-panel" id="panel-page-about">
+      <p class="panel-title">About Page</p>
+      <p class="panel-sub">Edit everything on the about page</p>
+
       <div class="settings-group">
-        <p class="settings-group-title">👤 About Page</p>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <p class="settings-group-title">Profile</p>
+        <div class="two-col">
           <div class="setting-field"><label>Your Name</label><input type="text" id="set-about_name" value="{{ settings.about_name }}"></div>
           <div class="setting-field"><label>Location</label><input type="text" id="set-about_location" value="{{ settings.about_location }}"></div>
           <div class="setting-field"><label>Months Shooting</label><input type="text" id="set-about_months" value="{{ settings.about_months }}"></div>
           <div class="setting-field"><label>Profile Photo URL — upload first, paste URL here</label><input type="text" id="set-about_photo" value="{{ settings.about_photo }}" placeholder="https://res.cloudinary.com/..."></div>
         </div>
-        <div class="setting-field"><label>Bio Paragraph 1</label><textarea id="set-about_bio1">{{ settings.about_bio1 }}</textarea></div>
-        <div class="setting-field"><label>Bio Paragraph 2</label><textarea id="set-about_bio2">{{ settings.about_bio2 }}</textarea></div>
-        <div class="setting-field"><label>Bio Paragraph 3</label><textarea id="set-about_bio3">{{ settings.about_bio3 }}</textarea></div>
-        <div class="setting-field"><label>Bio Paragraph 4</label><textarea id="set-about_bio4">{{ settings.about_bio4 }}</textarea></div>
-        <div class="setting-field"><label>Bio Paragraph 5</label><textarea id="set-about_bio5">{{ settings.about_bio5 }}</textarea></div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:0.5rem;">
+        <button class="settings-save-btn" onclick="saveSettings(['about_name','about_location','about_months','about_photo'])">Save Profile</button>
+      </div>
+
+      <div class="settings-group">
+        <p class="settings-group-title">Bio — each paragraph is separate</p>
+        <div class="setting-field"><label>Paragraph 1</label><textarea id="set-about_bio1">{{ settings.about_bio1 }}</textarea></div>
+        <div class="setting-field"><label>Paragraph 2</label><textarea id="set-about_bio2">{{ settings.about_bio2 }}</textarea></div>
+        <div class="setting-field"><label>Paragraph 3</label><textarea id="set-about_bio3">{{ settings.about_bio3 }}</textarea></div>
+        <div class="setting-field"><label>Paragraph 4</label><textarea id="set-about_bio4">{{ settings.about_bio4 }}</textarea></div>
+        <div class="setting-field"><label>Paragraph 5</label><textarea id="set-about_bio5">{{ settings.about_bio5 }}</textarea></div>
+        <button class="settings-save-btn" onclick="saveSettings(['about_bio1','about_bio2','about_bio3','about_bio4','about_bio5'])">Save Bio</button>
+      </div>
+
+      <div class="settings-group">
+        <p class="settings-group-title">Stats</p>
+        <div class="three-col">
           <div>
             <div class="setting-field"><label>Stat 1 Number</label><input type="text" id="set-about_stat1_n" value="{{ settings.about_stat1_n }}"></div>
             <div class="setting-field"><label>Stat 1 Label</label><input type="text" id="set-about_stat1_l" value="{{ settings.about_stat1_l }}"></div>
@@ -381,20 +402,56 @@
             <div class="setting-field"><label>Stat 3 Label</label><input type="text" id="set-about_stat3_l" value="{{ settings.about_stat3_l }}"></div>
           </div>
         </div>
-        <button class="settings-save-btn" onclick="saveSettings(['about_name','about_location','about_months','about_photo','about_bio1','about_bio2','about_bio3','about_bio4','about_bio5','about_stat1_n','about_stat1_l','about_stat2_n','about_stat2_l','about_stat3_n','about_stat3_l'])">Save About Page</button>
+        <button class="settings-save-btn" onclick="saveSettings(['about_stat1_n','about_stat1_l','about_stat2_n','about_stat2_l','about_stat3_n','about_stat3_l'])">Save Stats</button>
+      </div>
+    </div>
+
+    <!-- SERVICES EDITOR -->
+    <div class="admin-panel" id="panel-page-services">
+      <p class="panel-title">Services Page</p>
+      <p class="panel-sub">Edit your services, descriptions and prices</p>
+
+      {% for i in range(1, 9) %}
+      <div class="settings-group">
+        <p class="settings-group-title">Service {{ i }}</p>
+        <div class="setting-field"><label>Name</label><input type="text" id="set-s{{ i }}_name" value="{{ settings['s' ~ i ~ '_name'] }}"></div>
+        <div class="setting-field"><label>Description</label><textarea id="set-s{{ i }}_desc">{{ settings['s' ~ i ~ '_desc'] }}</textarea></div>
+        <div class="setting-field"><label>Price</label><input type="text" id="set-s{{ i }}_price" value="{{ settings['s' ~ i ~ '_price'] }}"></div>
+        <button class="settings-save-btn" onclick="saveSettings(['s{{ i }}_name','s{{ i }}_desc','s{{ i }}_price'])">Save Service {{ i }}</button>
+      </div>
+      {% endfor %}
+
+      <div class="settings-group">
+        <p class="settings-group-title">Pricing Note</p>
+        <div class="setting-field"><label>Note shown at the bottom of the page</label><textarea id="set-services_note">{{ settings.services_note }}</textarea></div>
+        <button class="settings-save-btn" onclick="saveSettings(['services_note'])">Save Note</button>
+      </div>
+    </div>
+
+    <!-- CONTACT EDITOR -->
+    <div class="admin-panel" id="panel-page-contact">
+      <p class="panel-title">Contact Page</p>
+      <p class="panel-sub">Edit your contact details</p>
+
+      <div class="settings-group">
+        <p class="settings-group-title">Contact Details</p>
+        <div class="setting-field"><label>Email Address</label><input type="text" id="set-contact_email" value="{{ settings.contact_email }}"></div>
+        <div class="setting-field"><label>Location</label><input type="text" id="set-contact_location" value="{{ settings.contact_location }}"></div>
+        <div class="setting-field"><label>Response Time</label><input type="text" id="set-contact_response" value="{{ settings.contact_response }}"></div>
+        <div class="setting-field"><label>Instagram URL</label><input type="text" id="set-instagram" value="{{ settings.instagram }}"></div>
+        <div class="setting-field"><label>TikTok URL</label><input type="text" id="set-tiktok" value="{{ settings.tiktok }}"></div>
+        <button class="settings-save-btn" onclick="saveSettings(['contact_email','contact_location','contact_response','instagram','tiktok'])">Save Contact Details</button>
       </div>
     </div>
 
     <!-- SETTINGS -->
     <div class="admin-panel" id="panel-settings">
       <p class="panel-title">Settings</p>
-      <p class="panel-sub">Social links and contact info</p>
+      <p class="panel-sub">General site settings</p>
       <div class="settings-group">
-        <p class="settings-group-title">Social & Contact</p>
-        <div class="setting-field"><label>Location (shown on contact page)</label><input type="text" id="set-location" value="{{ settings.location }}"></div>
-        <div class="setting-field"><label>Instagram URL</label><input type="text" id="set-instagram" value="{{ settings.instagram }}"></div>
-        <div class="setting-field"><label>TikTok URL</label><input type="text" id="set-tiktok" value="{{ settings.tiktok }}"></div>
-        <button class="settings-save-btn" onclick="saveSettings(['location','instagram','tiktok'])">Save Settings</button>
+        <p class="settings-group-title">Site Info</p>
+        <div class="setting-field"><label>Location (footer)</label><input type="text" id="set-location" value="{{ settings.location }}"></div>
+        <button class="settings-save-btn" onclick="saveSettings(['location'])">Save</button>
       </div>
     </div>
 
@@ -511,7 +568,7 @@ function deleteNote(id) {
 function saveSettings(keys) {
   var data = {};
   keys.forEach(function(k) { var el = document.getElementById('set-' + k); if (el) data[k] = el.value; });
-  fetch('/admin/settings/save', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(function() { toast('Settings saved'); });
+  fetch('/admin/settings/save', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(function() { toast('Saved ✓'); });
 }
 function openBlogEditor(id, title, category, coverUrl, published) {
   var editor = document.getElementById('blogEditor');
