@@ -16,30 +16,34 @@
     <div>
       <p class="sec-label">Details</p>
       <h2 class="sec-title">Let's Talk</h2>
-      <p style="font-size: 0.95rem; line-height: 1.8; color: #888888; margin-bottom: 2rem;">
+      <p style="font-size:0.95rem;line-height:1.8;color:#888888;margin-bottom:2rem;">
         Whether you've got a firm plan or just an idea, get in touch. I work with all budgets and I'm always up for something creative.
       </p>
 
       <div class="contact-details">
         <div class="cd-row">
           <span class="cd-label">Location</span>
-          <span class="cd-val">Leicester, UK</span>
+          <span class="cd-val">{{ s.contact_location }}</span>
         </div>
         <div class="cd-row">
           <span class="cd-label">Email</span>
-          <span class="cd-val"><a href="mailto:tinotend4official@icloud.com">tinotend4official@icloud.com</a></span>
+          <span class="cd-val"><a href="mailto:{{ s.contact_email }}">{{ s.contact_email }}</a></span>
         </div>
         <div class="cd-row">
           <span class="cd-label">Instagram</span>
-          <span class="cd-val"><a href="#" style="color:#e8000d;">@yourhandle</a></span>
+          <span class="cd-val"><a href="{{ s.contact_instagram }}" target="_blank" style="color:#e8000d;">@tino4_real</a></span>
         </div>
         <div class="cd-row">
           <span class="cd-label">Response</span>
-          <span class="cd-val">Within 24 hours</span>
+          <span class="cd-val">{{ s.contact_response }}</span>
         </div>
         <div class="cd-row">
           <span class="cd-label">Status</span>
+          {% if s.contact_status == 'yes' %}
           <span class="cd-val cd-available">&#10003; Taking bookings now</span>
+          {% else %}
+          <span class="cd-val" style="color:#e8000d;">&#10007; Not taking bookings right now</span>
+          {% endif %}
         </div>
       </div>
     </div>
@@ -61,12 +65,13 @@
           <label>Type of shoot</label>
           <select id="ftype" required>
             <option value="" disabled selected>Select a service</option>
-            <option>Church / Architecture</option>
-            <option>Restaurant / Food</option>
-            <option>Streetwear / Fashion</option>
-            <option>Brand Campaign</option>
-            <option>Event / Club Night</option>
-            <option>Portrait</option>
+            <option>Portraits & Headshots</option>
+            <option>Fashion & Streetwear</option>
+            <option>Events & Club Nights</option>
+            <option>Food & Restaurants</option>
+            <option>Brand & Product Shoots</option>
+            <option>Street & Documentary</option>
+            <option>Architecture & Interiors</option>
             <option>Something else</option>
           </select>
         </div>
@@ -114,7 +119,7 @@
       }
     })
     .catch(function() {
-      msg.textContent = 'Something went wrong. Email me directly at tinotend4official@icloud.com';
+      msg.textContent = 'Something went wrong. Email me directly at {{ s.contact_email }}';
       msg.className = 'err';
     })
     .finally(function() {
