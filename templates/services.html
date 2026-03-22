@@ -14,142 +14,107 @@
   <p class="sec-label">Pricing</p>
   <h2 class="sec-title" style="margin-bottom: 0.5rem;">What I Shoot</h2>
   <p style="color:#888;font-size:0.9rem;margin-bottom:3rem;line-height:1.8;">
-    I shoot everything. Whether you've got a full brief or just a feeling, get in touch and we'll figure it out. All prices are fair — I'm building my portfolio and I want to work with people who are building something too.
+    I shoot everything. Whether you've got a full brief or just a feeling, get in touch and we'll figure it out.
   </p>
 
-  <!-- SERVICE ACCORDION -->
   <div class="accordion">
 
     <div class="acc-item">
       <button class="acc-head" onclick="toggleAcc(this)">
-        <span><span class="acc-icon">🧍</span> Portraits & Headshots</span>
+        <span><span class="acc-icon">🧍</span> {{ s.s1_name }}</span>
         <span class="acc-arrow">+</span>
       </button>
       <div class="acc-body">
-        <p>Whether it's for LinkedIn, social media, press shots or just something to remember a moment — I'll make sure you look good. Relaxed sessions, no stiff posing.</p>
-        <ul>
-          <li>1 location, up to 1 hour</li>
-          <li>10–20 edited shots delivered</li>
-          <li>24 hour turnaround</li>
-        </ul>
-        <p class="acc-price">From <strong>£30–£50</strong></p>
+        <p>{{ s.s1_desc }}</p>
+        <p class="acc-price">{{ s.s1_price }}</p>
       </div>
     </div>
 
     <div class="acc-item">
       <button class="acc-head" onclick="toggleAcc(this)">
-        <span><span class="acc-icon">👟</span> Fashion & Streetwear</span>
+        <span><span class="acc-icon">👟</span> {{ s.s2_name }}</span>
         <span class="acc-arrow">+</span>
       </button>
       <div class="acc-body">
-        <p>Lookbooks, fit pics, brand content — shot on location around Nottingham or wherever you want. I'll find the angles and light that make your fits look as fire as they feel.</p>
-        <ul>
-          <li>1–2 locations, up to 2 hours</li>
-          <li>20–40 edited shots</li>
-          <li>Great for personal brands & upcoming streetwear labels</li>
-        </ul>
-        <p class="acc-price">From <strong>£40–£70</strong></p>
+        <p>{{ s.s2_desc }}</p>
+        <p class="acc-price">{{ s.s2_price }}</p>
       </div>
     </div>
 
     <div class="acc-item">
       <button class="acc-head" onclick="toggleAcc(this)">
-        <span><span class="acc-icon">🎉</span> Events & Club Nights</span>
+        <span><span class="acc-icon">🎉</span> {{ s.s3_name }}</span>
         <span class="acc-arrow">+</span>
       </button>
       <div class="acc-body">
-        <p>Full coverage of your night. Club nights, birthdays, house parties, gigs — I'll move through the crowd and capture the energy properly. Fast edits, shareable files ready to post.</p>
-        <ul>
-          <li>Up to 3 hours coverage</li>
-          <li>50–100+ shots delivered</li>
-          <li>Same or next day turnaround</li>
-        </ul>
-        <p class="acc-price">From <strong>£60–£100</strong></p>
+        <p>{{ s.s3_desc }}</p>
+        <p class="acc-price">{{ s.s3_price }}</p>
       </div>
     </div>
 
     <div class="acc-item">
       <button class="acc-head" onclick="toggleAcc(this)">
-        <span><span class="acc-icon">🍜</span> Food & Restaurants</span>
+        <span><span class="acc-icon">🍜</span> {{ s.s4_name }}</span>
         <span class="acc-arrow">+</span>
       </button>
       <div class="acc-body">
-        <p>Atmosphere shots, plated dishes and interior photos for menus, Instagram and Google listings. Help your restaurant stand out online with visuals that actually do the food justice.</p>
-        <ul>
-          <li>2–3 hour session on location</li>
-          <li>20–40 edited shots</li>
-          <li>Dishes, interior, vibe — all covered</li>
-        </ul>
-        <p class="acc-price">From <strong>£50–£80</strong></p>
+        <p>{{ s.s4_desc }}</p>
+        <p class="acc-price">{{ s.s4_price }}</p>
       </div>
     </div>
 
     <div class="acc-item">
       <button class="acc-head" onclick="toggleAcc(this)">
-        <span><span class="acc-icon">🚀</span> Brand & Product Shoots</span>
+        <span><span class="acc-icon">🚀</span> {{ s.s5_name }}</span>
         <span class="acc-arrow">+</span>
       </button>
       <div class="acc-body">
-        <p>If you're building a brand from scratch, I get it — I'm doing the same thing. Launch shoots, product photography and campaign content for upcoming brands who need visuals that punch above their weight.</p>
-        <ul>
-          <li>Flexible sessions tailored to your brief</li>
-          <li>Products, people, places — whatever tells your story</li>
-          <li>Great for new businesses, Depop sellers, small labels</li>
-        </ul>
-        <p class="acc-price">From <strong>£40–£80</strong></p>
+        <p>{{ s.s5_desc }}</p>
+        <p class="acc-price">{{ s.s5_price }}</p>
       </div>
     </div>
 
     <div class="acc-item">
       <button class="acc-head" onclick="toggleAcc(this)">
-        <span><span class="acc-icon">🌆</span> Street & Documentary</span>
+        <span><span class="acc-icon">🌆</span> {{ s.s6_name }}</span>
         <span class="acc-arrow">+</span>
       </button>
       <div class="acc-body">
-        <p>Candid street photography, location shoots and documentary-style coverage. Real moments, real places — no staging, no filters. Perfect for personal projects or anyone who wants authentic content.</p>
-        <ul>
-          <li>Flexible session length</li>
-          <li>Nottingham, East Midlands and beyond</li>
-          <li>Raw, honest photography</li>
-        </ul>
-        <p class="acc-price">From <strong>£30–£60</strong></p>
+        <p>{{ s.s6_desc }}</p>
+        <p class="acc-price">{{ s.s6_price }}</p>
       </div>
     </div>
 
     <div class="acc-item">
       <button class="acc-head" onclick="toggleAcc(this)">
-        <span><span class="acc-icon">⛪</span> Architecture & Interiors</span>
+        <span><span class="acc-icon">⛪</span> {{ s.s7_name }}</span>
         <span class="acc-arrow">+</span>
       </button>
       <div class="acc-body">
-        <p>Churches, buildings, interiors and architectural details. Available across the Midlands. Great for venues, churches or anyone wanting professional documentation of a space.</p>
-        <ul>
-          <li>2–3 hour session on site</li>
-          <li>20–30 edited shots</li>
-          <li>Interior, exterior and detail shots</li>
-        </ul>
-        <p class="acc-price">From <strong>£50–£80</strong></p>
+        <p>{{ s.s7_desc }}</p>
+        <p class="acc-price">{{ s.s7_price }}</p>
       </div>
     </div>
 
     <div class="acc-item">
       <button class="acc-head" onclick="toggleAcc(this)">
-        <span><span class="acc-icon">🤝</span> Something Else?</span>
+        <span><span class="acc-icon">🤝</span> {{ s.s8_name }}</span>
         <span class="acc-arrow">+</span>
       </button>
       <div class="acc-body">
-        <p>Got something in mind that doesn't fit a category? I shoot everything. If you've got an idea — a concept, a project, a collaboration — just reach out and let's talk about it. No idea is too weird.</p>
-        <p class="acc-price">Price on request</p>
+        <p>{{ s.s8_desc }}</p>
+        <p class="acc-price">{{ s.s8_price }}</p>
       </div>
     </div>
 
   </div>
 
-  <!-- NOTE -->
+  {% if s.services_note %}
   <div style="margin-top:3rem;padding:1.5rem;border-left:3px solid #e8000d;background:rgba(232,0,13,0.05);">
     <p style="font-family:'Barlow Condensed',Arial,sans-serif;font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:#e8000d;margin-bottom:0.5rem;">A note on pricing</p>
-    <p style="color:#888;font-size:0.88rem;line-height:1.8;margin:0;">All prices are rough guides. I'm a beginner building my portfolio and I'd rather shoot something great at a fair price than overcharge and underdeliver. If you've got a budget, tell me — we'll make it work.</p>
+    <p style="color:#888;font-size:0.88rem;line-height:1.8;margin:0;">{{ s.services_note }}</p>
   </div>
+  {% endif %}
 
   <div style="text-align:center;margin-top:3rem;">
     <a href="{{ url_for('contact') }}" class="btn-primary">Book a Shoot</a>
@@ -162,17 +127,15 @@
 {% block extra_js %}
 <script>
   function toggleAcc(btn) {
-    var item = btn.parentElement;
-    var body = item.querySelector('.acc-body');
+    var item  = btn.parentElement;
+    var body  = item.querySelector('.acc-body');
     var arrow = btn.querySelector('.acc-arrow');
     var isOpen = item.classList.contains('open');
-
     document.querySelectorAll('.acc-item').forEach(function(i) {
       i.classList.remove('open');
       i.querySelector('.acc-body').style.maxHeight = null;
       i.querySelector('.acc-arrow').textContent = '+';
     });
-
     if (!isOpen) {
       item.classList.add('open');
       body.style.maxHeight = body.scrollHeight + 'px';
