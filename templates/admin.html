@@ -200,6 +200,17 @@
     </div>
 
     <!-- IMAGES -->
+    <script>
+    document.querySelector('input[type="file"]').addEventListener('change', function(e)
+    {
+        const file = e.target.files[0];
+        if (file.size > 5 * 1024 * 1024) {  // 5MB
+            alert('Please compress image to <5MB (use tinypng.com)');
+            e.target.value = '';
+    }
+    });
+    </script>
+
     <div class="admin-panel" id="panel-images">
       <p class="panel-title">Images</p>
       <p class="panel-sub">Upload, label and manage your photos</p>
